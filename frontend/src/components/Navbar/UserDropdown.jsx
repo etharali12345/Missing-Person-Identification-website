@@ -1,5 +1,6 @@
 import { NavLink } from "react-router";
 import { activeClass } from "../../utils/navHelper.js";
+import { LogoutButton } from "./LogoutButton.jsx";
 import ProfileButton from "./ProfileButton";
 import { HardDriveUpload, LogOut, UserRound } from "lucide-react";
 
@@ -27,10 +28,7 @@ export function UserDropdown() {
         </li>
         <hr className="dropdown-divider m-0 " />
         <li>
-          <NavLink to="/logout" className={dropItemClass}>
-            <LogOut size={20} className="ms-2" />
-            تسجيل الخروج
-          </NavLink>
+          <LogoutButton />
         </li>
       </ul>
     </div>
