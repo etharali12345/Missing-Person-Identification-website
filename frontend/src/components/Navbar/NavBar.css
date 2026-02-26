@@ -3,8 +3,6 @@
 }
 
 .custom-navbar {
-  --navbackground: #eff0f1;
-  --borderRadius: 50px;
   box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.2);
 }
 
@@ -15,7 +13,7 @@
 .nav-pill-container {
   background-color: var(--navbackground);
   border-radius: var(--borderRadius);
-  padding: 5px 5px;
+  padding: 5px 5px !important;
   gap: 5px;
 }
 
@@ -74,11 +72,11 @@
 }
 
 .dropdown-menu {
-  border: none;
+  border: none !important;
   border-radius: 0px 0px 5px 5px;
   box-shadow: 1px 5px 5px rgba(0, 0, 0, 0.15);
   width: 200px;
-  text-align: right;
+  text-align: right !important;
 }
 
 .dropdown-item {
