@@ -10,3 +10,9 @@ class Config:
     MYSQL_DB = 'face_recognition_db'     # اسم قاعدة البيانات
     JWT_SECRET_KEY = "jwt-secret-string"
     UPLOAD_FOLDER = "uploads"
+
+    JWT_TOKEN_LOCATION = ['cookies']
+    JWT_COOKIE_CSRF_PROTECT = False
+    JWT_ACCESS_COOKIE_NAME = 'access_token_cookie' # اسم الكوكيز
+    JWT_COOKIE_SAMESITE = 'None' # مهم جداً للتعامل بين بورتات مختلفة
+    JWT_COOKIE_SECURE = False   # خليه False لأنك شغالة localhost مش HTTPS

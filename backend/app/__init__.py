@@ -9,6 +9,7 @@ def create_app():
     CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
     app.config.from_object(Config)
 
+    CORS(app, supports_credentials=True, origins=["http://localhost:5173", "http://127.0.0.1:5173"])
     # initialize extensions
     mysql.init_app(app)
     jwt.init_app(app)
