@@ -12,9 +12,8 @@ auth_bp = Blueprint("auth", __name__)
 
 @auth_bp.route("/signup", methods=["POST"])
 def signup():
-    print("\n--- Incoming Signup Request ---")
     try:
-        # 🟢 الحالة الأولى: تسجيل مستخدم عادي (JSON)
+        # الحالة الأولى: تسجيل مستخدم عادي (JSON)
         if request.is_json:
             data = request.get_json()
             role = data.get("role")
@@ -55,10 +54,9 @@ def signup():
                 }
             })
             set_access_cookies(response, access_token)
-            print("✅ Normal User Registered and Cookie Set")
             return response, 201
 
-        # 🔵 الحالة الثانية: تسجيل جهة رسمية (FormData / Multipart)
+        #  الحالة الثانية: تسجيل جهة رسمية 
         else:
             role = request.form.get("role")
             if role != "authority":
@@ -72,9 +70,6 @@ def signup():
             location = request.form.get("location")
             license_num = request.form.get("license_number")
 
-            # ملاحظة: هنا يجب معالجة رفع الملف (document) إذا وجد
-            # file = request.files.get('document') ...
-
             cur = mysql.connection.cursor()
             cur.execute("""
                 INSERT INTO authority (authority_type, authority_name, email_or_phone, password, location, license_number, status)
@@ -83,9 +78,6 @@ def signup():
             
             mysql.connection.commit()
             cur.close()
-
-            # الجهات الرسمية غالباً لا تسجل دخول فوراً (تنتظر Approved)
-            # ولكن إذا أردتِ تسجيل دخولهم فوراً، ننشئ التوكن هنا:
             access_token = create_access_token(identity={
                 "email": email_or_phone,
                 "role": "authority"
@@ -96,15 +88,12 @@ def signup():
                 "role": "authority"
             })
             set_access_cookies(response, access_token)
-            print("✅ Authority Registered (Pending) and Cookie Set")
             return response, 201
 
     except Exception as e:
-        print(f"❌ SIGNUP ERROR: {str(e)}")
         return jsonify({"message": "Internal Server Error", "error": str(e)}), 500
 @auth_bp.route('/login', methods=['POST'])
 def login():
-    print("\n--- Incoming Login Request ---")
     try:
         data = request.get_json()
         email_or_phone = data.get("email_or_phone")
@@ -112,7 +101,7 @@ def login():
 
         cur = mysql.connection.cursor()
         
-        # 1️⃣ البحث في جدول المستخدمين (users)
+        # البحث في جدول المستخدمين (users)
         cur.execute("SELECT * FROM users WHERE email_or_phone = %s", (email_or_phone,))
         user = cur.fetchone()
 
@@ -123,12 +112,12 @@ def login():
             response = jsonify({
                 "message": "Login successful",
                 "role": "user",
-                "user": {"first_name": user[1], "last_name": user[2], "email": user[3]}
+                "user": {'role':'user'}
             })
             set_access_cookies(response, access_token)
             return response, 200
 
-        # 2️⃣ البحث في جدول الجهات (authority) إذا لم يجد في الأول
+        #  البحث في جدول الجهات (authority) إذا لم يجد في الأول
         cur.execute("SELECT * FROM authority WHERE email_or_phone = %s", (email_or_phone,))
         auth_user = cur.fetchone()
         cur.close()
@@ -138,24 +127,21 @@ def login():
             
             response = jsonify({
                 "message": "Login successful",
-                "role": "authority",
-                "user": {"name": auth_user[3], "type": auth_user[2], "email": auth_user[4]}
+                "user": {"role": "authority"}
             })
             set_access_cookies(response, access_token)
             return response, 200
         
-        # 3️⃣ فشل تسجيل الدخول
+        #  فشل تسجيل الدخول
         return jsonify({"message": "Invalid email/phone or password"}), 401
 
     except Exception as e:
-        print(f"❌ Login Error: {str(e)}")
         return jsonify({"message": "Internal Server Error", "error": str(e)}), 500
     
 #الدالة اللي بترجع لي المستخدم الحالي للنظام 
 @auth_bp.route("/me", methods=["GET"])
-@jwt_required() # السطر ده بيخلي المسار محمي (لازم يكون فيه Token)
+@jwt_required() 
 def get_current_user():
-    print("\n--- Fetching Current User Data (/me) ---")
     try:
         # استخراج البيانات المخزنة داخل التوكن (Email و Role)
         current_identity = get_jwt_identity()
@@ -164,7 +150,7 @@ def get_current_user():
 
         cur = mysql.connection.cursor()
 
-        # 1️⃣ لو المستخدم عادي
+        #  لو المستخدم عادي
         if role == "user":
             cur.execute("SELECT first_name, last_name, email_or_phone FROM users WHERE email_or_phone = %s", (email,))
             user = cur.fetchone()
@@ -172,14 +158,11 @@ def get_current_user():
             if user:
                 return jsonify({
                     "user": {
-                        "first_name": user[0],
-                        "last_name": user[1],
-                        "email": user[2],
                         "role": "user"
                     }
                 }), 200
 
-        # 2️⃣ لو المستخدم جهة رسمية (Authority)
+        #  لو المستخدم جهة رسمية (Authority)
         elif role == "authority":
             cur.execute("SELECT authority_type, authority_name, email_or_phone FROM authority WHERE email_or_phone = %s", (email,))
             auth_user = cur.fetchone()
@@ -197,13 +180,12 @@ def get_current_user():
         return jsonify({"message": "User not found"}), 404
 
     except Exception as e:
-        print(f"❌ Error in /me: {str(e)}")
         return jsonify({"message": "Server error"}), 500
     
 #روات تسجيل الخروج 
 @auth_bp.route("/logout", methods=["POST"])
 def logout():
     resp = jsonify({"message": "Successfully logged out"})
-    # هذه الدالة تمسح توكن الـ JWT من الكوكيز في المتصفح
     unset_jwt_cookies(resp)
     return resp, 200
+
