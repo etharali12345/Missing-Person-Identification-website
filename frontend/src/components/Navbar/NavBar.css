@@ -5,6 +5,14 @@
 .custom-navbar {
   box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.2);
 }
+.navbar {
+  z-index: 100;
+}
+
+.navbar-home {
+  background: transparent !important;
+  box-shadow: none !important;
+}
 
 .logo-width {
   width: 120px;
@@ -15,6 +23,11 @@
   border-radius: var(--borderRadius);
   padding: 5px 5px !important;
   gap: 5px;
+}
+
+.nav-pill-home,
+.btn-login-home {
+  background-color: rgba(0, 0, 0, 0.37);
 }
 
 .nav-link {
@@ -28,6 +41,11 @@
 
 .active-pill {
   background-color: var(--primaryGreen) !important;
+  color: white !important;
+}
+
+.active-pill-home {
+  background-color: #198653a6 !important;
   color: white !important;
 }
 

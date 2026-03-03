@@ -1,0 +1,32 @@
+.hero {
+  margin-top: -70px;
+  position: relative;
+  min-height: 100vh;
+  background-image: url("/images/bg1.png");
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  padding-top: 80px;
+}
+
+.hero-content h1 {
+  font-family:
+    Aref Ruqaa,
+    arial;
+  color: #e0e0c6;
+  text-shadow: 1px 5px 6px rgb(0, 0, 0);
+}

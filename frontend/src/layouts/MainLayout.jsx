@@ -4,9 +4,9 @@ import { Footer } from "../components/Footer/Footer.jsx";
 
 export function MainLayout() {
   return (
-    <div>
+    <div className="d-flex flex-column min-vh-100">
       <NavBar />
-      <main className="min-vh-100">
+      <main className="flex-grow-1">
         <Outlet />
       </main>
       <Footer />

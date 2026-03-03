@@ -7,14 +7,19 @@ import { AuthorityLinks } from "./AuthorityLinks";
 import { AuthorityDropdown } from "./AuthorityDropdown";
 import { AdminLinks } from "./AdminLinks";
 import { AdminDropdown } from "./AdminDropdown";
+import { useLocation } from "react-router";
 import "./NavBar.css";
 
 export function NavBar() {
   const { loading, user } = useAuth();
+  const location = useLocation();
+  const isHome = location.pathname === "/";
   if (loading) return null;
 
   return (
-    <nav className="navbar navbar-expand-lg bg-white custom-navbar py-2 px-2">
+    <nav
+      className={`navbar navbar-expand-lg custom-navbar py-2 px-2 ${isHome ? "navbar-home" : "bg-white "}`}
+    >
       <div className="container-fluid ">
         {/* Right */}
         <div className="logo-width">
@@ -52,7 +57,9 @@ export function NavBar() {
 
           <div className="offcanvas-body d-lg-flex align-items-center w-100">
             {/* Central Pages Coponent*/}
-            <ul className="navbar-nav nav-pill-container mx-auto">
+            <ul
+              className={`navbar-nav nav-pill-container mx-auto ${isHome ? "nav-pill-home" : ""}`}
+            >
               {user?.role === "admin" ? (
                 <AdminLinks />
               ) : (
