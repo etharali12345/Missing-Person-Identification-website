@@ -5,7 +5,7 @@ import "./login.css";
 
 export function LoginPage() {
   return (
-    <div className="container-fluid p-5 d-flex justify-content-center min-vh-100   login-container">
+    <div className="container-fluid p-5 d-flex justify-content-center min-vh-100 login-container">
       <div className="glass-card">
         <div className="text-center mb-4">
           <div className="icon-wrapper">

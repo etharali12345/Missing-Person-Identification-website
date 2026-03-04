@@ -1,4 +1,8 @@
 //install hook
 export function MissingReportPage() {
-  return <></>;
+  return (
+    <>
+      <h1>hi missing</h1>
+    </>
+  );
 }

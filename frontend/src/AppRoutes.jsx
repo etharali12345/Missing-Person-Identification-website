@@ -2,6 +2,7 @@ import { Routes, Route } from "react-router";
 import { MainLayout } from "./layouts/MainLayout.jsx";
 import { LoginPage } from "./features/public/LoginPage.jsx";
 import { SignUpPage } from "./features/public/SignUpPag.jsx";
+import { MissingReportPage } from "./features/missingReport/pages/MissingReportPage.jsx";
 import { Home } from "./pages/Home.jsx";
 import { Unauthorized } from "./pages/Unauthorized.jsx";
 import { RequiredAuth } from "./components/auth/RequiredAuth.jsx";
@@ -44,7 +45,7 @@ export function AppRoutes() {
         </Route>
 
         <Route element={<RequiredAuth role={["admin", "user"]} />}>
-          <Route path="/report-missing" element={<Home />} />
+          <Route path="/report-missing" element={<MissingReportPage />} />
           <Route path="/my-reports" element={<Home />} />
         </Route>
       </Route>
