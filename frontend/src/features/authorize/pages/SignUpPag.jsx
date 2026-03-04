@@ -1,8 +1,8 @@
-import { SignUpForm } from "./SignUpForm";
+import { SignUpForm } from "../components/SignUpForm";
 import { UserRoundKey } from "lucide-react";
 import { NavLink } from "react-router";
-import "./login.css";
-import "./signup.css";
+import "../login.css";
+import "../signup.css";
 
 export function SignUpPage() {
   return (

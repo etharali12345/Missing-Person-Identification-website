@@ -14,8 +14,17 @@ const api = axios.create({
     "imageUrl": "/uploads/found_123.jpg"
   }
 }*/
-export const submitMissingReport = async (formData) => {
-  return <></>;
+export const submitMissingReportSVC = async (formData) => {
+  console.log([...formData.entries()]);
+  return null;
+  try {
+    const res = await api.post("/missing-report/send", formData);
+    return res.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message || "فشل الارسال الرجاء المحاولة مرةأخرى",
+    );
+  }
 };
 
 export const validateMissingMatch = async (matchId, decision) => {

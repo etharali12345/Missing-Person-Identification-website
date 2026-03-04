@@ -1,0 +1,64 @@
+.glass-reportCard {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0px 1px 2px 2px #5353532c;
+  border-radius: 1.25rem;
+  width: 100%;
+  max-width: 370px;
+  padding: 2rem 1.3rem;
+  text-align: start;
+  flex: 1;
+  margin-top: -20px;
+}
+
+.glass-reportCard h6 {
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.glass-reportCard .form-label {
+  font-size: 14px;
+  padding-right: 8px;
+}
+
+.form-control::placeholder,
+input[type="date"]:invalid,
+select.form-select:invalid {
+  color: #acacac !important;
+}
+
+input[type="tel"] {
+  direction: rtl;
+}
+input[type="date"] {
+  text-align: end;
+}
+
+.input-icon-wrapper {
+  position: relative;
+}
+.input-icon-wrapper input,
+.input-icon-wrapper select,
+.input-icon-wrapper textarea {
+  padding-right: 28px;
+}
+
+.input-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9ca3af;
+}
+
+input:disabled,
+select:disabled,
+textarea:disabled {
+  background-color: #f8f8fc !important;
+  color: #7a7878;
+  border-color: #e9e7e7;
+  opacity: 1;
+  cursor: not-allowed;
+}

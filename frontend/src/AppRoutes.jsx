@@ -1,7 +1,7 @@
 import { Routes, Route } from "react-router";
 import { MainLayout } from "./layouts/MainLayout.jsx";
-import { LoginPage } from "./features/public/LoginPage.jsx";
-import { SignUpPage } from "./features/public/SignUpPag.jsx";
+import { LoginPage } from "./features/authorize/pages/LoginPage.jsx";
+import { SignUpPage } from "./features/authorize/pages/SignUpPag";
 import { MissingReportPage } from "./features/missingReport/pages/MissingReportPage.jsx";
 import { Home } from "./pages/Home.jsx";
 import { Unauthorized } from "./pages/Unauthorized.jsx";

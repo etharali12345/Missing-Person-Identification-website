@@ -1,7 +1,7 @@
 import { Lock } from "lucide-react";
-import { LoginForm } from "./LoginForm";
+import { LoginForm } from "../components/LoginForm";
 import { NavLink } from "react-router";
-import "./login.css";
+import "../login.css";
 
 export function LoginPage() {
   return (

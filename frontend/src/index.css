@@ -16,3 +16,9 @@
   font-size: 14px;
   font-family: "Cairo", sans-serif;
 }
+
+.center-flex {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
