@@ -4,16 +4,29 @@ import { submitMissingReportSVC } from "../services/MissingReportService";
 export const useMissingReport = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
-  const [result, setResult] = useState(null);
+  const [result, setResult] = useState({
+    status: "match",
+    mathcId: "54545435",
+    percentage: 0.81,
+    details: {
+      name: "احمد محمد احمد ",
+      approximate_age: 34,
+      gender: "male",
+      foun_date: "2026/4/4",
+      found_location: "الشمالية- واد ي سيدنا",
+      image: "/images/found_123.jpg",
+      authority_name: "منظمة الهلال الاحمر",
+      phone_number1: "0249943675432",
+      phone_number2: "0249945646465",
+    },
+  });
 
   const submitReport = useCallback(async (formData) => {
     try {
-      console.log("entered hook");
       setLoading(true);
       setError(null);
-
-      const res = await submitMissingReportSVC(formData);
-      setResult(res);
+      const response = await submitMissingReportSVC(formData);
+      setResult(response);
     } catch (err) {
       setError(err.message);
     } finally {

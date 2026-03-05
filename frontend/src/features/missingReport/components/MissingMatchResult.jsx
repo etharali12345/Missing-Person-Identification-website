@@ -1,3 +1,15 @@
-//from report result get matchId={result.matchId}, data={result.person}, onDecision={onDecision}
+import { ImageShow } from "../../../components/shared/ImageShow";
+import { CircularProgress } from "../../../components/shared/CircularProgress";
 
-// pass to ConfirmButtons =  matchId={matchId},  onDecision={onDecision}
+export function MissingMatchResult({ result }) {
+  return (
+    <div className="center-flex flex-column w-100">
+      <ImageShow image={result.details.image} />
+      <div className="glass-reportCard">
+        <div className="circular-contaier">
+          <CircularProgress />
+        </div>
+      </div>
+    </div>
+  );
+}

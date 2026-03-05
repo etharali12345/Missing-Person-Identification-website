@@ -1,25 +1,22 @@
 import axios from "axios";
 
+const BASE_URL = "http://localhost:5000";
+
 const api = axios.create({
-  baseURL: "http://localhost:5000/api",
+  baseURL: `${BASE_URL}/api`,
   withCredentials: true,
 });
-/*{
-  "status": "match",
-  "confidence": 0.91,
-  "person": {
-    "name": "Ahmed Ali",
-    "age": 14,
-    "location": "Khartoum",
-    "imageUrl": "/uploads/found_123.jpg"
-  }
-}*/
+
 export const submitMissingReportSVC = async (formData) => {
   console.log([...formData.entries()]);
   return null;
   try {
     const res = await api.post("/missing-report/send", formData);
-    return res.data;
+    const data = res.data;
+    if (data.details?.image) {
+      data.details.image = `${BASE_URL}${data.details.image}`;
+    }
+    return data;
   } catch (error) {
     throw new Error(
       error.response?.data?.message || "فشل الارسال الرجاء المحاولة مرةأخرى",

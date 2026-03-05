@@ -1,15 +1,12 @@
-// get from Page result={result} onDecision={handleDecision}
-// pass <MissingReportResult result={result} onDecision={handleDecision} />
+import { MissingMatchResult } from "./MissingMatchResult";
+import { MissingNoMatchResult } from "./MissingNoMatchResult";
 
-/*
-if (!result) return null;
-
-if (result.status === "no_match") {
-  return <NoMatchResult />;
+export function MissingReportResult({ result, setShowForm }) {
+  if (result.status === "no_match") {
+    setShowForm(false);
+    return <MissingNoMatchResult />;
+  }
+  if (result.status === "match" || result.status === "uncertain") {
+    return <MissingMatchResult result={result} />;
+  }
 }
-
-if (result.status === "match") {
-  //pass matchId={result.matchId}, data={result.person}, onDecision={onDecision}
-  return <MissingMatchResult />;
-}
-  */
