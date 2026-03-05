@@ -1,14 +1,11 @@
 import axios from "axios";
 
-const user = { user: { role: "user" } };
-
 const api = axios.create({
-  baseURL: "http://localhost:5000/api",
+  baseURL: "http://127.0.0.1:5000/api",
   withCredentials: true,
 });
 
 export const getMeService = async () => {
-  return user?.user;
   try {
     const res = await api.get("/auth/me");
     return res.data.user;
