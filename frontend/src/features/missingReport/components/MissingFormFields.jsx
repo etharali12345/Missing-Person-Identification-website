@@ -1,15 +1,13 @@
 import { UserRound, MapPin, Phone } from "lucide-react";
 
-export function MissingReportFields({
-  handleInputChange,
-  validated,
-  submitted,
-}) {
+export function MissingFormFields({ handleInputChange, validated, submitted }) {
   return (
     <div className="row g-2 mb-3">
       <div className="col-9">
         <div className="mb-1">
-          <label className="form-label">الاسم</label>
+          <label className="form-label">
+            الاسم<span className="text-danger">*</span>
+          </label>
           <div className="input-icon-wrapper">
             {!validated && (
               <span className="input-icon">
@@ -32,7 +30,9 @@ export function MissingReportFields({
 
       <div className="col-3">
         <div className="mb-1">
-          <label className="form-label">العمر</label>
+          <label className="form-label">
+            العمر<span className="text-danger">*</span>
+          </label>
           <input
             type="number"
             name="age"
@@ -42,13 +42,15 @@ export function MissingReportFields({
             disabled={submitted}
             required
           />
-          <div className="invalid-feedback">يرجى إدخال العمر</div>
+          <div className="invalid-feedback">ادخل العمر</div>
         </div>
       </div>
 
       <div className="col-6">
         <div className="mb-1">
-          <label className="form-label">الجنس</label>
+          <label className="form-label">
+            الجنس<span className="text-danger">*</span>
+          </label>
           <select
             name="gender"
             className="form-select"
@@ -76,9 +78,7 @@ export function MissingReportFields({
             className="form-control"
             onChange={handleInputChange}
             disabled={submitted}
-            required
           />
-          <div className="invalid-feedback">يرجى إدخال تاريخ آخر ظهور</div>
         </div>
       </div>
 
@@ -98,16 +98,16 @@ export function MissingReportFields({
               placeholder="مثال: شوهد في امدرمان - الواحة"
               onChange={handleInputChange}
               disabled={submitted}
-              required
             />
-            <div className="invalid-feedback">يرجى إدخال مكان آخر ظهور</div>
           </div>
         </div>
       </div>
 
       <div className="col-6">
         <div className="mb-1">
-          <label className="form-label">رقم هاتفك للتواصل</label>
+          <label className="form-label">
+            رقم هاتفك للتواصل<span className="text-danger">*</span>
+          </label>
           <div className="input-icon-wrapper">
             {!validated && (
               <span className="input-icon">
@@ -122,15 +122,18 @@ export function MissingReportFields({
               onChange={handleInputChange}
               disabled={submitted}
               required
+              pattern="^\+?[0-9]{7,15}$"
             />
-            <div className="invalid-feedback">يرجى إدخال رقم الهاتف</div>
+            <div className="invalid-feedback">يرجى إدخال رقم هاتف صحيح</div>
           </div>
         </div>
       </div>
 
       <div className="col-6">
         <div className="mb-1">
-          <label className="form-label">رقم اخر للطوارئ</label>
+          <label className="form-label">
+            رقم اخر للطوارئ<span className="text-danger">*</span>
+          </label>
           <div className="input-icon-wrapper">
             {!validated && (
               <span className="input-icon">
@@ -144,6 +147,8 @@ export function MissingReportFields({
               placeholder="249xxxxxxxxx+"
               onChange={handleInputChange}
               disabled={submitted}
+              pattern="^\+?[0-9]{7,15}$"
+              required
             />
           </div>
         </div>

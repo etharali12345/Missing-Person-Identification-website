@@ -15,12 +15,20 @@ export function MissingReportPage() {
       <div className="row gy-5 align-items-stretch justify-content-center">
         {showForm && (
           <div className="col-12 px-5 col-md-6 center-flex align-items-stretch">
-            <MissingReportForm submitReport={submitReport} error={error} />
+            <MissingReportForm
+              submitReport={submitReport}
+              error={error}
+              loading={loading}
+            />
           </div>
         )}
         {result && (
           <div className="col-12 px-5 col-md-6 center-flex align-items-stretch">
-            <MissingReportResult result={result} setShowForm={setShowForm} />
+            <MissingReportResult
+              result={result}
+              setShowForm={setShowForm}
+              validateMatch={validateMatch}
+            />
           </div>
         )}
       </div>

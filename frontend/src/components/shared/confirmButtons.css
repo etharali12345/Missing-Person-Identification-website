@@ -1,0 +1,32 @@
+.decision-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 25px;
+  padding-top: 16px;
+}
+
+.btn-confirm {
+  flex: 1;
+  padding: 7px;
+  border-radius: 7px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: opacity 0.2s ease;
+  font-family: inherit;
+}
+
+.btn-confirm:hover {
+  opacity: 0.8;
+}
+
+.btn-confirm.primary {
+  background-color: #555555;
+  color: #ffffff;
+}
+
+.btn-confirm.secondary {
+  background-color: #f2f2f2;
+  color: #444444;
+}

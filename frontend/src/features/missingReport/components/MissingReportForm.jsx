@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { ImagePreview } from "../../../components/shared/ImagePreview";
-import { MissingReportFields } from "./MissingReportFields";
+import { MissingFormFields } from "./MissingFormFields";
 
-export function MissingReportForm({ submitReport, error }) {
+export function MissingReportForm({ submitReport, error, loading }) {
   const [validated, setValidated] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [uploadData, setUploadData] = useState({
@@ -37,16 +37,20 @@ export function MissingReportForm({ submitReport, error }) {
       return;
     }
     setValidated(true);
-
     const formData = new FormData();
     formData.append("image", uploadData.image);
     formData.append("name", uploadData.name);
     formData.append("gender", uploadData.gender);
-    formData.append("last_seen_data", uploadData.last_seen_data);
-    formData.append("last_seen_location", uploadData.last_seen_location);
+    formData.append("age", uploadData.age);
     formData.append("phone_number1", uploadData.phone_number1);
     formData.append("phone_number2", uploadData.phone_number2);
 
+    if (uploadData.last_seen_data) {
+      formData.append("last_seen_data", uploadData.last_seen_data);
+    }
+    if (uploadData.last_seen_location) {
+      formData.append("last_seen_location", uploadData.last_seen_location);
+    }
     await submitReport(formData);
     setSubmitted(true);
   };
@@ -60,18 +64,26 @@ export function MissingReportForm({ submitReport, error }) {
       <ImagePreview image={uploadData.image} setImage={handleImageChange} />
       <div className="glass-reportCard">
         <h6>ادخل بيانات الشخص المفقود</h6>
-        <MissingReportFields
+        <MissingFormFields
           handleInputChange={handleInputChange}
           submitted={submitted}
           validated={validated}
         />
-        {validated && !uploadData.image && <p>يرجى ارفاق صورة الشخص المفقود</p>}
+        {validated && !uploadData.image && (
+          <p className="text-center text-danger">
+            يرجى إرفاق صورة الشخص المفقود
+          </p>
+        )}
         {error && (
           <div className="alert alert-danger center-flex p-3" role="alert">
             {error}
           </div>
         )}
-        <button type="submit" className="btn btn-success w-100">
+        <button
+          type="submit"
+          className="btn btn-success w-100"
+          disabled={submitted || loading}
+        >
           ارسال
         </button>
       </div>

@@ -8,8 +8,6 @@ const api = axios.create({
 });
 
 export const submitMissingReportSVC = async (formData) => {
-  console.log([...formData.entries()]);
-  return null;
   try {
     const res = await api.post("/missing-report/send", formData);
     const data = res.data;
@@ -19,12 +17,12 @@ export const submitMissingReportSVC = async (formData) => {
     return data;
   } catch (error) {
     throw new Error(
-      error.response?.data?.message || "فشل الارسال الرجاء المحاولة مرةأخرى",
+      error.response?.data?.message || "فشل الارسال الرجاء المحاولة مرة أخرى",
     );
   }
 };
 
-export const validateMissingMatch = async (matchId, decision) => {
+export const validateMatchSVC = async (matchId, decision) => {
   try {
     const response = await api.post(`/missing-report/${matchId}/validate`, {
       decision,
