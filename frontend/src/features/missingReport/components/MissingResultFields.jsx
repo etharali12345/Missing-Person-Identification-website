@@ -4,13 +4,13 @@ import "./missingResultFields.css";
 export function MissingResultFields({ details }) {
   return (
     <>
-      {details.name && (
+      {details.full_name && (
         <div className="info-group">
           <div className="label-row">
             <UserRound size={18} className="icon" />
-            <span className="label-text">الاسم</span>
+            <span className="label-text">ا لاسم</span>
           </div>
-          <div className="value-text">{details.name}</div>
+          <div className="value-text">{details.full_name}</div>
         </div>
       )}
 

@@ -38,8 +38,8 @@ export function MissingReportForm({ submitReport, error, loading }) {
     }
     setValidated(true);
     const formData = new FormData();
-    formData.append("image", uploadData.image);
-    formData.append("name", uploadData.name);
+    formData.append("image_path", uploadData.image);
+    formData.append("full_name", uploadData.name);
     formData.append("gender", uploadData.gender);
     formData.append("age", uploadData.age);
     formData.append("phone_number1", uploadData.phone_number1);

@@ -9,7 +9,7 @@ export function MissingMatchResult({ result, validateMatch }) {
   const color = isUncertain ? "yellow" : "green";
   return (
     <div className="center-flex flex-column w-100">
-      <ImageShow image={result.details.image} />
+      <ImageShow image={result.details.image_path} />
       <div className="glass-reportCard">
         <div className="circular-contaier">
           <CircularProgress value={result.percentage} color={color} />

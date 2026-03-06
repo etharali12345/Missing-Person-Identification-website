@@ -24,11 +24,10 @@ export const submitMissingReportSVC = async (formData) => {
 
 export const validateMatchSVC = async (matchId, decision) => {
   try {
-    const res = await api.post(`/missing-report/${matchId}/validate`, {
+    await api.post(`/report/${matchId}/validate`, {
       decision,
     });
-    return res.data;
   } catch (error) {
-    throw error.response?.data || { message: "Validation failed" };
+    throw { message: "Validation failed" };
   }
 };
