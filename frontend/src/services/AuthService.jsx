@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://127.0.0.1:5000/api",
+  baseURL: "http://localhost:5000/api",
   withCredentials: true,
 });
 
@@ -45,4 +45,3 @@ export const logoutService = async () => {
     console.error("Logout failed on server", error);
   }
 };
-
