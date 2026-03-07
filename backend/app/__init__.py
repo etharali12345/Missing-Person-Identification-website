@@ -3,6 +3,7 @@ from flask_cors import CORS
 from .config import Config
 from .extensions import mysql, jwt
 from .routes.auth import auth_bp
+from .routes.missing_person import missing_person
 
 def create_app():
     app = Flask(__name__)
@@ -16,5 +17,7 @@ def create_app():
     jwt.init_app(app)
 
     app.register_blueprint(auth_bp, url_prefix="/api//auth")
+    app.register_blueprint(missing_person, url_prefix="/api//missing_person")
+
 
     return app
