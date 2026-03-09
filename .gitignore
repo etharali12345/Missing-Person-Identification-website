@@ -1,0 +1,48 @@
+# --- Python & Environment ---
+venv/
+.venv/
+env/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.vscode/
+.idea/
+
+# --- Configuration & Secrets ---
+# تم استثناء ملف الإعدادات لاحتوائه على Secret Keys وقواعد البيانات
+config.py
+.env
+
+# --- AI Models & InsightFace ---
+# الموديلات حجمها كبير جداً ولا تُرفع
+.insightface/
+models/
+*.onnx
+
+# --- FAISS & Data Storage ---
+# ملفات البحث والمقارنة
+*.index
+missing_persons.index
+
+# --- Databases ---
+# استثناء قواعد البيانات المحلية
+*.db
+*.mysql
+instance/
+
+# --- User Uploads & Media ---
+# استثناء الصور المرفوعة من المستخدمين (نحفظ المجلد ونستثني المحتوى)
+static/uploads/*
+!static/uploads/.gitkeep
+dataset1/
+*.jpg
+*.png
+*.jpeg
+*.gif
+
+# --- Logs & System Files ---
+*.log
+.DS_Store
+Thumbs.db
