@@ -26,7 +26,8 @@
 
 .form-control::placeholder,
 input[type="date"]:invalid,
-select.form-select:invalid {
+select.form-select:invalid,
+select.form-select:has(option[value=""]:checked) {
   color: #acacac !important;
 }
 
@@ -58,7 +59,7 @@ input:disabled,
 select:disabled,
 textarea:disabled {
   background-color: #f8f8fc !important;
-  color: #7a7878;
+  color: #7a7878 !important;
   border-color: #e9e7e7;
   opacity: 1;
   cursor: not-allowed;

@@ -1,13 +1,11 @@
 import { UserRound, MapPin, Phone } from "lucide-react";
 
-export function MissingFormFields({ handleInputChange, validated, submitted }) {
+export function FoundFormFields({ handleInputChange, validated, submitted }) {
   return (
     <div className="row g-2 mb-3">
-      <div className="col-9">
+      <div className="col-8">
         <div className="mb-1">
-          <label className="form-label">
-            الاسم<span className="text-danger">*</span>
-          </label>
+          <label className="form-label">الاسم</label>
           <div className="input-icon-wrapper">
             {!validated && (
               <span className="input-icon">
@@ -16,43 +14,37 @@ export function MissingFormFields({ handleInputChange, validated, submitted }) {
             )}
             <input
               type="text"
-              name="name"
+              name="full_name"
               className="form-control"
               placeholder="مثال:احمد محمد احمد"
               onChange={handleInputChange}
               disabled={submitted}
-              required
             />
-            <div className="invalid-feedback">يرجى إدخال الاسم</div>
           </div>
         </div>
       </div>
 
-      <div className="col-3">
+      <div className="col-4">
         <div className="mb-1">
-          <label className="form-label">
-            العمر<span className="text-danger">*</span>
-          </label>
+          <label className="form-label">العمر التقريبي</label>
           <input
             type="number"
-            name="age"
+            name="approximate_age"
             className="form-control"
             placeholder="30"
             onChange={handleInputChange}
             disabled={submitted}
-            required
           />
-          <div className="invalid-feedback">ادخل العمر</div>
         </div>
       </div>
 
-      <div className="col-6">
+      <div className="col-12">
         <div className="mb-1">
           <label className="form-label">
-            الجنس<span className="text-danger">*</span>
+            الحالة الصحية<span className="text-danger">*</span>
           </label>
           <select
-            name="gender"
+            name="health_status"
             className="form-select"
             onChange={handleInputChange}
             defaultValue=""
@@ -60,21 +52,43 @@ export function MissingFormFields({ handleInputChange, validated, submitted }) {
             required
           >
             <option value="" disabled>
-              اختر الجنس
+              اختر الحالة
             </option>
-            <option value="male">ذكر</option>
-            <option value="female">أنثى</option>
+            <option value="healthy">سليم</option>
+            <option value="minor_injury">مصاب بإصابة طفيفة</option>
+            <option value="critical_condition">بحالة صحية حرجة</option>
+            <option value="mental_health_affected">حالة ذهنية متأثرة</option>
+            <option value="unable_to_speak">غير قادر على الكلام</option>
           </select>
-          <div className="invalid-feedback">يرجى اختيار الجنس</div>
+          <div className="invalid-feedback">يرجى اختيار الحالة الصحية</div>
         </div>
       </div>
 
       <div className="col-6">
         <div className="mb-1">
-          <label className="form-label">تاريخ آخر ظهور</label>
+          <label className="form-label">الجنس</label>
+          <select
+            name="gender"
+            className="form-select"
+            onChange={handleInputChange}
+            defaultValue=""
+            disabled={submitted}
+          >
+            <option value="" disabled>
+              اختر الجنس
+            </option>
+            <option value="male">ذكر</option>
+            <option value="female">أنثى</option>
+          </select>
+        </div>
+      </div>
+
+      <div className="col-6">
+        <div className="mb-1">
+          <label className="form-label">تاريخ العثور</label>
           <input
             type="date"
-            name="last_seen_data"
+            name="found_date"
             className="form-control"
             onChange={handleInputChange}
             disabled={submitted}
@@ -84,7 +98,7 @@ export function MissingFormFields({ handleInputChange, validated, submitted }) {
 
       <div className="col-12">
         <div className="mb-1">
-          <label className="form-label">مكان آخر ظهور</label>
+          <label className="form-label">مكان العثور</label>
           <div className="input-icon-wrapper">
             {!validated && (
               <span className="input-icon" style={{ top: "14px" }}>
@@ -92,10 +106,10 @@ export function MissingFormFields({ handleInputChange, validated, submitted }) {
               </span>
             )}
             <textarea
-              name="last_seen_location"
+              name="found_location"
               className="form-control"
               rows={2}
-              placeholder="مثال: شوهد في امدرمان - الواحة"
+              placeholder="مثال: تم العثور عليه في امدرمان - الواحة"
               onChange={handleInputChange}
               disabled={submitted}
             />
@@ -132,7 +146,7 @@ export function MissingFormFields({ handleInputChange, validated, submitted }) {
       <div className="col-6">
         <div className="mb-1">
           <label className="form-label">
-            رقم اخر للطوارئ<span className="text-danger">*</span>
+            رقم آخر للطوارئ<span className="text-danger">*</span>
           </label>
           <div className="input-icon-wrapper">
             {!validated && (
