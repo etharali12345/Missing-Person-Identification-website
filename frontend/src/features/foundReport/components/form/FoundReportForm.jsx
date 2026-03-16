@@ -2,7 +2,7 @@ import { useState } from "react";
 import { ImagePreview } from "../../../../components/shared/ImagePreview";
 import { FoundFormFields } from "./FoundFormFields";
 
-export function FoundReportFrom({ submitReport, error, loading }) {
+export function FoundReportForm({ submitReport, error, loading }) {
   const [validated, setValidated] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [uploadData, setUploadData] = useState({
@@ -40,20 +40,21 @@ export function FoundReportFrom({ submitReport, error, loading }) {
     setValidated(true);
     const formData = new FormData();
 
-    if (uploadData.image) formData.append("image_path", uploadData.image);
+    formData.append("image_path", uploadData.image);
+    formData.append("phone_number1", uploadData.phone_number1);
+    formData.append("phone_number2", uploadData.phone_number2);
+
     if (uploadData.full_name)
       formData.append("full_name", uploadData.full_name);
-    if (uploadData.gender) formData.append("gender", uploadData.gender);
     if (uploadData.approximate_age)
       formData.append("approximate_age", uploadData.approximate_age);
+    if (uploadData.gender) formData.append("gender", uploadData.gender);
+    if (uploadData.health_status)
+      formData.append("health_status", uploadData.health_status);
     if (uploadData.found_date)
       formData.append("found_date", uploadData.found_date);
     if (uploadData.found_location)
       formData.append("found_location", uploadData.found_location);
-
-    formData.append("health_status", uploadData.health_status);
-    formData.append("phone_number1", uploadData.phone_number1);
-    formData.append("phone_number2", uploadData.phone_number2);
 
     await submitReport(formData);
     setSubmitted(true);

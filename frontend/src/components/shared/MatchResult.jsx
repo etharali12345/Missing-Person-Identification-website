@@ -1,12 +1,12 @@
-import { ImageShow } from "../../../components/shared/ImageShow";
-import { CircularProgress } from "../../../components/shared/CircularProgress";
-import { LinearProgress } from "../../../components/shared/LinearProgress";
-import { MissingResultFields } from "./MissingResultFields";
-import { ConfirmButtons } from "../../../components/shared/ConfirmButtons";
+import { ImageShow } from "./ImageShow";
+import { CircularProgress } from "./CircularProgress";
+import { LinearProgress } from "./LinearProgress";
+import { ConfirmButtons } from "./ConfirmButtons";
 
-export function MissingMatchResult({ result, validateMatch }) {
+export function MatchResult({ result, DetailsComponent, validateUncertain }) {
   const isUncertain = result.status === "uncertain";
   const color = isUncertain ? "yellow" : "green";
+
   return (
     <div className="center-flex flex-column w-100">
       <ImageShow image={result.details.image_path} />
@@ -23,11 +23,12 @@ export function MissingMatchResult({ result, validateMatch }) {
           )}
         </div>
         <LinearProgress value={result.percentage} color={color} />
-        <MissingResultFields details={result.details} />
-        {isUncertain ? (
-          <ConfirmButtons matchId={result.matchId} onDecision={validateMatch} />
-        ) : (
-          ""
+        <DetailsComponent details={result.details} />
+        {isUncertain && (
+          <ConfirmButtons
+            matchId={result.matchId}
+            onDecision={validateUncertain}
+          />
         )}
       </div>
     </div>

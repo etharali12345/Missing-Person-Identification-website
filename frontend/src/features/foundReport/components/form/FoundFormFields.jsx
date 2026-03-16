@@ -40,27 +40,15 @@ export function FoundFormFields({ handleInputChange, validated, submitted }) {
 
       <div className="col-12">
         <div className="mb-1">
-          <label className="form-label">
-            الحالة الصحية<span className="text-danger">*</span>
-          </label>
-          <select
+          <label className="form-label">الحالة الصحية</label>
+          <input
+            type="text"
             name="health_status"
-            className="form-select"
+            className="form-control"
+            placeholder="مثال: سليم"
             onChange={handleInputChange}
-            defaultValue=""
             disabled={submitted}
-            required
-          >
-            <option value="" disabled>
-              اختر الحالة
-            </option>
-            <option value="healthy">سليم</option>
-            <option value="minor_injury">مصاب بإصابة طفيفة</option>
-            <option value="critical_condition">بحالة صحية حرجة</option>
-            <option value="mental_health_affected">حالة ذهنية متأثرة</option>
-            <option value="unable_to_speak">غير قادر على الكلام</option>
-          </select>
-          <div className="invalid-feedback">يرجى اختيار الحالة الصحية</div>
+          />
         </div>
       </div>
 

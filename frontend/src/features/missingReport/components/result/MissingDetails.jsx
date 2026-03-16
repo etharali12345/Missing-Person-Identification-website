@@ -1,7 +1,6 @@
 import { UserRound, MapPin, Phone, Building2 } from "lucide-react";
-import "./missingResultFields.css";
 
-export function MissingResultFields({ details }) {
+export function MissingDetails({ details }) {
   return (
     <>
       {details.full_name && (

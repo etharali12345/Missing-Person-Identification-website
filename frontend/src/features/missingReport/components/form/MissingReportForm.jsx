@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ImagePreview } from "../../../components/shared/ImagePreview";
+import { ImagePreview } from "../../../../components/shared/ImagePreview";
 import { MissingFormFields } from "./MissingFormFields";
 
 export function MissingReportForm({ submitReport, error, loading }) {

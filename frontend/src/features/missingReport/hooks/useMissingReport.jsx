@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
 import {
   submitMissingReportSVC,
-  validateMatchSVC,
+  validateUncertainSVC,
 } from "../services/MissingReportService";
 
 export const useMissingReport = () => {
@@ -22,9 +22,9 @@ export const useMissingReport = () => {
     }
   }, []);
 
-  const validateMatch = useCallback(async (matchId, decision) => {
+  const validateUncertain = useCallback(async (matchId, decision) => {
     try {
-      await validateMatchSVC(matchId, decision);
+      await validateUncertainSVC(matchId, decision);
       if (decision === "confirmed") {
         setResult((prev) => ({ ...prev, status: "match" }));
       } else {
@@ -37,7 +37,7 @@ export const useMissingReport = () => {
 
   return {
     submitReport,
-    validateMatch,
+    validateUncertain,
     loading,
     error,
     result,
