@@ -1,9 +1,9 @@
 import { NavLink } from "react-router";
 import { LogIn } from "lucide-react";
-import { activeClass } from "../../utils/navHelper.js";
+import { useActiveClass } from "../../utils/navHelper.js";
 
 export function LoginButton() {
-  const navClass = activeClass("btn-login");
+  const navClass = useActiveClass("btn-login", ["/login", "/signup"]);
   return (
     <NavLink to="/login" className={navClass}>
       تسجيل الدخول

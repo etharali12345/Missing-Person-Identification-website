@@ -3,15 +3,17 @@
 }
 
 .custom-navbar {
-  box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.2);
-}
-.navbar {
+  --hoverBg: #356e543d;
   z-index: 100;
+  box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.2);
 }
 
 .navbar-home {
   background: transparent !important;
   box-shadow: none !important;
+  --navbackground: rgba(0, 0, 0, 0.37);
+  --text: rgb(226, 213, 213) !important;
+  --hoverBg: #2abd7b3d;
 }
 
 .logo-width {
@@ -25,13 +27,8 @@
   gap: 5px;
 }
 
-.nav-pill-home,
-.btn-login-home {
-  background-color: rgba(0, 0, 0, 0.37);
-}
-
 .nav-link {
-  color: var(--text);
+  color: var(--text) !important;
   padding: 7px 0px !important;
   border-radius: var(--borderRadius);
   width: 120px;
@@ -41,11 +38,6 @@
 
 .active-pill {
   background-color: var(--primaryGreen) !important;
-  color: white !important;
-}
-
-.active-pill-home {
-  background-color: #198653a6 !important;
   color: white !important;
 }
 
@@ -77,7 +69,7 @@
 .nav-link:hover,
 .btn-profile.show,
 .nav-link.show {
-  background-color: #356e543d;
+  background-color: var(--hoverBg);
 }
 
 .btn-profile.active-pill.show,

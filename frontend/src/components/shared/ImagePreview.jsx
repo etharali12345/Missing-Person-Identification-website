@@ -42,7 +42,7 @@ export const ImagePreview = ({ image, setImage }) => {
           type="file"
           ref={fileInputRef}
           onChange={handleFileChange}
-          accept="image/*"
+          accept="image/jpeg, image/png, image/webp"
           style={{ display: "none" }}
         />
 
