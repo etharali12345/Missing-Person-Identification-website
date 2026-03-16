@@ -3,7 +3,11 @@ import { CircularProgress } from "./CircularProgress";
 import { LinearProgress } from "./LinearProgress";
 import { ConfirmButtons } from "./ConfirmButtons";
 
-export function MatchResult({ result, DetailsComponent, validateUncertain }) {
+export function MatchResult({
+  result,
+  DetailsComponent,
+  validateUncertain = null,
+}) {
   const isUncertain = result.status === "uncertain";
   const color = isUncertain ? "yellow" : "green";
 
