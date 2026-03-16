@@ -1,5 +1,6 @@
 :root {
-  --primaryGreen: #198653;
+  --primaryGreen: linear-gradient(135deg, #25744f, #45ac7a);
+  --primary: #198653;
   --primaryBlue: #4e88e6;
   --text: #616161;
   --navbackground: #eff0f1;

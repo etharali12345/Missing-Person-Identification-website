@@ -81,7 +81,7 @@ export function LoginForm() {
             {error}
           </div>
         )}
-        <button type="submit" className="btn btn-success btn-custom w-100 mb-4">
+        <button type="submit" className="btn-custom w-100 mb-4">
           دخول
         </button>
       </form>

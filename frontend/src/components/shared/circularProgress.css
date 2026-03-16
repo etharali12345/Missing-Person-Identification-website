@@ -4,13 +4,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #e8e8e8;
+  background: #e8e8e8;
   box-shadow: inset 0px 3px 6px rgba(0, 0, 0, 0.308);
 }
 
 .cp-inner {
   position: absolute;
-  background-color: #ffffff;
+  background: #ffffff;
   border-radius: 50%;
   display: flex;
   align-items: center;

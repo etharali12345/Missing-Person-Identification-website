@@ -72,7 +72,7 @@ export function NavBar() {
             </ul>
 
             {/*Left side Component*/}
-            <div className="logo-width d-flex justify-content-end">
+            <div className="logo-width nav-left d-flex justify-content-end">
               {!user && <LoginButton />}
               {user?.role === "user" && <UserDropdown />}
               {user?.role === "authority" && <AuthorityDropdown />}

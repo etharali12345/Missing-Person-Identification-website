@@ -4,7 +4,7 @@
   cursor: pointer;
   border-radius: 20px;
   overflow: hidden;
-  background-color: #f8f9fa;
+  background: #f8f9fa;
   display: flex;
   flex-direction: column;
   align-items: center;

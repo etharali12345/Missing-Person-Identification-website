@@ -33,7 +33,7 @@
 
 .entity-selector.active {
   border: 2px solid var(--primaryBlue);
-  background-color: #eff6ff;
+  background: #eff6ff;
 }
 
 .custom-radio-circle {
@@ -58,13 +58,13 @@
   transform: translate(-50%, -50%);
   width: 10px;
   height: 10px;
-  background-color: var(--primaryBlue);
+  background: var(--primaryBlue);
   border-radius: 50%;
 }
 
 .upload-area {
   border: 2px dashed #e5e7eb;
-  background-color: #f9fafb;
+  background: #f9fafb;
   border-radius: 0.5rem;
   padding: 1.5rem;
   text-align: center;

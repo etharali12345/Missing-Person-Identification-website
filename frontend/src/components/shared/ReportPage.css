@@ -58,7 +58,7 @@ input[type="date"] {
 input:disabled,
 select:disabled,
 textarea:disabled {
-  background-color: #f8f8fc !important;
+  background: #f8f8fc !important;
   color: #7a7878 !important;
   border-color: #e9e7e7;
   opacity: 1;
@@ -70,4 +70,10 @@ textarea:disabled {
   top: 0;
   left: 50%;
   transform: translate(-50%, -50%);
+}
+
+@media (max-width: 991px) {
+  .glass-reportCard {
+    padding: 1.1rem;
+  }
 }

@@ -22,11 +22,11 @@
 }
 
 .btn-confirm.primary {
-  background-color: #555555;
+  background: #555555;
   color: #ffffff;
 }
 
 .btn-confirm.secondary {
-  background-color: #f2f2f2;
+  background: #f2f2f2;
   color: #444444;
 }
