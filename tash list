@@ -1,0 +1,28 @@
+[33mdba7467[m[33m ([m[1;36mHEAD -> [m[1;32mbackend-rawan[m[33m, [m[1;31morigin/backend-rawan[m[33m)[m HEAD@{0}: reset: moving to dba7467
+[33mdba7467[m[33m ([m[1;36mHEAD -> [m[1;32mbackend-rawan[m[33m, [m[1;31morigin/backend-rawan[m[33m)[m HEAD@{1}: reset: moving to dba7467
+[33mdba7467[m[33m ([m[1;36mHEAD -> [m[1;32mbackend-rawan[m[33m, [m[1;31morigin/backend-rawan[m[33m)[m HEAD@{2}: reset: moving to dba7467
+[33mc3134a4[m HEAD@{3}: commit (merge): accept main changes
+[33m6eed730[m HEAD@{4}: commit: accept main changes
+[33m3fed91d[m HEAD@{5}: commit (merge): resolve conflicts by accepting main changes
+[33mdba7467[m[33m ([m[1;36mHEAD -> [m[1;32mbackend-rawan[m[33m, [m[1;31morigin/backend-rawan[m[33m)[m HEAD@{6}: reset: moving to HEAD
+[33mdba7467[m[33m ([m[1;36mHEAD -> [m[1;32mbackend-rawan[m[33m, [m[1;31morigin/backend-rawan[m[33m)[m HEAD@{7}: checkout: moving from backend-rawan to backend-rawan
+[33mdba7467[m[33m ([m[1;36mHEAD -> [m[1;32mbackend-rawan[m[33m, [m[1;31morigin/backend-rawan[m[33m)[m HEAD@{8}: checkout: moving from backend-rawan to backend-rawan
+[33mdba7467[m[33m ([m[1;36mHEAD -> [m[1;32mbackend-rawan[m[33m, [m[1;31morigin/backend-rawan[m[33m)[m HEAD@{9}: checkout: moving from main to backend-rawan
+[33m2fad2d0[m[33m ([m[1;32mmain[m[33m)[m HEAD@{10}: checkout: moving from backend-rawan to main
+[33mdba7467[m[33m ([m[1;36mHEAD -> [m[1;32mbackend-rawan[m[33m, [m[1;31morigin/backend-rawan[m[33m)[m HEAD@{11}: commit: Clean up project structure and ignore venv and pycache
+[33mbfd65a5[m HEAD@{12}: checkout: moving from main to backend-rawan
+[33m2fad2d0[m[33m ([m[1;32mmain[m[33m)[m HEAD@{13}: checkout: moving from backend-rawan to main
+[33mbfd65a5[m HEAD@{14}: commit: update
+[33mecc6023[m HEAD@{15}: checkout: moving from main to backend-rawan
+[33m2fad2d0[m[33m ([m[1;32mmain[m[33m)[m HEAD@{16}: pull origin main: Fast-forward
+[33mee25ee1[m HEAD@{17}: checkout: moving from backend-rawan to main
+[33mecc6023[m HEAD@{18}: commit: missing person page
+[33maee8e0d[m HEAD@{19}: commit: برمجة واجهة تسجيل الدخول و واجهة إنشاء الحساب
+[33m702a61a[m HEAD@{20}: commit: تعديلات على واجهة تسجيل الدخول
+[33m8f2b268[m HEAD@{21}: pull --tags origin backend-rawan: Merge made by the 'recursive' strategy.
+[33m62055d7[m HEAD@{22}: commit: عملته واجهة إنشاء الحساب
+[33m49d168d[m HEAD@{23}: checkout: moving from main to backend-rawan
+[33mee25ee1[m HEAD@{24}: checkout: moving from backend-rawan to main
+[33m49d168d[m HEAD@{25}: commit: firest bakend update
+[33mee25ee1[m HEAD@{26}: checkout: moving from main to backend-rawan
+[33mee25ee1[m HEAD@{27}: clone: from https://github.com/etharali12345/Missing-Person-Identification-website.git
