@@ -7,9 +7,9 @@ const api = axios.create({
   withCredentials: true,
 });
 
-export const submitMissingReportSVC = async (formData) => {
+export const submitFoundReportSVC = async (formData) => {
   try {
-    const res = await api.post("/missing-report/send", formData);
+    const res = await api.post("/found-report/send", formData);
     const data = res.data;
     if (data.details?.image) {
       data.details.image = `${BASE_URL}${data.details.image}`;
@@ -22,11 +22,7 @@ export const submitMissingReportSVC = async (formData) => {
   }
 };
 
-<<<<<<< HEAD
-export const validateMatchSVC = async (matchId, decision) => {
-=======
 export const validateUncertainSVC = async (matchId, decision) => {
->>>>>>> main
   try {
     await api.post(`/report/${matchId}/validate`, {
       decision,

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 .offcanvas-body {
   overflow: visible !important;
 }
@@ -107,3 +108,135 @@
     max-width: 75vw !important;
   }
 }
+=======
+.offcanvas-body {
+  overflow: visible !important;
+}
+
+.custom-navbar {
+  --hoverBg: #356e543d;
+  z-index: 100;
+  box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.2);
+}
+
+.navbar-home {
+  background: transparent !important;
+  box-shadow: none !important;
+  --navbackground: rgba(0, 0, 0, 0.37);
+  --text: rgb(226, 213, 213) !important;
+  --hoverBg: #2abd7b3d;
+}
+
+.logo-width {
+  width: 120px;
+}
+
+.nav-pill-container {
+  background: var(--navbackground);
+  border-radius: var(--borderRadius);
+  padding: 5px 5px !important;
+  gap: 5px;
+}
+
+.nav-link {
+  color: var(--text) !important;
+  padding: 7px 0px !important;
+  border-radius: var(--borderRadius);
+  width: 120px;
+  text-align: center;
+  font-weight: 600;
+}
+
+.active-pill {
+  background: var(--primaryGreen) !important;
+  color: white !important;
+}
+
+.btn-login,
+.btn-profile {
+  background: var(--navbackground);
+  color: var(--text);
+  border: none;
+  border-radius: calc(var(--borderRadius) - 40px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  font-weight: 600;
+}
+
+.btn-login {
+  padding: 9px 7px 9px 3px;
+  text-decoration: none;
+}
+
+.btn-profile {
+  padding: 5px 7px;
+  border-radius: var(--borderRadius);
+}
+
+.btn-login:hover,
+.btn-profile:hover,
+.nav-link:hover,
+.btn-profile.show,
+.nav-link.show {
+  background: var(--hoverBg);
+}
+
+.btn-profile.active-pill.show,
+.nav-link.active-pill.show {
+  background: #356e543d !important;
+  color: var(--text) !important;
+  transition:
+    background 0.3s ease,
+    color 0.3s ease;
+}
+
+.dropdown-menu {
+  border: none !important;
+  border-radius: 0px 0px 5px 5px;
+  box-shadow: 1px 5px 5px rgba(0, 0, 0, 0.15);
+  width: 200px;
+  text-align: right !important;
+}
+
+.dropdown-item {
+  color: var(--text);
+}
+
+.dropdown-item:hover {
+  background: #a6c5b759;
+}
+
+[aria-expanded="true"] .downArrow-icon {
+  transform: rotate(180deg);
+}
+
+/* md and sm devices */
+@media (max-width: 991px) {
+  .nav-pill-container {
+    background: none;
+  }
+
+  .nav-link,
+  .nav-left,
+  .dropdown,
+  .btn-profile,
+  .btn-login {
+    width: 100% !important;
+    border-radius: 5px;
+  }
+
+  .dropdown {
+    padding: 10px 5px !important;
+  }
+
+  .dropdown-menu {
+    width: 100% !important;
+  }
+
+  .sidebar {
+    max-width: 75vw !important;
+  }
+}
+>>>>>>> main
