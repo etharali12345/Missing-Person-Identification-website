@@ -98,7 +98,6 @@ def login():
         data = request.get_json()
         email_or_phone = data.get("email_or_phone")
         password = data.get("password")
-
         cur = mysql.connection.cursor()
         
         # البحث في جدول المستخدمين (users)
@@ -127,7 +126,9 @@ def login():
             
             response = jsonify({
                 "message": "Login successful",
-                "user": {"role": "authority"}
+                "user": {
+                    "role": "authority"
+                    }
             })
             set_access_cookies(response, access_token)
             return response, 200
@@ -170,9 +171,6 @@ def get_current_user():
             if auth_user:
                 return jsonify({
                     "user": {
-                        "type": auth_user[0],
-                        "name": auth_user[1],
-                        "email": auth_user[2],
                         "role": "authority"
                     }
                 }), 200

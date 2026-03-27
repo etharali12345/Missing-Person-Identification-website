@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-export function Home() {
-  return <h1>Wlecom to home</h1>;
-}
-=======
 import "./home.css";
 export function Home() {
   return (
@@ -19,4 +14,3 @@ export function Home() {
     </div>
   );
 }
->>>>>>> main

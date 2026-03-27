@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-export const activeClass =
-  (base) =>
-  ({ isActive }) =>
-    `${base} ${isActive ? "active-pill" : ""}`;
-=======
 import { useLocation } from "react-router";
 
 export const activeClass =
@@ -16,4 +10,3 @@ export const useActiveClass = (base, paths) => {
   const isActive = paths.some((path) => pathname.startsWith(path));
   return `${base} ${isActive ? "active-pill" : ""}`;
 };
->>>>>>> main

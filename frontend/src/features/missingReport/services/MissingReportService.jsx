@@ -22,11 +22,7 @@ export const submitMissingReportSVC = async (formData) => {
   }
 };
 
-<<<<<<< HEAD
-export const validateMatchSVC = async (matchId, decision) => {
-=======
 export const validateUncertainSVC = async (matchId, decision) => {
->>>>>>> main
   try {
     await api.post(`/report/${matchId}/validate`, {
       decision,
