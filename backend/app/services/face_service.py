@@ -11,9 +11,13 @@ import MySQLdb.cursors
 # ---------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------
-UPLOAD_BASE_DIR    = os.environ.get("UPLOAD_BASE_DIR", "static/uploads")
-MISSING_IMG_DIR    = os.path.join(UPLOAD_BASE_DIR, "missing")
-FOUND_IMG_DIR      = os.path.join(UPLOAD_BASE_DIR, "found")
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+STATIC_DIR = os.path.join(BASE_DIR, "static")
+
+MISSING_IMG_DIR = os.path.join(STATIC_DIR, "uploads", "missing")
+FOUND_IMG_DIR   = os.path.join(STATIC_DIR, "uploads", "found")
+
 MISSING_FAISS_PATH = os.environ.get("MISSING_FAISS_PATH", "faiss_indexes/missing_persons.index")
 FOUND_FAISS_PATH   = os.environ.get("FOUND_FAISS_PATH",   "faiss_indexes/found_persons.index")
 FACE_EMBEDDING_DIM = 512
@@ -24,6 +28,9 @@ FACE_EMBEDDING_DIM = 512
 _faiss_cache = {}
 
 def ensure_dirs():
+    print(f"[DIR] creating dirs if not exist...")
+    print(f"[DIR] MISSING_IMG_DIR: {MISSING_IMG_DIR}")
+    print(f"[DIR] FOUND_IMG_DIR: {FOUND_IMG_DIR}")
     for d in (MISSING_IMG_DIR, FOUND_IMG_DIR,
               os.path.dirname(MISSING_FAISS_PATH),
               os.path.dirname(FOUND_FAISS_PATH)):
@@ -55,12 +62,16 @@ def save_faiss_index(index: faiss.Index, category: str) -> None:
     faiss.write_index(index, path)
     _faiss_cache[category] = index            # ✅ حدّث الـ cache
 
-def add_embedding_to_index(embedding: np.ndarray, category: str) -> None:
+def add_embedding_to_index(embedding: np.ndarray, category: str) -> int:
     index = load_faiss_index(category)
     vec   = embedding.astype(np.float32).reshape(1, -1)
     faiss.normalize_L2(vec)
     index.add(vec)
-    save_faiss_index(index, category)         # ✅ يحفظ ويحدّث الـ cache
+    faiss_id = index.ntotal - 1  # 🔥 ده السطر المهم
+
+    print(f"[FAISS ADD] new faiss_id = {faiss_id}")
+    save_faiss_index(index, category)
+    return faiss_id  # 🔥 رجعيه
 
 def search_faiss_index(embedding: np.ndarray, category: str, top_k: int = 1) -> Tuple[np.ndarray, np.ndarray]:
     index = load_faiss_index(category)
@@ -80,23 +91,42 @@ def search_faiss_index(embedding: np.ndarray, category: str, top_k: int = 1) -> 
 # Image helpers
 # ---------------------------------------------------------------------------
 def build_image_url(path: str) -> str:
+    print(f"[BUILD_URL] input path: '{path}' | type: {type(path)}")
     if not path:
+        print("[BUILD_URL] ⚠️ path is falsy - returning None")
         return None
-    base_url = request.host_url.rstrip('/')
-    return base_url + "/" + path.lstrip("/")
+    clean_path = path.lstrip("/")
+    result = f"http://localhost:5000/{clean_path}"
+    print(f"[BUILD_URL] result: '{result}'")
+    return result
 
 
 def attach_image_url(data: dict) -> dict:
+    """بدل ما نضيف image_url جديد، نحول image_path نفسه لـ URL كامل"""
     if data and data.get("image_path"):
-        data["image_url"] = build_image_url(data["image_path"])
+        path = data["image_path"]
+        # ✅ لو مش URL كامل، حوّله
+        if not path.startswith("http"):
+            data["image_path"] = f"http://localhost:5000/{path.lstrip('/')}"
     return data
 def save_image(file_storage, category: str) -> str:
     ensure_dirs()
+
     dest_dir = MISSING_IMG_DIR if category == "missing" else FOUND_IMG_DIR
+    
+    print(f"[SAVE] dest_dir: {dest_dir}")
+    print(f"[SAVE] current working dir: {os.getcwd()}")
+
     ext      = os.path.splitext(file_storage.filename)[1].lower() or ".jpg"
     filename = f"{uuid.uuid4().hex}{ext}"
     abs_path = os.path.join(dest_dir, filename)
+
+    print(f"[SAVE] abs_path: {abs_path}")
+
     file_storage.save(abs_path)
+
+    print(f"[SAVE] file saved? {os.path.exists(abs_path)}")
+
     return os.path.join("static/uploads", category, filename).replace("\\", "/")
 
 # ---------------------------------------------------------------------------
@@ -116,7 +146,9 @@ def extract_embedding(image_path: str) -> Union[np.ndarray, None]:
     """
     استخراج الـ embedding مع دعم padding لو الوجه مش واضح (من الكود القديم).
     """
-    img = cv2.imread(image_path)
+    full_path = os.path.join(BASE_DIR, image_path)
+    print(f"[IMG] reading from: {full_path}")
+    img = cv2.imread(full_path)
     if img is None:
         return None
 
@@ -171,7 +203,7 @@ def sanitize_value(value, expected_type="str"):
         return str(value).strip() or None
         
     return value
-def get_missing_person_by_faiss_id(mysql, faiss_index: int) -> Optional[dict]:
+def get_missing_person_by_faiss_id(mysql, faiss_id: int) -> Optional[dict]:
     try:
         cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         cur.execute(
@@ -179,22 +211,19 @@ def get_missing_person_by_faiss_id(mysql, faiss_index: int) -> Optional[dict]:
             SELECT missing_id, full_name, approximate_age, gender,
                    last_seen_date, last_seen_location, image_path,
                    phone_number1, phone_number2, faiss_id
-            FROM   missing_persons
-            WHERE  faiss_id IS NOT NULL
-            ORDER  BY missing_id ASC
-            LIMIT  1 OFFSET %s
+            FROM missing_persons
+            WHERE faiss_id = %s
             """,
-            (faiss_index,)
+            (faiss_id,)
         )
         row = cur.fetchone()
         cur.close()
-        print(f"[DEBUG] faiss_index={faiss_index} → missing={row}")
+        print(f"[DEBUG] faiss_id={faiss_id} → missing={row}")
         return row
     except Exception:
         traceback.print_exc()
         return None
-
-def get_found_person_by_faiss_id(mysql, faiss_index: int) -> Optional[dict]:
+def get_found_person_by_faiss_id(mysql, faiss_id: int) -> Optional[dict]:
     try:
         cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         cur.execute(
@@ -203,17 +232,15 @@ def get_found_person_by_faiss_id(mysql, faiss_index: int) -> Optional[dict]:
                    fp.health_status, fp.found_date, fp.found_location,
                    fp.image_path, fp.phone_number1, fp.phone_number2,
                    fp.faiss_id, a.authority_name
-            FROM   found_persons fp
+            FROM found_persons fp
             LEFT JOIN authority a ON fp.organization_id = a.organization_id
-            WHERE  fp.faiss_id IS NOT NULL
-            ORDER  BY fp.found_id ASC
-            LIMIT  1 OFFSET %s
+            WHERE fp.faiss_id = %s
             """,
-            (faiss_index,)
+            (faiss_id,)
         )
         row = cur.fetchone()
         cur.close()
-        print(f"[DEBUG] faiss_index={faiss_index} → found={row}")
+        print(f"[DEBUG] faiss_id={faiss_id} → found={row}")
         return row
     except Exception:
         traceback.print_exc()

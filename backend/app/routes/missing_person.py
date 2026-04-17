@@ -25,10 +25,12 @@ UNCERTAIN_THRESHOLD = 0.60
 def _insert_missing_person(cur, user_id, fields, image_path):
     """
     Helper مركزي لإدخال missing_person - يضمن تنظيف البيانات دايماً.
+    ✅ faiss_id يتحدد من برا الـ function عبر add_embedding_to_index
     """
     if hasattr(image_path, 'filename'):
         raise ValueError("image_path must be a string path, not FileStorage object")
 
+    # ✅ INSERT بدون faiss_id - هيتحدث بعدين
     cur.execute(
         """
         INSERT INTO missing_persons
@@ -45,14 +47,10 @@ def _insert_missing_person(cur, user_id, fields, image_path):
             sanitize_value(fields.get("last_seen_date")),
             sanitize_value(fields.get("phone_number1")),
             sanitize_value(fields.get("phone_number2")),
-            image_path,                                           # ✅ string مضمون
+            image_path,
         )
     )
     new_id = cur.lastrowid
-    cur.execute(
-        "UPDATE missing_persons SET faiss_id = %s WHERE missing_id = %s",
-        (new_id, new_id)
-    )
     return new_id
 
 
@@ -70,7 +68,6 @@ def send_missing_report():
     if not image_file or image_file.filename == "":
         return jsonify({"success": False, "message": "Image file is required."}), 400
 
-    # ✅ استخرج البيانات كـ strings نظيفة
     fields = {
         "full_name":          request.form["full_name"].strip(),
         "age":                request.form.get("age", "").strip(),
@@ -82,7 +79,6 @@ def send_missing_report():
     }
 
     try:
-        # ✅ save_image يرجع string path
         saved_image_path = save_image(image_file, category="missing")
 
         if not isinstance(saved_image_path, str):
@@ -101,17 +97,26 @@ def send_missing_report():
     # MATCH (>= 0.677)
     # ------------------------------------------------------------------
     if distances is not None and distances[0][0] >= MATCH_THRESHOLD:
-        similarity     = float(distances[0][0])
-        faiss_row      = int(indices[0][0])
-        matched_person = get_found_person_by_faiss_id(mysql, faiss_row)
+        similarity = float(distances[0][0])
+        faiss_id   = int(indices[0][0])                                      # ✅ اسم واضح
+        matched_person = get_found_person_by_faiss_id(mysql, faiss_id)       # ✅ نفس المتغير
 
         if matched_person:
             cur = None
             try:
                 cur = mysql.connection.cursor()
 
-                # ✅ احفظ missing_person أولاً عشان تاخد missing_id حقيقي
+                # ✅ 1) أضف للـ FAISS الأول عشان تاخد faiss_id صحيح
+                new_faiss_id = add_embedding_to_index(embedding, category="missing")
+
+                # ✅ 2) احفظ في DB
                 new_missing_id = _insert_missing_person(cur, user_id, fields, saved_image_path)
+
+                # ✅ 3) ربط faiss_id بالـ missing_person
+                cur.execute(
+                    "UPDATE missing_persons SET faiss_id = %s WHERE missing_id = %s",
+                    (new_faiss_id, new_missing_id)
+                )
 
                 cur.execute(
                     """
@@ -122,7 +127,6 @@ def send_missing_report():
                     (new_missing_id, matched_person.get("found_id"), user_id, similarity)
                 )
                 mysql.connection.commit()
-                add_embedding_to_index(embedding, category="missing")
 
             except Exception:
                 if cur: mysql.connection.rollback()
@@ -140,15 +144,14 @@ def send_missing_report():
             }), 200
 
     # ------------------------------------------------------------------
-    # UNCERTAIN (0.60 - 0.677) - لا تحفظ missing_person، انتظر قرار المستخدم
+    # UNCERTAIN (0.60 - 0.677) - لا تحفظ في DB، انتظر قرار المستخدم
     # ------------------------------------------------------------------
     if distances is not None and UNCERTAIN_THRESHOLD <= distances[0][0] < MATCH_THRESHOLD:
         similarity = float(distances[0][0])
-        faiss_row  = int(indices[0][0])
-        candidate  = get_found_person_by_faiss_id(mysql, faiss_row)
+        faiss_id   = int(indices[0][0])                                      # ✅ اسم موحد
+        candidate  = get_found_person_by_faiss_id(mysql, faiss_id)
 
         if candidate:
-            # ✅ هنا لا نحفظ شيء في DB - ننتظر قرار المستخدم في validate
             return jsonify({
                 "success":    True,
                 "status":     "uncertain",
@@ -158,7 +161,7 @@ def send_missing_report():
                 "formData": {
                     **fields,
                     "image_path": saved_image_path,
-                    "image_url":  build_image_url(saved_image_path)
+                    "image_url":  build_image_url(saved_image_path)   # ✅ saved_image_path موجود هنا
                 }
             }), 200
 
@@ -168,9 +171,20 @@ def send_missing_report():
     cur = None
     try:
         cur = mysql.connection.cursor()
+
+        # ✅ 1) أضف للـ FAISS الأول
+        new_faiss_id = add_embedding_to_index(embedding, category="missing")
+
+        # ✅ 2) احفظ في DB
         new_missing_id = _insert_missing_person(cur, user_id, fields, saved_image_path)
+
+        # ✅ 3) ربط faiss_id بالـ missing_person
+        cur.execute(
+            "UPDATE missing_persons SET faiss_id = %s WHERE missing_id = %s",
+            (new_faiss_id, new_missing_id)
+        )
+
         mysql.connection.commit()
-        add_embedding_to_index(embedding, category="missing")
 
         return jsonify({
             "success":    True,
@@ -193,7 +207,6 @@ def validate_match(matchId):
     user_id    = 6
     body       = request.get_json(silent=True) or {}
     decision   = body.get("decision")
-    # التأكد من جلب formData بشكل صحيح
     form       = body.get("formData", {})
     similarity = body.get("percentage", 0)
 
@@ -202,12 +215,28 @@ def validate_match(matchId):
         cur = mysql.connection.cursor()
 
         if decision == "confirmed":
-            # استخدام الدالة المساعدة لضمان عدم وجود NULL وإعادة ضبط الـ IDs
-            new_missing_id = _insert_missing_person(cur, user_id, form, form.get("image_path", ""))
+            # ✅ 1) أضف للـ FAISS
+            image_path = form.get("image_path", "")
+            embedding  = extract_embedding(image_path) if image_path else None
+
+            if embedding is not None:
+                new_faiss_id = add_embedding_to_index(embedding, category="missing")
+            else:
+                new_faiss_id = None
+
+            # ✅ 2) احفظ في DB
+            new_missing_id = _insert_missing_person(cur, user_id, form, image_path)
+
+            # ✅ 3) ربط faiss_id لو الـ embedding اتحسب
+            if new_faiss_id is not None:
+                cur.execute(
+                    "UPDATE missing_persons SET faiss_id = %s WHERE missing_id = %s",
+                    (new_faiss_id, new_missing_id)
+                )
 
             cur.execute(
                 """
-                INSERT INTO match_results 
+                INSERT INTO match_results
                     (missing_id, found_id, user_id, similarity_score, status)
                 VALUES (%s, %s, %s, %s, 'confirmed')
                 """,
@@ -217,15 +246,25 @@ def validate_match(matchId):
             return jsonify({"success": True, "message": "تم تأكيد المطابقة وحفظ البلاغ"}), 200
 
         elif decision == "rejected":
-            # حفظه كبلاغ جديد تماماً
-            new_missing_id = _insert_missing_person(cur, user_id, form, form.get("image_path", ""))
-            
-            # إضافة الـ embedding للفهرس لأنه بلاغ جديد لم يكن موجوداً
-            # ملاحظة: ستحتاجين لاستخراج الـ embedding من الصورة هنا إذا أردتِ دقة كاملة
-            
+            image_path = form.get("image_path", "")
+            embedding  = extract_embedding(image_path) if image_path else None
+
+            if embedding is not None:
+                new_faiss_id = add_embedding_to_index(embedding, category="missing")
+            else:
+                new_faiss_id = None
+
+            new_missing_id = _insert_missing_person(cur, user_id, form, image_path)
+
+            if new_faiss_id is not None:
+                cur.execute(
+                    "UPDATE missing_persons SET faiss_id = %s WHERE missing_id = %s",
+                    (new_faiss_id, new_missing_id)
+                )
+
             cur.execute(
                 """
-                INSERT INTO match_results 
+                INSERT INTO match_results
                     (missing_id, found_id, user_id, similarity_score, status)
                 VALUES (%s, %s, %s, %s, 'no_match')
                 """,
@@ -233,14 +272,14 @@ def validate_match(matchId):
             )
             mysql.connection.commit()
             return jsonify({
-                "success": True, 
-                "status":  "no_match", 
+                "success": True,
+                "status":  "no_match",
                 "message": "تم رفض المطابقة وحفظه كبلاغ جديد"
             }), 200
 
     except Exception as e:
         print(f"[ERROR] validate_match: {e}")
-        traceback.print_exc() # لإظهار تفاصيل الخطأ في التيرمينال
+        traceback.print_exc()
         if mysql.connection: mysql.connection.rollback()
         return jsonify({"success": False, "message": str(e)}), 500
     finally:

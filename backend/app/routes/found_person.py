@@ -26,10 +26,10 @@ def _insert_found_person(cur, organization_id, fields, image_path):
     """
     Helper مركزي لإدخال found_person - يضمن تنظيف البيانات دايماً.
     """
-    # ✅ تأكد إن image_path string مش FileStorage
     if hasattr(image_path, 'filename'):
         raise ValueError("image_path must be a string path, not FileStorage object")
 
+    # ✅ INSERT مرة واحدة بس (كان مكرر قبل كده - تم الحذف)
     cur.execute(
         """
         INSERT INTO found_persons
@@ -46,16 +46,13 @@ def _insert_found_person(cur, organization_id, fields, image_path):
             sanitize_value(fields.get("found_location")),
             sanitize_value(fields.get("found_date")),
             sanitize_value(fields.get("health_status")),
-            image_path,                                           # ✅ string مضمون
+            image_path,
             sanitize_value(fields.get("phone_number1")),
             sanitize_value(fields.get("phone_number2")),
         )
     )
+
     new_id = cur.lastrowid
-    cur.execute(
-        "UPDATE found_persons SET faiss_id = %s WHERE found_id = %s",
-        (new_id, new_id)
-    )
     return new_id
 
 
@@ -73,7 +70,6 @@ def send_found_report():
     if not image_file:
         return jsonify({"success": False, "message": "Image file is required."}), 400
 
-    # ✅ استخرج البيانات كـ strings نظيفة
     fields = {
         "full_name":       request.form.get("full_name", "Unknown").strip(),
         "approximate_age": request.form.get("approximate_age", "").strip(),
@@ -86,10 +82,8 @@ def send_found_report():
     }
 
     try:
-        # ✅ save_image يرجع string path - مش FileStorage
         image_path = save_image(image_file, category="found")
-        
-        # ✅ تحقق إضافي
+
         if not isinstance(image_path, str):
             raise ValueError(f"save_image returned non-string: {type(image_path)}")
 
@@ -103,20 +97,29 @@ def send_found_report():
         return jsonify({"success": False, "message": "Processing failed."}), 500
 
     # ------------------------------------------------------------------
-    # MATCH (>= 0.677) - لا تحفظ found_person هنا، بس سجل في match_results
+    # MATCH (>= 0.677)
     # ------------------------------------------------------------------
     if distances is not None and distances[0][0] >= MATCH_THRESHOLD:
-        similarity     = float(distances[0][0])
-        faiss_row      = int(indices[0][0])
-        matched_person = get_missing_person_by_faiss_id(mysql, faiss_row)
+        similarity = float(distances[0][0])
+        faiss_id   = int(indices[0][0])                                      # ✅ اسم واضح
+        matched_person = get_missing_person_by_faiss_id(mysql, faiss_id)     # ✅ نفس المتغير
 
         if matched_person:
             cur = None
             try:
                 cur = mysql.connection.cursor()
 
-                # ✅ احفظ found_person أولاً عشان تاخد found_id حقيقي
+                # ✅ 1) أضف للـ FAISS الأول عشان تاخد faiss_id صحيح
+                new_faiss_id = add_embedding_to_index(embedding, category="found")
+
+                # ✅ 2) احفظ في DB
                 new_found_id = _insert_found_person(cur, organization_id, fields, image_path)
+
+                # ✅ 3) ربط faiss_id بالـ found_person
+                cur.execute(
+                    "UPDATE found_persons SET faiss_id = %s WHERE found_id = %s",
+                    (new_faiss_id, new_found_id)
+                )
 
                 cur.execute(
                     """
@@ -127,7 +130,6 @@ def send_found_report():
                     (matched_person.get("missing_id"), new_found_id, organization_id, similarity)
                 )
                 mysql.connection.commit()
-                add_embedding_to_index(embedding, category="found")
 
             except Exception:
                 if cur: mysql.connection.rollback()
@@ -145,17 +147,18 @@ def send_found_report():
             }), 200
 
     # ------------------------------------------------------------------
-    # UNCERTAIN (0.60 - 0.677) - احفظ found_person وانتظر قرار المستخدم
+    # UNCERTAIN (0.60 - 0.677)
     # ------------------------------------------------------------------
     if distances is not None and UNCERTAIN_THRESHOLD <= distances[0][0] < MATCH_THRESHOLD:
         similarity = float(distances[0][0])
-        faiss_row  = int(indices[0][0])
-        candidate  = get_missing_person_by_faiss_id(mysql, faiss_row)
+        faiss_id   = int(indices[0][0])                                      # ✅ اسم موحد
+        candidate  = get_missing_person_by_faiss_id(mysql, faiss_id)
 
         if candidate:
             cur = None
             try:
                 cur = mysql.connection.cursor()
+                # ✅ UNCERTAIN مش بيضيف للـ FAISS - بس بيحفظ في DB وينتظر قرار المستخدم
                 new_found_id = _insert_found_person(cur, organization_id, fields, image_path)
                 mysql.connection.commit()
             except Exception:
@@ -175,24 +178,35 @@ def send_found_report():
                 "formData": {
                     **fields,
                     "image_path": image_path,
-                    "image_url":  build_image_url(image_path)
+                    "image_url":  build_image_url(image_path)       # ✅ image_path موجود هنا
                 }
             }), 200
 
     # ------------------------------------------------------------------
-    # NO MATCH - احفظ في found_persons وأضف للـ FAISS
+    # NO MATCH
     # ------------------------------------------------------------------
     cur = None
     try:
         cur = mysql.connection.cursor()
+
+        # ✅ 1) أضف للـ FAISS الأول
+        new_faiss_id = add_embedding_to_index(embedding, category="found")
+
+        # ✅ 2) احفظ في DB
         new_found_id = _insert_found_person(cur, organization_id, fields, image_path)
+
+        # ✅ 3) ربط faiss_id بالـ found_person
+        cur.execute(
+            "UPDATE found_persons SET faiss_id = %s WHERE found_id = %s",
+            (new_faiss_id, new_found_id)
+        )
+
         mysql.connection.commit()
-        add_embedding_to_index(embedding, category="found")
 
         return jsonify({
-            "success":  True,
-            "status":   "no_match",
-            "found_id": new_found_id,
+            "success":   True,
+            "status":    "no_match",
+            "found_id":  new_found_id,
             "image_url": build_image_url(image_path)
         }), 201
 
@@ -220,7 +234,6 @@ def validate_found_match(matchId):
         if not found_id:
             return jsonify({"success": False, "message": "Missing found_id"}), 400
 
-        # ✅ تحقق إن found_id موجود فعلاً في DB
         cur.execute("SELECT found_id FROM found_persons WHERE found_id = %s", (found_id,))
         if not cur.fetchone():
             return jsonify({"success": False, "message": f"found_id {found_id} not found"}), 404

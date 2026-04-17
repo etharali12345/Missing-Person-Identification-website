@@ -10,7 +10,12 @@ from .routes.missing_person import missing_person_bp
 from .routes.found_person import found_person_bp
 
 def create_app():
-    app = Flask(__name__, static_folder="static")
+    root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    static_dir = os.path.join(root_dir, 'static')
+
+    app = Flask(__name__, 
+                static_folder=static_dir, 
+                static_url_path='/static')
     app.config.from_object(Config)
 
     CORS(
@@ -26,10 +31,19 @@ def create_app():
     app.register_blueprint(auth_bp, url_prefix="/api/auth")
     app.register_blueprint(missing_person_bp, url_prefix="/api")
     app.register_blueprint(found_person_bp, url_prefix="/api")
-    @app.route('/static/<path:filename>')
+
+
+    @app.route('/static/uploads/<path:filename>')
     def serve_image(filename):
-        return send_from_directory(
-        os.path.join(app.root_path, 'static'),
-        filename
-    )
+        print(f"[SERVE] filename requested: '{filename}'")
+        print(f"[SERVE] static_dir: '{static_dir}'")
+        
+        # ✅ الملف موجود في static/uploads مش في static مباشرة
+        uploads_dir = os.path.join(static_dir, 'uploads')
+        full_path   = os.path.join(uploads_dir, filename)
+        
+        print(f"[SERVE] full_path: '{full_path}'")
+        print(f"[SERVE] file exists: {os.path.exists(full_path)}")
+        
+        return send_from_directory(uploads_dir, filename)
     return app
