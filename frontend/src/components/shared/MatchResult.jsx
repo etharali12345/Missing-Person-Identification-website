@@ -8,6 +8,7 @@ export function MatchResult({
   DetailsComponent,
   validateUncertain = null,
 }) {
+  console.log("RESULT OBJECT:", JSON.stringify(result, null, 2));
   const isUncertain = result.status === "uncertain";
   const color = isUncertain ? "yellow" : "green";
 

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "http://127.0.0.1:5000";
+const BASE_URL = "http://localhost:5000";
 
 const api = axios.create({
   baseURL: `${BASE_URL}/api`,
@@ -22,10 +22,12 @@ export const submitFoundReportSVC = async (formData) => {
   }
 };
 
-export const validateUncertainSVC = async (matchId, decision) => {
+export const validateUncertainSVC = async (matchId, decision, foundId, similarity) => {
   try {
     await api.post(`/report/${matchId}/validate`, {
       decision,
+      found_id: foundId,
+      percentage: similarity,
     });
   } catch (error) {
     throw { message: "Validation failed" };
