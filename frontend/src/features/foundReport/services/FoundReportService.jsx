@@ -22,12 +22,10 @@ export const submitFoundReportSVC = async (formData) => {
   }
 };
 
-export const validateUncertainSVC = async (matchId, decision, foundId, similarity) => {
+export const validateUncertainSVC = async (matchId, decision) => {
   try {
     await api.post(`/report/${matchId}/validate`, {
       decision,
-      found_id: foundId,
-      percentage: similarity,
     });
   } catch (error) {
     throw { message: "Validation failed" };
