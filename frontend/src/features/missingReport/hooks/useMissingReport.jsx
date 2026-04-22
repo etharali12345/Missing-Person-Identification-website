@@ -22,18 +22,21 @@ export const useMissingReport = () => {
     }
   }, []);
 
-  const validateUncertain = useCallback(async (matchId, decision) => {
-    try {
-      await validateUncertainSVC(matchId, decision);
-      if (decision === "confirmed") {
-        setResult((prev) => ({ ...prev, status: "match" }));
-      } else {
-        setResult({ status: "no_match" });
+  const validateUncertain = useCallback(
+    async (matchId, decision, percentage) => {
+      try {
+        await validateUncertainSVC(matchId, percentage, decision);
+        if (decision === "confirmed") {
+          setResult((prev) => ({ ...prev, status: "match" }));
+        } else {
+          setResult({ status: "no_match" });
+        }
+      } catch (error) {
+        console.error(error);
       }
-    } catch (error) {
-      console.error(error);
-    }
-  }, []);
+    },
+    [],
+  );
 
   return {
     submitReport,

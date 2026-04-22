@@ -31,6 +31,7 @@ export function MatchResult({
         {isUncertain && (
           <ConfirmButtons
             matchId={result.matchId}
+            percentage={result.percentage}
             onDecision={validateUncertain}
           />
         )}
