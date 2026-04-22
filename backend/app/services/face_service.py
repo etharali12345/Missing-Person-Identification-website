@@ -190,7 +190,7 @@ def sanitize_value(value, expected_type="str"):
     if hasattr(value, 'read') or hasattr(value, 'filename'):
         raise ValueError(f"FileStorage object passed instead of path string!")
     
-    if value is None or value == "" or value == 0:
+    if value is None or value == "":
         return None
         
     if expected_type == "int":
@@ -201,6 +201,10 @@ def sanitize_value(value, expected_type="str"):
             
     if expected_type == "str":
         return str(value).strip() or None
+    if expected_type == "phone":
+        if value is None or str(value).strip() == "":
+            return None
+        return str(value).strip()
         
     return value
 def get_missing_person_by_faiss_id(mysql, faiss_id: int) -> Optional[dict]:

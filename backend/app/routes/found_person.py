@@ -47,8 +47,8 @@ def _insert_found_person(cur, organization_id, fields, image_path):
             sanitize_value(fields.get("found_date")),
             sanitize_value(fields.get("health_status")),
             image_path,
-            sanitize_value(fields.get("phone_number1")),
-            sanitize_value(fields.get("phone_number2")),
+            sanitize_value(fields.get("phone_number1"), "phone"),
+            sanitize_value(fields.get("phone_number2"), "phone"),
         )
     )
 
@@ -218,7 +218,7 @@ def send_found_report():
         if cur: cur.close()
 
 
-@found_person_bp.route("/found-report/<int:matchId>/validate", methods=["POST"])
+@found_person_bp.route("/report/<int:matchId>/validate", methods=["POST"])
 @jwt_required()
 def validate_found_match(matchId):
     body       = request.get_json(silent=True) or {}
