@@ -5,6 +5,7 @@ import { SignUpPage } from "./features/authorize/pages/SignUpPag";
 import { MissingReportPage } from "./features/missingReport/pages/MissingReportPage.jsx";
 import { FoundReportPage } from "./features/foundReport/pages/FoundReportPage.jsx";
 import { Home } from "./pages/Home.jsx";
+import { MyMissingReportsPage } from "./features/myMissingReports/pages/MyMissingReports.jsx";
 import { Unauthorized } from "./pages/Unauthorized.jsx";
 import { RequiredAuth } from "./components/auth/RequiredAuth.jsx";
 import { GuestOnly } from "./components/auth/GuestOnly.jsx";
@@ -47,7 +48,7 @@ export function AppRoutes() {
 
         <Route element={<RequiredAuth role={["admin", "user"]} />}>
           <Route path="/report-missing" element={<MissingReportPage />} />
-          <Route path="/my-reports" element={<Home />} />
+          <Route path="/my-reports" element={<MyMissingReportsPage />} />
         </Route>
       </Route>
     </Routes>
