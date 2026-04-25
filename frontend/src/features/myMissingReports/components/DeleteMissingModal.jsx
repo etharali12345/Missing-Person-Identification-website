@@ -1,6 +1,6 @@
 import { BaseModal } from "../../../components/shared/list/BaseModal";
 
-export function DeleteModal({ show, onConfirm, onCancel }) {
+export function DeleteMissingModal({ show, onConfirm, onCancel }) {
   return (
     <BaseModal
       show={show}

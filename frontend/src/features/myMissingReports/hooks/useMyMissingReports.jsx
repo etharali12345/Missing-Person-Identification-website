@@ -7,6 +7,7 @@ import {
 
 export function useMyMissingReports() {
   const [missingList, setMissingList] = useState([]);
+  const [updateError, setUpdateError] = useState(null);
 
   const getMissingList = useCallback(async () => {
     try {
@@ -28,20 +29,34 @@ export function useMyMissingReports() {
 
   const handleUpdate = useCallback(async (id, updatedData) => {
     try {
+      setUpdateError(null);
       await updateMissing(id, updatedData);
       setMissingList((prev) =>
         prev.map((item) =>
           item.id === id ? { ...item, ...updatedData } : item,
         ),
       );
+      return true;
     } catch (err) {
-      console.error(err);
+      setUpdateError(err.message);
+      return false;
     }
+  }, []);
+
+  const clearUpdateError = useCallback(() => {
+    setUpdateError(null);
   }, []);
 
   useEffect(() => {
     getMissingList();
   }, [getMissingList]);
 
-  return { missingList, getMissingList, handleDelete, handleUpdate };
+  return {
+    missingList,
+    getMissingList,
+    handleDelete,
+    handleUpdate,
+    updateError,
+    clearUpdateError,
+  };
 }

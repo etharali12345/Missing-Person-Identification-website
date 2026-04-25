@@ -1,10 +1,18 @@
 import { CardProfile } from "../../../components/shared/list/CardProfile";
 import { useMyMissingReports } from "../hooks/useMyMissingReports";
+import { UpdateMissingModal } from "../components/UpdateMissingModal";
+import { DeleteMissingModal } from "../components/DeleteMissingModal";
 import "../../../components/shared/list/CardsPage.css";
 
 export function MyMissingReportsPage() {
-  const { missingList, getMissingList, handleDelete, handleUpdate } =
-    useMyMissingReports();
+  const {
+    missingList,
+    getMissingList,
+    handleDelete,
+    handleUpdate,
+    updateError,
+    clearUpdateError,
+  } = useMyMissingReports();
 
   return (
     <div className="container pb-5">
@@ -19,8 +27,12 @@ export function MyMissingReportsPage() {
           >
             <CardProfile
               profile={profile}
+              DeleteModal={DeleteMissingModal}
               onDelete={handleDelete}
+              UpdateModal={UpdateMissingModal}
               onUpdate={handleUpdate}
+              updateError={updateError}
+              clearUpdateError={clearUpdateError}
               onDetails={() => {}}
             />
           </div>

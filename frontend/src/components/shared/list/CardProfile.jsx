@@ -1,10 +1,16 @@
 import { useState } from "react";
 import { CardImage } from "./CardImage";
-import { DeleteModal } from "../../../features/myMissingReports/components/DeleteModal";
-import { UpdateMissingModal } from "../../../features/myMissingReports/components/UpdateMissingModal";
 import { SquarePen, Trash2 } from "lucide-react";
 
-export function CardProfile({ profile, onDelete, onUpdate }) {
+export function CardProfile({
+  profile,
+  DeleteModal,
+  onDelete,
+  UpdateModal,
+  onUpdate,
+  updateError,
+  clearUpdateError,
+}) {
   const isMatch = profile.status === "match";
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
@@ -14,9 +20,9 @@ export function CardProfile({ profile, onDelete, onUpdate }) {
     setShowDeleteModal(false);
   };
 
-  const handleUpdateConfirm = (id, updatedData) => {
-    onUpdate(id, updatedData);
-    setShowUpdateModal(false);
+  const handleUpdateConfirm = async (id, updatedData) => {
+    const success = await onUpdate(id, updatedData);
+    if (success) setShowUpdateModal(false);
   };
 
   return (
@@ -83,11 +89,15 @@ export function CardProfile({ profile, onDelete, onUpdate }) {
         onCancel={() => setShowDeleteModal(false)}
       />
 
-      <UpdateMissingModal
+      <UpdateModal
         show={showUpdateModal}
         profile={profile}
         onConfirm={handleUpdateConfirm}
-        onCancel={() => setShowUpdateModal(false)}
+        onCancel={() => {
+          clearUpdateError();
+          setShowUpdateModal(false);
+        }}
+        updateError={updateError}
       />
     </>
   );

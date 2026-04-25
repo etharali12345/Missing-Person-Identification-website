@@ -20,6 +20,7 @@ const profiles = [
     phone_number1: "0501234567",
     phone_number2: "0559876543",
     status: "match",
+    matchId: 53254,
   },
   {
     id: 2,
@@ -44,6 +45,7 @@ const profiles = [
     phone_number1: "0501234567",
     phone_number2: "0559876543",
     status: "match",
+    matchId: 98765,
   },
   {
     id: 4,
@@ -69,9 +71,7 @@ export const getMissings = async () => {
       image: item.image ? `${BASE_URL}${item.image}` : null,
     }));
   } catch (error) {
-    throw new Error(
-      "Getting the Missing Cases that have been Submited by user Failed",
-    );
+    throw new Error("Getting the Missing Cases Failed");
   }
 };
 
@@ -91,6 +91,8 @@ export const updateMissing = async (id, updatedData) => {
   try {
     await api.put(`/my-uploaded-missings/${id}`, updatedData);
   } catch (error) {
-    throw new Error("Updating the Missing Case Failed");
+    const message =
+      error.response?.data?.message || "حدث خطأ أثناء تحديث البلاغ";
+    throw new Error(message);
   }
 };

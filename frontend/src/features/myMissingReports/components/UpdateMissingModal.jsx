@@ -1,10 +1,17 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { BaseModal } from "../../../components/shared/list/BaseModal";
 import "./updateMissingModal.css";
 
-export function UpdateMissingModal({ show, profile, onConfirm, onCancel }) {
+export function UpdateMissingModal({
+  show,
+  profile,
+  onConfirm,
+  onCancel,
+  updateError,
+}) {
   const [formData, setFormData] = useState({});
   const [errors, setErrors] = useState({});
+  const errorRef = useRef(null);
 
   useEffect(() => {
     if (profile) {
@@ -79,6 +86,12 @@ export function UpdateMissingModal({ show, profile, onConfirm, onCancel }) {
     setErrors({});
     onCancel();
   };
+
+  useEffect(() => {
+    if (updateError && errorRef.current) {
+      errorRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, [updateError]);
 
   return (
     <BaseModal
@@ -200,6 +213,13 @@ export function UpdateMissingModal({ show, profile, onConfirm, onCancel }) {
           )}
         </div>
       </div>
+      {updateError && (
+        <div className="col-12" ref={errorRef}>
+          <div className="alert alert-danger text-center py-2">
+            {updateError}
+          </div>
+        </div>
+      )}
     </BaseModal>
   );
 }
