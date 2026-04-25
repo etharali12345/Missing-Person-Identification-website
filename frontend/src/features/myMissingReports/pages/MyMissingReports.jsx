@@ -2,6 +2,7 @@ import { CardProfile } from "../../../components/shared/list/CardProfile";
 import { useMyMissingReports } from "../hooks/useMyMissingReports";
 import { UpdateMissingModal } from "../components/UpdateMissingModal";
 import { DeleteMissingModal } from "../components/DeleteMissingModal";
+import { MissingMatchModal } from "../components/MissingMatchModal";
 import "../../../components/shared/list/CardsPage.css";
 
 export function MyMissingReportsPage() {
@@ -12,6 +13,9 @@ export function MyMissingReportsPage() {
     handleUpdate,
     updateError,
     clearUpdateError,
+    handleMatchDetails,
+    matchDetails,
+    matchLoading,
   } = useMyMissingReports();
 
   return (
@@ -33,7 +37,10 @@ export function MyMissingReportsPage() {
               onUpdate={handleUpdate}
               updateError={updateError}
               clearUpdateError={clearUpdateError}
-              onDetails={() => {}}
+              MatchDetailsModal={MissingMatchModal}
+              onDetails={handleMatchDetails}
+              matchDetails={matchDetails}
+              matchLoading={matchLoading}
             />
           </div>
         ))}

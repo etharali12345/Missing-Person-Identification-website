@@ -3,11 +3,14 @@ import {
   getMissings,
   deleteMissing,
   updateMissing,
+  getMatchDetails,
 } from "../services/MyMissingServices";
 
 export function useMyMissingReports() {
   const [missingList, setMissingList] = useState([]);
   const [updateError, setUpdateError] = useState(null);
+  const [matchDetails, setMatchDetails] = useState(null);
+  const [matchLoading, setMatchLoading] = useState(false);
 
   const getMissingList = useCallback(async () => {
     try {
@@ -47,6 +50,19 @@ export function useMyMissingReports() {
     setUpdateError(null);
   }, []);
 
+  const handleMatchDetails = useCallback(async (matchId) => {
+    try {
+      setMatchDetails(null);
+      setMatchLoading(true);
+      const data = await getMatchDetails(matchId);
+      setMatchDetails(data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setMatchLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     getMissingList();
   }, [getMissingList]);
@@ -58,5 +74,8 @@ export function useMyMissingReports() {
     handleUpdate,
     updateError,
     clearUpdateError,
+    handleMatchDetails,
+    matchDetails,
+    matchLoading,
   };
 }

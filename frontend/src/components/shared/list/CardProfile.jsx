@@ -10,10 +10,15 @@ export function CardProfile({
   onUpdate,
   updateError,
   clearUpdateError,
+  MatchDetailsModal,
+  onDetails,
+  matchDetails,
+  matchLoading,
 }) {
   const isMatch = profile.status === "match";
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const [showMatchDetailsModal, setShowMatchDetailsModal] = useState(false);
 
   const handleDeleteConfirm = () => {
     onDelete(profile.id);
@@ -23,6 +28,11 @@ export function CardProfile({
   const handleUpdateConfirm = async (id, updatedData) => {
     const success = await onUpdate(id, updatedData);
     if (success) setShowUpdateModal(false);
+  };
+
+  const handleDetailsClick = () => {
+    onDetails(profile.matchId);
+    setShowMatchDetailsModal(true);
   };
 
   return (
@@ -60,7 +70,9 @@ export function CardProfile({
                 حذف البلاغ
                 <Trash2 size={18} />
               </button>
-              <button className="btn-details">تفاصيل التطابق</button>
+              <button className="btn-details" onClick={handleDetailsClick}>
+                تفاصيل التطابق
+              </button>
             </div>
           </>
         ) : (
@@ -98,6 +110,13 @@ export function CardProfile({
           setShowUpdateModal(false);
         }}
         updateError={updateError}
+      />
+
+      <MatchDetailsModal
+        show={showMatchDetailsModal}
+        details={matchDetails}
+        loading={matchLoading}
+        onCancel={() => setShowMatchDetailsModal(false)}
       />
     </>
   );

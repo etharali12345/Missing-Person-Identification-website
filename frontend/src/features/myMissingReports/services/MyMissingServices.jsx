@@ -64,11 +64,11 @@ const profiles = [
 export const getMissings = async () => {
   return profiles;
   try {
-    const res = await api.get("/my-uploaded-missings");
+    const res = await api.get("/my-missing-cases");
     const data = res.data;
     return data.map((item) => ({
       ...item,
-      image: item.image ? `${BASE_URL}${item.image}` : null,
+      image_path: item.image_path ? `${BASE_URL}/${item.image_path}` : null,
     }));
   } catch (error) {
     throw new Error("Getting the Missing Cases Failed");
@@ -79,7 +79,7 @@ export const deleteMissing = async (id) => {
   console.log("Deleting missing case with ID:", id);
   return;
   try {
-    await api.delete(`/my-uploaded-missings/${id}`);
+    await api.delete(`/my-missing-cases/${id}`);
   } catch (error) {
     throw new Error("Deleting the Missing Case Failed");
   }
@@ -89,10 +89,27 @@ export const updateMissing = async (id, updatedData) => {
   console.log("Updating missing case with ID:", id, "Data:", updatedData);
   return;
   try {
-    await api.put(`/my-uploaded-missings/${id}`, updatedData);
+    await api.put(`/my-missing-cases/${id}`, updatedData);
   } catch (error) {
     const message =
       error.response?.data?.message || "حدث خطأ أثناء تحديث البلاغ";
+    throw new Error(message);
+  }
+};
+
+export const getMatchDetails = async (matchId) => {
+  //console.log("Fetching match details for ID:", matchId);
+  //return data;
+  try {
+    const res = await api.get(`/missing-match/${matchId}`);
+    const data = res.data;
+    if (data?.image_path) {
+      data.image_path = `${BASE_URL}/${data.image_path}`;
+    }
+    return data;
+  } catch (error) {
+    const message =
+      error.response?.data?.message || "حدث خطأ أثناء جلب تفاصيل التطابق";
     throw new Error(message);
   }
 };
