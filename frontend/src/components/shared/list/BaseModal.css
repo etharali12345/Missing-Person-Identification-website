@@ -20,7 +20,7 @@
 .custome-modal .modal-body {
   overflow-y: auto;
   flex: 1;
-  padding: 0 55px;
+  padding: 5px 55px;
 }
 
 .custome-image {
