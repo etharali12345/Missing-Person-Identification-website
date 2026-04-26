@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from "react";
 import { BaseModal } from "../../../components/shared/list/BaseModal";
-import "./updateMissingModal.css";
 
 export function UpdateMissingModal({
   show,
@@ -98,7 +97,7 @@ export function UpdateMissingModal({
       show={show}
       title="تعديل البلاغ"
       onCancel={handleCancel}
-      customClass="update-modal"
+      customClass="custome-modal"
       footer={
         <>
           <button className="btn btn-primary" onClick={handleSubmit}>
@@ -110,107 +109,106 @@ export function UpdateMissingModal({
         </>
       }
     >
-      <div className="d-flex justify-content-center update-image">
-        <img
-          src={profile.image_path}
-          alt={profile.full_name}
-          style={{ width: "200px" }}
-        />
+      <div className="d-flex justify-content-center custome-image">
+        <img src={profile.image_path} alt={profile.full_name} />
       </div>
-      <div className="row g-2 px-3 py-4 justify-content-center update-form">
+
+      <div className=" px-3 py-4 custome-form">
         <h5 className="text-center">معلومات المفقود</h5>
 
-        <div className="col-9">
-          <label className="form-label">الاسم</label>
-          <input
-            className={`form-control text-end ${errors.full_name ? "is-invalid" : ""}`}
-            name="full_name"
-            placeholder="الاسم الكامل"
-            required
-            value={formData.full_name}
-            onChange={handleChange}
-          />
-          {errors.full_name && (
-            <div className="invalid-feedback">{errors.full_name}</div>
-          )}
-        </div>
+        <div className="row g-2 justify-content-center">
+          <div className="col-9">
+            <label className="form-label">الاسم</label>
+            <input
+              className={`form-control text-end ${errors.full_name ? "is-invalid" : ""}`}
+              name="full_name"
+              placeholder="الاسم الكامل"
+              required
+              value={formData.full_name}
+              onChange={handleChange}
+            />
+            {errors.full_name && (
+              <div className="invalid-feedback">{errors.full_name}</div>
+            )}
+          </div>
 
-        <div className="col-3">
-          <label className="form-label">العمر</label>
-          <input
-            className={`form-control text-end ${errors.age ? "is-invalid" : ""}`}
-            name="age"
-            type="number"
-            placeholder="العمر"
-            required
-            value={formData.age}
-            onChange={handleChange}
-          />
-          {errors.age && <div className="invalid-feedback">{errors.age}</div>}
-        </div>
+          <div className="col-3">
+            <label className="form-label">العمر</label>
+            <input
+              className={`form-control text-end ${errors.age ? "is-invalid" : ""}`}
+              name="age"
+              type="number"
+              placeholder="العمر"
+              required
+              value={formData.age}
+              onChange={handleChange}
+            />
+            {errors.age && <div className="invalid-feedback">{errors.age}</div>}
+          </div>
 
-        <div className="col-6">
-          <label className="form-label">الجنس</label>
-          <select
-            className="form-select text-end"
-            name="gender"
-            required
-            value={formData.gender}
-            onChange={handleChange}
-          >
-            <option value="male">ذكر</option>
-            <option value="female">أنثى</option>
-          </select>
-        </div>
+          <div className="col-6">
+            <label className="form-label">الجنس</label>
+            <select
+              className="form-select text-end"
+              name="gender"
+              required
+              value={formData.gender}
+              onChange={handleChange}
+            >
+              <option value="male">ذكر</option>
+              <option value="female">أنثى</option>
+            </select>
+          </div>
 
-        <div className="col-6">
-          <label className="form-label">تاريخ اخر مشاهدة</label>
-          <input
-            className="form-control text-end"
-            name="last_seen_date"
-            type="date"
-            value={formData.last_seen_date}
-            onChange={handleChange}
-          />
-        </div>
+          <div className="col-6">
+            <label className="form-label">تاريخ اخر مشاهدة</label>
+            <input
+              className="form-control text-end"
+              name="last_seen_date"
+              type="date"
+              value={formData.last_seen_date}
+              onChange={handleChange}
+            />
+          </div>
 
-        <div className="col-12">
-          <label className="form-label">آخر موقع مشاهدة</label>
-          <input
-            className="form-control text-end"
-            name="last_seen_location"
-            placeholder="آخر موقع"
-            value={formData.last_seen_location}
-            onChange={handleChange}
-          />
-        </div>
+          <div className="col-12">
+            <label className="form-label">آخر موقع مشاهدة</label>
+            <input
+              className="form-control text-end"
+              name="last_seen_location"
+              placeholder="آخر موقع"
+              value={formData.last_seen_location}
+              onChange={handleChange}
+            />
+          </div>
 
-        <div className="col-6">
-          <label className="form-label">رقم الهاتفك للتواصل</label>
-          <input
-            className={`form-control text-end ${errors.phone_number1 ? "is-invalid" : ""}`}
-            name="phone_number1"
-            placeholder="رقم الهاتف 1"
-            value={formData.phone_number1}
-            onChange={handleChange}
-          />
-          {errors.phone_number1 && (
-            <div className="invalid-feedback">{errors.phone_number1}</div>
-          )}
-        </div>
+          <div className="col-6">
+            <label className="form-label">رقم الهاتفك للتواصل</label>
+            <input
+              className={`form-control text-end ${errors.phone_number1 ? "is-invalid" : ""}`}
+              name="phone_number1"
+              placeholder="رقم الهاتف 1"
+              value={formData.phone_number1}
+              onChange={handleChange}
+            />
+            {errors.phone_number1 && (
+              <div className="invalid-feedback">{errors.phone_number1}</div>
+            )}
+          </div>
 
-        <div className="col-6">
-          <label className="form-label">رقم الهاتف اخر</label>
-          <input
-            className={`form-control text-end ${errors.phone_number2 ? "is-invalid" : ""}`}
-            name="phone_number2"
-            placeholder="رقم الهاتف 2"
-            value={formData.phone_number2}
-            onChange={handleChange}
-          />
-          {errors.phone_number2 && (
-            <div className="invalid-feedback">{errors.phone_number2}</div>
-          )}
+          <div className="col-6">
+            <label className="form-label">رقم الهاتف اخر</label>
+            <input
+              className={`form-control text-end ${errors.phone_number2 ? "is-invalid" : ""}`}
+              name="phone_number2"
+              placeholder="رقم الهاتف 2"
+              value={formData.phone_number2}
+              onChange={handleChange}
+            />
+            {errors.phone_number2 && (
+              <div className="invalid-feedback">{errors.phone_number2}</div>
+            )}
+          </div>
         </div>
       </div>
       {updateError && (

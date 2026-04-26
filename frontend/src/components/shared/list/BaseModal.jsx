@@ -1,3 +1,5 @@
+import "./BaseModal.css";
+
 export function BaseModal({
   show,
   title,
@@ -23,7 +25,7 @@ export function BaseModal({
           <div className="modal-header">
             <h5 className="modal-title w-100">{title}</h5>
           </div>
-          <div className="modal-body d-flex flex-column gap-2">{children}</div>
+          <div className="modal-body d-flex flex-column">{children}</div>
           <div className={`modal-footer justify-content-${direction}`}>
             {footer}
           </div>

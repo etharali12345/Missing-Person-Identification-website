@@ -53,7 +53,7 @@ export const ImagePreview = ({ image, setImage }) => {
               color="rgba(143, 143, 143, 0.75)"
               strokeWidth={1.7}
             />
-            <p className="upload-text">اضغط هنا لرفع صورة</p>
+            <p className="upload-text">اضغط هنا لرفع صورة المفقود</p>
           </div>
         ) : (
           <div className="w-100 h-100 position-relative">

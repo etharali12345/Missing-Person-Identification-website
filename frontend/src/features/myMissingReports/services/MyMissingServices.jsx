@@ -97,9 +97,23 @@ export const updateMissing = async (id, updatedData) => {
   }
 };
 
+const details = {
+  percentage: 0.85,
+  full_name: "احمد محمد احمد",
+  approximate_age: 34,
+  gender: "male",
+  health_status: "سليم",
+  found_date: "2024-2-5",
+  found_location: "الخرطوم الرياض",
+  image_path: "images/found_123.jpg",
+  authority_name: "منظمة الهلال الاحمر",
+  phone_number1: "06546546456",
+  phone_number2: "645654654654654645",
+};
+
 export const getMatchDetails = async (matchId) => {
-  //console.log("Fetching match details for ID:", matchId);
-  //return data;
+  console.log("Fetching match details for ID:", matchId);
+  return details;
   try {
     const res = await api.get(`/missing-match/${matchId}`);
     const data = res.data;
