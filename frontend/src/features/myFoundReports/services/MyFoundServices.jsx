@@ -1,0 +1,65 @@
+import axios from "axios";
+import { Phone } from "lucide-react";
+
+const BASE_URL = "http://localhost:5000";
+
+const api = axios.create({
+  baseURL: `${BASE_URL}/api`,
+  withCredentials: true,
+});
+
+export const getFounds = async () => {
+  try {
+    const res = await api.get("/my-found-cases");
+    const data = res.data;
+    return data.map((item) => ({
+      ...item,
+      image_path: item.image_path ? `${BASE_URL}/${item.image_path}` : null,
+    }));
+  } catch (error) {
+    throw new Error("Getting the Found Cases Failed");
+  }
+};
+
+export const deleteFound = async (id) => {
+  try {
+    await api.delete(`/my-found-cases/${id}`);
+  } catch (error) {
+    throw new Error("Deleting the Found Case Failed");
+  }
+};
+
+export const updateFound = async (id, updatedData) => {
+  try {
+    await api.put(`/my-found-cases/${id}`, updatedData);
+  } catch (error) {
+    const message =
+      error.response?.data?.message || "حدث خطأ أثناء تحديث البلاغ";
+    throw new Error(message);
+  }
+};
+
+export const getMatchDetails = async (matchId) => {
+  try {
+    const res = await api.get(`/found-match/${matchId}`);
+    const data = res.data;
+    if (data?.image_path) {
+      data.image_path = `${BASE_URL}/${data.image_path}`;
+    }
+    return data;
+  } catch (error) {
+    const message =
+      error.response?.data?.message || "حدث خطأ أثناء جلب تفاصيل التطابق";
+    throw new Error(message);
+  }
+};
+
+export const cancelMatch = async (matchId) => {
+  try {
+    await api.patch(`/found-match/${matchId}/cancel`);
+  } catch (error) {
+    const message =
+      error.response?.data?.message || "حدث خطأ أثناء إلغاء التطابق";
+    throw new Error(message);
+  }
+};

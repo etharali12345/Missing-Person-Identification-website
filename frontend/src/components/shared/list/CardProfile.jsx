@@ -14,6 +14,7 @@ export function CardProfile({
   onDetails,
   matchDetails,
   matchLoading,
+  onCancelMatch,
 }) {
   const isMatch = profile.status === "match";
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -117,6 +118,8 @@ export function CardProfile({
         details={matchDetails}
         loading={matchLoading}
         onCancel={() => setShowMatchDetailsModal(false)}
+        onCancelMatch={onCancelMatch}
+        matchId={profile.matchId}
       />
     </>
   );

@@ -162,3 +162,12 @@
   background-color: #dbd9d9;
   color: #fafafa;
 }
+
+.btn-cancle-match {
+  background-color: rgb(156, 156, 156) !important;
+  color: white !important;
+}
+
+.btn-cancle-match:hover {
+  background-color: rgb(93, 121, 114) !important;
+}
