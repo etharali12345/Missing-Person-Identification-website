@@ -1,0 +1,45 @@
+Login:
+email_or_phone
+password
+
+Signup:
+1- المستخدم العادي (JSON)
+role : "normal"
+first_name
+last_name
+email_or_phone
+password
+
+2- السلطات (FormData)
+role : "authority"
+authority_type : ("service", "organization")
+authority_name
+email_or_phone
+password
+location
+document
+license_number => في حال كان النوع الجهة الرسميةorganization
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    #if current_user.is_authenticated:
+    form = LoginForm()
+
+    if form.validate_on_submit():
+      emailOrPhone = form.emailOrPhone.data
+      password = form.password.data
+
+      cur = mysql.connection.cursor()
+      cur.execute("SELECT * FROM users WHERE email_or_phone = %s", (emailOrPhone,))
+      user = cur.fetchone()
+      cur.close()
+
+      if user and check_password_hash(user[4], password):  
+            flash('تم تسجيل الدخول بنجاح!', 'success')
+            return redirect(url_for('homePage'))
+      else:
+            flash('الرجاء التحقق من البريد الإلكتروني وكلمة المرور والمحاولة مرة أخرى!', 'danger')
+
+    return render_template('login.html', title="تسجيل الدخول", form=form)
+           
