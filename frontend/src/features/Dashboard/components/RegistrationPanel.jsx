@@ -1,9 +1,9 @@
 import "./registrationPanel.css";
 import { useState } from "react";
 
-export function RegistrationPanel() {
+export function RegistrationPanel({ authorities }) {
   const [filter, setFilter] = useState("all");
-  const authorities = [];
+
   const filteredData =
     filter === "all"
       ? authorities
@@ -44,7 +44,7 @@ export function RegistrationPanel() {
           </div>
         </div>
 
-        <div>
+        <div className="table-scroll-area">
           <table className="custom-table">
             <thead>
               <tr>
@@ -56,7 +56,7 @@ export function RegistrationPanel() {
                 <th></th>
               </tr>
             </thead>
-            <tbody className="table-scroll-area">
+            <tbody>
               {filteredData.map((item) => {
                 const statusInfo = getStatusDisplay(item.status);
                 return (
@@ -71,7 +71,13 @@ export function RegistrationPanel() {
                       </div>
                     </td>
                     <td className="name-text">{item.authority_name}</td>
-                    <td className="type-text">{item.authority_type}</td>
+                    <td className="type-text">
+                      {item.authority_type === "service"
+                        ? "جهة حكومية"
+                        : item.authority_type === "organization"
+                          ? "منظمة"
+                          : item.authority_type}
+                    </td>
                     <td className="date-text">{item.created_at}</td>
                     <td className="status-text">{statusInfo.text}</td>
                     <td className="action-cell">

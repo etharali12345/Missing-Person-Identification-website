@@ -32,8 +32,7 @@
 }
 
 .filter-group {
-  background-color: #f3f4f6;
-  padding: 4px;
+  padding: 3px;
   border-radius: 50px;
   display: flex;
 }
@@ -42,7 +41,6 @@
   border: none;
   padding: 8px 24px;
   border-radius: 50px;
-  font-size: 0.85rem;
   background: transparent;
   color: #6b7280;
   transition: all 0.2s ease;
@@ -54,15 +52,12 @@
   color: white;
 }
 
-/* حاوية التمرير - محدودة بـ 5 صفوف */
 .table-scroll-area {
   overflow-y: auto;
-  /* ارتفاع كل صف تقريباً 61px * 5 صفوف = 305px */
   max-height: 310px;
   position: relative;
 }
 
-/* تخصيص شريط التمرير الأخضر */
 .table-scroll-area::-webkit-scrollbar {
   width: 6px;
 }
@@ -80,15 +75,17 @@
   text-align: center;
 }
 
-/* الرأس ثابت دائماً فوق الصفوف */
+.custom-table thead {
+  box-shadow: 0 0px 5px rgba(0, 0, 0, 0.3);
+}
+
 .custom-table thead th {
   position: sticky;
   top: 0;
   background-color: #ffffff;
   padding: 18px 10px;
   font-weight: 400;
-  color: #9ca3af;
-  font-size: 0.85rem;
+  font-size: 1rem;
   border-bottom: 1px solid #f3f4f6;
   z-index: 10;
 }
@@ -97,7 +94,6 @@
   padding: 18px 10px;
   border-bottom: 1px solid #f9fafb;
   color: #4b5563;
-  font-size: 0.9rem;
 }
 
 .id-cell {
@@ -108,8 +104,8 @@
 }
 
 .status-dot {
-  width: 13px;
-  height: 13px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
 }
 
@@ -130,7 +126,6 @@
   background: none;
   border: none;
   color: #6b7280;
-  font-size: 0.8rem;
   cursor: pointer;
 }
 
