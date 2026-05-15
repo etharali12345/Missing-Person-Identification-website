@@ -17,6 +17,11 @@ export function AdminLinks() {
   return (
     <>
       <li className="nav-item">
+        <NavLink to="/" className={navClass}>
+          الرئيسية
+        </NavLink>
+      </li>
+      <li className="nav-item">
         <NavLink to="/admin-dashboard" className={navClass}>
           لوحة التحكم
         </NavLink>
@@ -38,7 +43,7 @@ export function AdminLinks() {
           <li>
             <NavLink to="/report-missing" className={dropItemClass}>
               <ClipboardPlus size={20} className="ms-2 icon" />
-              ابلاغ عن مققود
+              ابلاغ عن مفقود
             </NavLink>
           </li>
           <hr className="dropdown-divider m-0" />

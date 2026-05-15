@@ -1,0 +1,144 @@
+.dashboard-container {
+  padding: 40px 20px;
+  font-family: "Noto Sans Arabic", sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.main-card {
+  background: white;
+  border-radius: 0px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  max-width: 1100px;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-header-custom {
+  padding: 15px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.title-text {
+  font-size: 1.2rem;
+  color: #374151;
+  font-weight: 600;
+  margin: 0;
+}
+
+.filter-group {
+  background-color: #f3f4f6;
+  padding: 4px;
+  border-radius: 50px;
+  display: flex;
+}
+
+.filter-btn {
+  border: none;
+  padding: 8px 24px;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  background: transparent;
+  color: #6b7280;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.filter-btn.active {
+  background-color: #1a8a5f;
+  color: white;
+}
+
+/* حاوية التمرير - محدودة بـ 5 صفوف */
+.table-scroll-area {
+  overflow-y: auto;
+  /* ارتفاع كل صف تقريباً 61px * 5 صفوف = 305px */
+  max-height: 310px;
+  position: relative;
+}
+
+/* تخصيص شريط التمرير الأخضر */
+.table-scroll-area::-webkit-scrollbar {
+  width: 6px;
+}
+.table-scroll-area::-webkit-scrollbar-track {
+  background: #f9fafb;
+}
+.table-scroll-area::-webkit-scrollbar-thumb {
+  background-color: #1a8a5f;
+  border-radius: 20px;
+}
+
+.custom-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center;
+}
+
+/* الرأس ثابت دائماً فوق الصفوف */
+.custom-table thead th {
+  position: sticky;
+  top: 0;
+  background-color: #ffffff;
+  padding: 18px 10px;
+  font-weight: 400;
+  color: #9ca3af;
+  font-size: 0.85rem;
+  border-bottom: 1px solid #f3f4f6;
+  z-index: 10;
+}
+
+.custom-table td {
+  padding: 18px 10px;
+  border-bottom: 1px solid #f9fafb;
+  color: #4b5563;
+  font-size: 0.9rem;
+}
+
+.id-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.status-dot {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+}
+
+.id-text {
+  color: #6b7280;
+}
+.name-text {
+  font-weight: 400;
+  color: #374151;
+}
+.type-text,
+.date-text,
+.status-text {
+  color: #6b7280;
+}
+
+.more-btn {
+  background: none;
+  border: none;
+  color: #6b7280;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.more-btn:hover {
+  color: #1a8a5f;
+  text-decoration: underline;
+}
+
+tr:hover td {
+  background-color: #fafafa;
+}
