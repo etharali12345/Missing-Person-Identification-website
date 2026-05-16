@@ -1,12 +1,20 @@
 import { useDashboard } from "../hooks/useDashboard";
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { RegistrationPanel } from "../components/RegistrationPanel";
 
 export function DashboardPage() {
-  const { authorities } = useDashboard();
+  const location = useLocation();
+  const { authorities, getAuthorities } = useDashboard();
+
+  useEffect(() => {
+    if (location.state?.refreshNeeded) {
+      getAuthorities();
+    }
+  }, [location.key]);
 
   return (
     <div className="container dashboard-page pt-5">
-      <h1>لوحة الإدارة</h1>
       <RegistrationPanel authorities={authorities} />
     </div>
   );

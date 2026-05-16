@@ -1,8 +1,11 @@
 import "./registrationPanel.css";
+import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { ArrowLeft } from "lucide-react";
 
-export function RegistrationPanel({ authorities }) {
+export function RegistrationPanel({ authorities, handleStatusChange }) {
   const [filter, setFilter] = useState("all");
+  const navigate = useNavigate();
 
   const filteredData =
     filter === "all"
@@ -81,7 +84,16 @@ export function RegistrationPanel({ authorities }) {
                     <td className="date-text">{item.created_at}</td>
                     <td className="status-text">{statusInfo.text}</td>
                     <td className="action-cell">
-                      <button className="more-btn">المزيد ←</button>
+                      <button
+                        className="more-btn"
+                        onClick={() =>
+                          navigate("/authorityDetails", {
+                            state: item,
+                          })
+                        }
+                      >
+                        المزيد <ArrowLeft size={12} />
+                      </button>
                     </td>
                   </tr>
                 );

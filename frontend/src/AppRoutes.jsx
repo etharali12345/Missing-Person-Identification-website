@@ -11,6 +11,7 @@ import { DashboardPage } from "./features/Dashboard/pages/DashboardPage.jsx";
 import { Unauthorized } from "./pages/Unauthorized.jsx";
 import { RequiredAuth } from "./components/auth/RequiredAuth.jsx";
 import { GuestOnly } from "./components/auth/GuestOnly.jsx";
+import { AuthorityDetailsPage } from "./features/Dashboard/pages/authorityDetialsPage.jsx";
 
 export function AppRoutes() {
   return (
@@ -38,7 +39,7 @@ export function AppRoutes() {
 
         <Route element={<RequiredAuth role={["admin"]} />}>
           <Route path="/admin-dashboard" element={<DashboardPage />} />
-          <Route path="/admin-profile" element={<Home />} />
+          <Route path="/authorityDetails" element={<AuthorityDetailsPage />} />
           <Route path="/founded-database" element={<Home />} />
         </Route>
 

@@ -1,5 +1,8 @@
 import { useState, useCallback, useEffect } from "react";
-import { getAuthoritiesSVC } from "../services/DashboardServices";
+import {
+  getAuthoritiesSVC,
+  updateAuthorityStatus,
+} from "../services/AuthorityRegisterService";
 
 export function useDashboard() {
   const [authorities, setAuthorities] = useState([]);
@@ -17,5 +20,5 @@ export function useDashboard() {
     getAuthorities();
   }, [getAuthorities]);
 
-  return { authorities };
+  return { authorities, getAuthorities };
 }

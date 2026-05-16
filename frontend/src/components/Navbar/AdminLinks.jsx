@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from "react-router";
-import { activeClass } from "../../utils/navHelper.js";
+import { activeClass, useActiveClass } from "../../utils/navHelper.js";
 import { ChevronDown, ClipboardPlus, Database } from "lucide-react";
 
 export function AdminLinks() {
@@ -12,6 +12,10 @@ export function AdminLinks() {
   ];
   const isDropdownActive = dropdownPaths.includes(location.pathname);
   const navClass = activeClass("nav-link");
+  const dashboardClass = useActiveClass("nav-link", [
+    "/admin-dashboard",
+    "/authorityDetails",
+  ]);
   const dropItemClass = activeClass("dropdown-item py-2");
 
   return (
@@ -22,7 +26,7 @@ export function AdminLinks() {
         </NavLink>
       </li>
       <li className="nav-item">
-        <NavLink to="/admin-dashboard" className={navClass}>
+        <NavLink to="/admin-dashboard" className={dashboardClass}>
           لوحة التحكم
         </NavLink>
       </li>
