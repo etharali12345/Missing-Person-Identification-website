@@ -39,7 +39,7 @@ export function AuthorityDetailsPage() {
       );
 
       setTimeout(() => {
-        navigate(-1, { state: { refreshNeeded: true } });
+        setSuccessMessage("");
       }, 5000);
     } catch (err) {
       console.error(err);
@@ -55,7 +55,10 @@ export function AuthorityDetailsPage() {
           </div>
         </div>
 
-        <button className="back-button" onClick={() => navigate(-1)}>
+        <button
+          className="back-button"
+          onClick={() => navigate(-1, { state: { refreshNeeded: true } })}
+        >
           <ArrowRight size={22} />
         </button>
 
@@ -152,7 +155,7 @@ export function AuthorityDetailsPage() {
               className="btn btn-secondary"
               onClick={() => handleAction("approved")}
             >
-              قبول الطلب
+              التراجع عن الرفض
             </button>
           </div>
         )}
