@@ -16,6 +16,7 @@ import { DatabaseMissingPage } from "./features/DatabaseMissing/pages/DatabaseMi
 import { DatabaseFoundPage } from "./features/DatabaseFound/pages/DatabaseFoundPage.jsx";
 import { HowWeHelp } from "./pages/HowWeHelp.jsx";
 import { WhoAreWe } from "./pages/WhoAreWe.jsx";
+import { ProfilePage } from "./features/userProfile/pages/ProfilePage.jsx";
 
 export function AppRoutes() {
   return (
@@ -34,7 +35,7 @@ export function AppRoutes() {
         </Route>
 
         <Route element={<RequiredAuth role={["user"]} />}>
-          <Route path="/profile" element={<Home />} />
+          <Route path="/profile" element={<ProfilePage />} />
         </Route>
 
         <Route element={<RequiredAuth role={["authority"]} />}>

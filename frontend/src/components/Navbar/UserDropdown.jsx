@@ -13,6 +13,13 @@ export function UserDropdown() {
       <ProfileButton dropdownPaths={dropdownPaths} />
       <ul className="dropdown-menu pb-0">
         <li>
+          <NavLink to="/profile" className={dropItemClass}>
+            <UserRound size={20} className="ms-2" />
+            الملف الشخصي
+          </NavLink>
+        </li>
+        <hr className="dropdown-divider m-0" />
+        <li>
           <NavLink to="/my-reports" className={dropItemClass}>
             <HardDriveUpload size={20} className="ms-2" />
             بلاغات مفقودين رفعتها
