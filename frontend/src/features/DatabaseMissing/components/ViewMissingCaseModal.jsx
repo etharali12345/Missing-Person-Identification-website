@@ -1,5 +1,5 @@
 import { BaseModal } from "../../../components/shared/list/BaseModal";
-import { FoundDetails } from "../../foundReport/components/result/FoundDetails";
+import { FoundMatchDetails } from "../../foundReport/components/result/FoundMatchDetails";
 import { CircleX } from "lucide-react";
 
 export function ViewMissingCaseModal({ show, profile, loading, onCancel }) {
@@ -27,7 +27,7 @@ export function ViewMissingCaseModal({ show, profile, loading, onCancel }) {
           </div>
           <div className="px-3 py-4 custome-form">
             <h5 className="text-center">معلومات المفقود</h5>
-            <FoundDetails details={profile} />
+            <FoundMatchDetails details={profile} />
           </div>
         </>
       )}

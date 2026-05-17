@@ -2,7 +2,7 @@ import { BaseModal } from "../../../components/shared/list/BaseModal";
 import { ImageShow } from "../../../components/shared/ImageShow";
 import { CircularProgress } from "../../../components/shared/CircularProgress";
 import { LinearProgress } from "../../../components/shared/LinearProgress";
-import { FoundDetails } from "../../foundReport/components/result/FoundDetails";
+import { FoundMatchDetails } from "../../foundReport/components/result/FoundMatchDetails";
 import "../../../components/shared/ReportResult.css";
 import { useState, useRef, useEffect } from "react";
 
@@ -79,7 +79,7 @@ export function FoundMatchModal({
             <p className="text-center mb-0">نسبة التطابق:</p>
             <p className="percentage">{percentage}</p>
             <LinearProgress value={details.percentage} color="green" />
-            <FoundDetails details={details} />
+            <FoundMatchDetails details={details} />
             {onCancelMatch && (
               <button
                 className="btn btn-cancle-match w-100 mt-3"

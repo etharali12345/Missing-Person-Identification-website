@@ -1,6 +1,6 @@
 import { UserRound, MapPin, Phone, Calendar } from "lucide-react";
 
-export function FoundDetails({ details }) {
+export function FoundMatchDetails({ details }) {
   return (
     <>
       {details.full_name && (
