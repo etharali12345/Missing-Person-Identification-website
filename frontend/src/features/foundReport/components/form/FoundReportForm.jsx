@@ -66,7 +66,11 @@ export function FoundReportForm({ submitReport, error, loading }) {
       onSubmit={handleSubmit}
       className={`needs-validation ${validated && !submitted ? "was-validated" : ""} center-flex flex-column w-100`}
     >
-      <ImagePreview image={uploadData.image} setImage={handleImageChange} />
+      <ImagePreview
+        image={uploadData.image}
+        setImage={handleImageChange}
+        isMissing={false}
+      />
 
       <div className="glass-reportCard">
         <h6>ادخل بيانات الشخص المعثور عليه</h6>
