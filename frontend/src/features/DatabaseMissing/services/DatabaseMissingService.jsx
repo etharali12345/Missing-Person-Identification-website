@@ -42,7 +42,6 @@ export const deleteMissing = async (id) => {
   }
 };
 
-//same route as my missing
 export const getMatchDetails = async (matchId) => {
   try {
     const res = await api.get(`/missing-database-match/${matchId}`);
@@ -52,9 +51,7 @@ export const getMatchDetails = async (matchId) => {
     }
     return data;
   } catch (error) {
-    const message =
-      error.response?.data?.message || "حدث خطأ أثناء جلب تفاصيل التطابق";
-    throw new Error(message);
+    throw new Error("Getting Match of Missing Failed");
   }
 };
 
@@ -62,8 +59,6 @@ export const cancelMatch = async (matchId) => {
   try {
     await api.patch(`/missing-database-match/${matchId}/cancel`);
   } catch (error) {
-    const message =
-      error.response?.data?.message || "حدث خطأ أثناء إلغاء التطابق";
-    throw new Error(message);
+    throw new Error("Cancel Match of Missing Failed");
   }
 };

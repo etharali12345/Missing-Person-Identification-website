@@ -2,7 +2,7 @@ import { BaseModal } from "../../../components/shared/list/BaseModal";
 import { ImageShow } from "../../../components/shared/ImageShow";
 import { CircularProgress } from "../../../components/shared/CircularProgress";
 import { LinearProgress } from "../../../components/shared/LinearProgress";
-import { MissingDetails } from "../../missingReport/components/result/MissingDetails";
+import { MissingMatchDetails } from "../../missingReport/components/result/MissingMatchDetails";
 import { useState, useRef, useEffect } from "react";
 import "../../../components/shared/ReportResult.css";
 
@@ -79,7 +79,7 @@ export function MissingMatchModal({
             <p className="text-center mb-0">نسبة التطابق:</p>
             <p className="percentage">{percentage}</p>
             <LinearProgress value={details.percentage} color="green" />
-            <MissingDetails details={details} />
+            <MissingMatchDetails details={details} />
             {onCancelMatch && (
               <button
                 className="btn btn-cancle-match w-100 mt-3"

@@ -1,45 +1,45 @@
 import { useState, useCallback, useEffect } from "react";
 import {
-  getMissingDB,
-  getMissingById,
-  deleteMissing,
+  getFoundDB,
+  getFoundById,
+  deleteFound,
   getMatchDetails,
   cancelMatch,
-} from "../services/DatabaseMissingService";
+} from "../services/DatabaseFoundService";
 
-export function useDatabaseMissing() {
-  const [missingList, setMissingList] = useState([]);
-  const [missing, setMissing] = useState(null);
-  const [missingLoading, setMissingLoading] = useState(false);
+export function useDatabaseFound() {
+  const [foundList, setFoundList] = useState([]);
+  const [found, setFound] = useState(null);
+  const [foundLoading, setFoundLoading] = useState(false);
   const [matchDetails, setMatchDetails] = useState(null);
   const [matchLoading, setMatchLoading] = useState(false);
 
-  const getMissingDBList = useCallback(async () => {
+  const getFoundDBList = useCallback(async () => {
     try {
-      const response = await getMissingDB();
-      setMissingList(response);
+      const response = await getFoundDB();
+      setFoundList(response);
     } catch (err) {
       console.error(err);
     }
   }, []);
 
-  const handleGetMissingById = useCallback(async (id) => {
+  const handleGetFoundById = useCallback(async (id) => {
     try {
-      setMissing(null);
-      setMissingLoading(true);
-      const data = await getMissingById(id);
-      setMissing(data);
+      setFound(null);
+      setFoundLoading(true);
+      const data = await getFoundById(id);
+      setFound(data);
     } catch (err) {
       console.error(err);
     } finally {
-      setMissingLoading(false);
+      setFoundLoading(false);
     }
   }, []);
 
   const handleDelete = useCallback(async (id) => {
     try {
-      await deleteMissing(id);
-      setMissingList((prev) => prev.filter((item) => item.id !== id));
+      await deleteFound(id);
+      setFoundList((prev) => prev.filter((item) => item.id !== id));
     } catch (err) {
       console.error(err);
     }
@@ -61,7 +61,7 @@ export function useDatabaseMissing() {
   const handleCancelMatch = useCallback(async (matchId) => {
     try {
       await cancelMatch(matchId);
-      setMissingList((prev) =>
+      setFoundList((prev) =>
         prev.map((item) =>
           item.matchId === matchId
             ? { ...item, status: "no_match", matchId: undefined }
@@ -74,15 +74,15 @@ export function useDatabaseMissing() {
   }, []);
 
   useEffect(() => {
-    getMissingDBList();
-  }, [getMissingDBList]);
+    getFoundDBList();
+  }, [getFoundDBList]);
 
   return {
-    getMissingDBList,
-    missingList,
-    handleGetMissingById,
-    missing,
-    missingLoading,
+    getFoundDBList,
+    foundList,
+    handleGetFoundById,
+    found,
+    foundLoading,
     handleDelete,
     handleMatchDetails,
     matchDetails,
