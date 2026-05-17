@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import { useAuth } from "../../../context/AuthContext";
 import { NormalSignUpForm } from "./NormalSignUpForm";
 import { AuthoritySignUpForm } from "./AuthoritySignUpForm";
+import { CircleCheckBig } from "lucide-react";
 
 export function SignUpForm() {
   const { signup } = useAuth();
@@ -11,6 +12,7 @@ export function SignUpForm() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [validated, setValidated] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
   const [userData, setUserData] = useState({
     email_or_phone: "",
     password: "",
@@ -61,6 +63,7 @@ export function SignUpForm() {
           password: userData.password,
         };
         await signup(payload);
+        navigate("/");
       }
       if (role === "authority") {
         const form = new FormData();
@@ -75,6 +78,7 @@ export function SignUpForm() {
           form.append("license_number", userData.license_number);
         }
         await signup(form);
+        setSubmitted(true);
       }
     } catch (err) {
       setError(err.message);
@@ -85,76 +89,98 @@ export function SignUpForm() {
 
   return (
     <div>
-      <div className="nav-tabs-custom">
-        <button
-          value="user"
-          onClick={handleRoleChange}
-          className={`tab-btn ${role === "user" ? "tab-active" : ""}`}
-        >
-          مستخدم عادي
-        </button>
-        <button
-          value="authority"
-          onClick={handleRoleChange}
-          className={`tab-btn ${role === "authority" ? "tab-active" : ""}`}
-        >
-          جهة رسمية
-        </button>
-      </div>
-
-      <form
-        noValidate
-        onSubmit={handleSubmit}
-        className={`needs-validation ${validated ? "was-validated" : ""}`}
-      >
-        {role === "user" ? (
-          <NormalSignUpForm
-            role={role}
-            userData={userData}
-            handleDataChange={handleDataChange}
-          />
-        ) : (
-          <AuthoritySignUpForm
-            role={role}
-            userData={userData}
-            handleDataChange={handleDataChange}
-          />
-        )}
-
-        <div className="mb-3">
-          <label className="form-label">البريد الإلكتروني أو الهاتف</label>
-          <input
-            type="text"
-            required
-            pattern="(\+?[0-9]{7,15}|[^\s@]+@[^\s@]+\.[^\s@]+)"
-            className="form-control w-100"
-            value={userData.email_or_phone}
-            onChange={handleEmailOrPhoneChange}
-          />
-          <div className="invalid-feedback">
-            يرجى إدخال بريد إلكتروني صحيح أو رقم هاتف صحيح
+      {submitted && role === "authority" ? (
+        <div className="text-center py-4 pt-0">
+          <div className="mb-4">
+            <CircleCheckBig size={60} color="#198653" />
           </div>
+          <h5 className="fw-bold mb-2">تم إرسال طلبك بنجاح</h5>
+          <p className="text-muted">
+            طلب تسجيل جهتك قيد المراجعة. سيتم إشعارك بعد موافقة المشرف.
+          </p>
         </div>
-
-        <div className="mb-4">
-          <label className="form-label">كلمة المرور</label>
-          <input
-            type="password"
-            required
-            minLength={6}
-            className="form-control w-100"
-            value={userData.password}
-            onChange={handlePasswordChange}
-          />
-          <div className="invalid-feedback">
-            يجب أن تكون كلمة المرور 6 أحرف على الأقل
+      ) : (
+        <div>
+          <div className="nav-tabs-custom">
+            <button
+              value="user"
+              onClick={handleRoleChange}
+              className={`tab-btn ${role === "user" ? "tab-active" : ""}`}
+            >
+              مستخدم عادي
+            </button>
+            <button
+              value="authority"
+              onClick={handleRoleChange}
+              className={`tab-btn ${role === "authority" ? "tab-active" : ""}`}
+            >
+              جهة رسمية
+            </button>
           </div>
-        </div>
 
-        <button type="submit" className="btn-custom w-100">
-          تأكيد التسجيل
-        </button>
-      </form>
+          <form
+            noValidate
+            onSubmit={handleSubmit}
+            className={`needs-validation ${validated ? "was-validated" : ""}`}
+          >
+            {role === "user" ? (
+              <NormalSignUpForm
+                role={role}
+                userData={userData}
+                handleDataChange={handleDataChange}
+              />
+            ) : (
+              <AuthoritySignUpForm
+                role={role}
+                userData={userData}
+                handleDataChange={handleDataChange}
+              />
+            )}
+
+            <div className="mb-3">
+              <label className="form-label">البريد الإلكتروني أو الهاتف</label>
+              <input
+                type="text"
+                required
+                pattern="(\+?[0-9]{7,15}|[^\s@]+@[^\s@]+\.[^\s@]+)"
+                className="form-control w-100"
+                value={userData.email_or_phone}
+                onChange={handleEmailOrPhoneChange}
+              />
+              <div className="invalid-feedback">
+                يرجى إدخال بريد إلكتروني صحيح أو رقم هاتف صحيح
+              </div>
+            </div>
+
+            <div className="mb-4">
+              <label className="form-label">كلمة المرور</label>
+              <input
+                type="password"
+                required
+                minLength={6}
+                className="form-control w-100"
+                value={userData.password}
+                onChange={handlePasswordChange}
+              />
+              <div className="invalid-feedback">
+                يجب أن تكون كلمة المرور 6 أحرف على الأقل
+              </div>
+            </div>
+
+            {error && (
+              <div
+                className="alert alert-danger d-flex justify-content-center align-items-center mb-3"
+                role="alert"
+              >
+                {error}
+              </div>
+            )}
+            <button type="submit" className="btn-custom w-100">
+              تأكيد التسجيل
+            </button>
+          </form>
+        </div>
+      )}
     </div>
   );
 }

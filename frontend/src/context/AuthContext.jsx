@@ -34,8 +34,11 @@ export function AuthProvider({ children }) {
   });
 
   const signup = useCallback(async (data) => {
-    const loggedUser = await singupService(data);
-    setUser(loggedUser);
+    const result = await singupService(data);
+    const isAuthority = data instanceof FormData;
+    if (!isAuthority) {
+      setUser(result);
+    }
   });
 
   const logout = useCallback(async () => {

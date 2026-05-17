@@ -6,7 +6,6 @@ const api = axios.create({
 });
 
 export const getMeService = async () => {
-  return { role: "admin" };
   try {
     const res = await api.get("/auth/me");
     return res.data.user;
@@ -23,7 +22,7 @@ export const loginService = async (email_or_phone, password) => {
     });
     return res.data.user;
   } catch (error) {
-    throw new Error(error.response?.data?.message || "فشل تسجيل الدخول");
+    throw new Error("بيانات تسجيل الدخول غير صحيحة");
   }
 };
 
