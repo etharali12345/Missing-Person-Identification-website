@@ -6,7 +6,7 @@ const api = axios.create({
 });
 
 export const getMeService = async () => {
-  return { role: "admin" };
+  return { role: "user" };
   try {
     const res = await api.get("/auth/me");
     return res.data.user;

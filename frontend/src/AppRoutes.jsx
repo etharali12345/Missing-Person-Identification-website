@@ -14,14 +14,16 @@ import { GuestOnly } from "./components/auth/GuestOnly.jsx";
 import { AuthorityDetailsPage } from "./features/Dashboard/pages/authorityDetialsPage.jsx";
 import { DatabaseMissingPage } from "./features/DatabaseMissing/pages/DatabaseMissingPage.jsx";
 import { DatabaseFoundPage } from "./features/DatabaseFound/pages/DatabaseFoundPage.jsx";
+import { HowWeHelp } from "./pages/HowWeHelp.jsx";
+import { WhoAreWe } from "./pages/WhoAreWe.jsx";
 
 export function AppRoutes() {
   return (
     <Routes>
       <Route element={<MainLayout />}>
         <Route index element={<Home />} />
-        <Route path="/about" element={<Home />} />
-        <Route path="/how-we-help" element={<Home />} />
+        <Route path="/about" element={<WhoAreWe />} />
+        <Route path="/how-we-help" element={<HowWeHelp />} />
         <Route path="/unauthorized" element={<Unauthorized />} />
 
         <Route path="/logout" element={<Home />} />

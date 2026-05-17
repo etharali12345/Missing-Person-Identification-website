@@ -1,3 +1,10 @@
+.instruction-text:hover {
+  transform: scale(1.03);
+}
+.instruction-text {
+  transition: all 0.3s ease;
+}
+
 .glass-reportCard {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);

@@ -36,7 +36,7 @@ export const ImagePreview = ({ image, setImage, isMissing = true }) => {
     <>
       <div
         onClick={handleContainerClick}
-        className={`imagePreview-container ${previewUrl ? "state-has-image" : "state-empty"}`}
+        className={`imagePreview-container upload-icon-area ${previewUrl ? "state-has-image" : "state-empty"}`}
       >
         <input
           type="file"
@@ -48,11 +48,9 @@ export const ImagePreview = ({ image, setImage, isMissing = true }) => {
 
         {!previewUrl ? (
           <div className="text-center p-4">
-            <ImageUp
-              size={50}
-              color="rgba(143, 143, 143, 0.75)"
-              strokeWidth={1.7}
-            />
+            <div className="upload-icon-container">
+              <ImageUp size={50} strokeWidth={1.7} className="image-icon" />
+            </div>
             {isMissing ? (
               <p className="upload-text">اضغط هنا لرفع صورة المفقود</p>
             ) : (
