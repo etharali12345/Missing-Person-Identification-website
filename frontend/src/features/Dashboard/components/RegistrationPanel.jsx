@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { ArrowLeft } from "lucide-react";
 
-export function RegistrationPanel({ authorities, handleStatusChange }) {
+export function RegistrationPanel({ authorities, getAuthorityById }) {
   const [filter, setFilter] = useState("all");
   const navigate = useNavigate();
 
@@ -22,6 +22,15 @@ export function RegistrationPanel({ authorities, handleStatusChange }) {
         return { text: "مرفوض", dot: "#b91c1c" };
       default:
         return { text: status, dot: "#000" };
+    }
+  };
+
+  const handleMoreClick = async (item) => {
+    try {
+      const fullAuthority = await getAuthorityById(item.authority_id);
+      navigate("/authorityDetails", { state: fullAuthority });
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -86,11 +95,7 @@ export function RegistrationPanel({ authorities, handleStatusChange }) {
                     <td className="action-cell">
                       <button
                         className="more-btn"
-                        onClick={() =>
-                          navigate("/authorityDetails", {
-                            state: item,
-                          })
-                        }
+                        onClick={() => handleMoreClick(item)}
                       >
                         المزيد <ArrowLeft size={12} />
                       </button>

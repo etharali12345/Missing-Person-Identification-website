@@ -11,10 +11,22 @@ export const getAuthoritiesSVC = async () => {
   try {
     const res = await api.get("/authorities");
     const data = res.data;
-    return data.map((authority) => ({
-      ...authority,
-      document: authority.document ? `${BASE_URL}/${authority.document}` : null,
-    }));
+    return data;
+  } catch (error) {
+    const message =
+      error.response?.data?.message || "حدث خطأ أثناء جلب طلبات التسجيل";
+    throw new Error(message);
+  }
+};
+
+export const getAuthorityByIdSVC = async (authorityId) => {
+  try {
+    const res = await api.get(`/authorities/${authorityId}`);
+    const data = res.data;
+    return {
+      ...data,
+      document: data.document ? `${BASE_URL}/${data.document}` : null,
+    };
   } catch (error) {
     const message =
       error.response?.data?.message || "حدث خطأ أثناء جلب طلبات التسجيل";

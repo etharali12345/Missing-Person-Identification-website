@@ -5,7 +5,7 @@ import { RegistrationPanel } from "../components/RegistrationPanel";
 
 export function DashboardPage() {
   const location = useLocation();
-  const { authorities, getAuthorities } = useDashboard();
+  const { authorities, getAuthorities, getAuthorityById } = useDashboard();
 
   useEffect(() => {
     if (location.state?.refreshNeeded) {
@@ -14,8 +14,11 @@ export function DashboardPage() {
   }, [location.key]);
 
   return (
-    <div className="container dashboard-page pt-5">
-      <RegistrationPanel authorities={authorities} />
+    <div className="container dashboard-page pt-5 pb-5 mb-3">
+      <RegistrationPanel
+        authorities={authorities}
+        getAuthorityById={getAuthorityById}
+      />
     </div>
   );
 }

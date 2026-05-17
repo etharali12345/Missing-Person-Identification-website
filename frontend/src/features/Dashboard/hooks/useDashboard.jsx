@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from "react";
 import {
   getAuthoritiesSVC,
-  updateAuthorityStatus,
+  getAuthorityByIdSVC,
 } from "../services/AuthorityRegisterService";
 
 export function useDashboard() {
@@ -16,9 +16,19 @@ export function useDashboard() {
     }
   }, []);
 
+  const getAuthorityById = useCallback(async (authorityId) => {
+    try {
+      const response = await getAuthorityByIdSVC(authorityId);
+      return response;
+    } catch (err) {
+      console.error(err);
+      throw err;
+    }
+  }, []);
+
   useEffect(() => {
     getAuthorities();
   }, [getAuthorities]);
 
-  return { authorities, getAuthorities };
+  return { authorities, getAuthorities, getAuthorityById };
 }
