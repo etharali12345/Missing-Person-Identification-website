@@ -13,13 +13,6 @@ export function AuthorityDropdown() {
       <ProfileButton dropdownPaths={dropdownPaths} />
       <ul className="dropdown-menu pb-0">
         <li>
-          <NavLink to="/authority-profile" className={dropItemClass}>
-            <UserRound size={20} className="ms-2" />
-            الملف التعريفي للجهة
-          </NavLink>
-        </li>
-        <hr className="dropdown-divider m-0" />
-        <li>
           <NavLink to="/my-found-reports" className={dropItemClass}>
             <HardDriveUpload size={20} className="ms-2" />
             بلاغات عثور رفعتها

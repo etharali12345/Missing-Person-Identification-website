@@ -1,10 +1,10 @@
 import { CardProfile } from "../../../components/shared/list/CardProfile";
 import { useDatabaseMissing } from "../hooks/useDatabaseMissing";
-
 import { DeleteMissingModal } from "../../myMissingReports/components/DeleteMissingModal";
 import { MissingMatchModal } from "../../myMissingReports/components/MissingMatchModal";
 import { ViewMissingCaseModal } from "../components/ViewMissingCaseModal";
 import "../../../components/shared/list/CardsPage.css";
+import { useAuth } from "../../../context/AuthContext";
 
 export function DatabaseMissingPage() {
   const {
@@ -18,6 +18,9 @@ export function DatabaseMissingPage() {
     matchLoading,
     handleCancelMatch,
   } = useDatabaseMissing();
+
+  const { user } = useAuth();
+  const isAdmin = user.role === "admin" ? true : false;
 
   return (
     <div className="container pb-5">
@@ -38,7 +41,7 @@ export function DatabaseMissingPage() {
               onMatchDetails={handleMatchDetails}
               matchDetails={matchDetails}
               matchLoading={matchLoading}
-              onCancelMatch={handleCancelMatch}
+              onCancelMatch={isAdmin ? handleCancelMatch : undefined}
               ViewCaseProfileModal={ViewMissingCaseModal}
               onCaseProfile={handleGetMissingById}
               caseProfile={missing}

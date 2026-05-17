@@ -24,26 +24,34 @@ export function MyMissingReportsPage() {
         قائمة المفقودين الذين <span>اضفتهم</span>
       </h1>
       <div className="row g-1 pb-5 justify-content-center">
-        {missingList.map((profile) => (
-          <div
-            key={profile.id}
-            className="col-12 col-sm-6 col-lg-4 col-xl-3 d-flex justify-content-center"
-          >
-            <CardProfile
-              profile={profile}
-              DeleteModal={DeleteMissingModal}
-              onDelete={handleDelete}
-              UpdateModal={UpdateMissingModal}
-              onUpdate={handleUpdate}
-              updateError={updateError}
-              clearUpdateError={clearUpdateError}
-              MatchDetailsModal={MissingMatchModal}
-              onMatchDetails={handleMatchDetails}
-              matchDetails={matchDetails}
-              matchLoading={matchLoading}
-            />
-          </div>
-        ))}
+        <div className="row g-1 pb-5 justify-content-center">
+          {missingList.length === 0 ? (
+            <h3 className="text-center text-muted mt-1">
+              لا يوجد مفقودين مضافين
+            </h3>
+          ) : (
+            missingList.map((profile) => (
+              <div
+                key={profile.id}
+                className="col-12 col-sm-6 col-lg-4 col-xl-3 d-flex justify-content-center"
+              >
+                <CardProfile
+                  profile={profile}
+                  DeleteModal={DeleteMissingModal}
+                  onDelete={handleDelete}
+                  UpdateModal={UpdateMissingModal}
+                  onUpdate={handleUpdate}
+                  updateError={updateError}
+                  clearUpdateError={clearUpdateError}
+                  MatchDetailsModal={MissingMatchModal}
+                  onMatchDetails={handleMatchDetails}
+                  matchDetails={matchDetails}
+                  matchLoading={matchLoading}
+                />
+              </div>
+            ))
+          )}
+        </div>
       </div>
     </div>
   );

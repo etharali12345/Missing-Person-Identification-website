@@ -25,27 +25,33 @@ export function MyFoundReportsPage() {
         قائمة المعثورين الذين <span>اضفتهم</span>
       </h1>
       <div className="row g-1 pb-5 justify-content-center">
-        {foundList.map((profile) => (
-          <div
-            key={profile.id}
-            className="col-12 col-sm-6 col-lg-4 col-xl-3 d-flex justify-content-center"
-          >
-            <CardProfile
-              profile={profile}
-              DeleteModal={DeleteFoundModal}
-              onDelete={handleDelete}
-              UpdateModal={UpdateFoundModal}
-              onUpdate={handleUpdate}
-              updateError={updateError}
-              clearUpdateError={clearUpdateError}
-              MatchDetailsModal={FoundMatchModal}
-              onMatchDetails={handleMatchDetails}
-              matchDetails={matchDetails}
-              matchLoading={matchLoading}
-              onCancelMatch={handleCancelMatch}
-            />
-          </div>
-        ))}
+        {foundList.length === 0 ? (
+          <h3 className="text-center text-muted mt-1">
+            لا يوجد معثورين مضافين
+          </h3>
+        ) : (
+          foundList.map((profile) => (
+            <div
+              key={profile.id}
+              className="col-12 col-sm-6 col-lg-4 col-xl-3 d-flex justify-content-center"
+            >
+              <CardProfile
+                profile={profile}
+                DeleteModal={DeleteFoundModal}
+                onDelete={handleDelete}
+                UpdateModal={UpdateFoundModal}
+                onUpdate={handleUpdate}
+                updateError={updateError}
+                clearUpdateError={clearUpdateError}
+                MatchDetailsModal={FoundMatchModal}
+                onMatchDetails={handleMatchDetails}
+                matchDetails={matchDetails}
+                matchLoading={matchLoading}
+                onCancelMatch={handleCancelMatch}
+              />
+            </div>
+          ))
+        )}
       </div>
     </div>
   );

@@ -46,9 +46,9 @@ export function AppRoutes() {
         </Route>
 
         <Route element={<RequiredAuth role={["admin", "authority"]} />}>
-          <Route path="/missing-database" element={<DatabaseMissingPage />} />
           <Route path="/report-found" element={<FoundReportPage />} />
           <Route path="/my-found-reports" element={<MyFoundReportsPage />} />
+          <Route path="/missing-database" element={<DatabaseMissingPage />} />
         </Route>
 
         <Route element={<RequiredAuth role={["admin", "user"]} />}>
