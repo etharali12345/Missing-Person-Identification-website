@@ -25,10 +25,10 @@ export const getMissingById = async (id) => {
   try {
     const res = await api.get(`/missing-database/${id}`);
     const data = res.data;
-    return data.map((item) => ({
-      ...item,
-      image_path: item.image_path ? `${BASE_URL}/${item.image_path}` : null,
-    }));
+    return {
+      ...data,
+      image_path: data.image_path ? `${BASE_URL}/${data.image_path}` : null,
+    };
   } catch (error) {
     throw new Error("Getting the Missing Database Entries Failed");
   }
@@ -42,6 +42,7 @@ export const deleteMissing = async (id) => {
   }
 };
 
+//same route as my missing
 export const getMatchDetails = async (matchId) => {
   try {
     const res = await api.get(`/missing-database-match/${matchId}`);

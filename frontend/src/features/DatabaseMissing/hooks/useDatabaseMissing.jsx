@@ -23,7 +23,7 @@ export function useDatabaseMissing() {
     }
   }, []);
 
-  const handleMissing = useCallback(async (id) => {
+  const handleGetMissingById = useCallback(async (id) => {
     try {
       setMissing(null);
       setMissingLoading(true);
@@ -78,15 +78,15 @@ export function useDatabaseMissing() {
   }, [getMissingDBList]);
 
   return {
-    missingList,
     getMissingDBList,
+    missingList,
+    handleGetMissingById,
     missing,
     missingLoading,
-    handleMissing,
     handleDelete,
+    handleMatchDetails,
     matchDetails,
     matchLoading,
-    handleMatchDetails,
     handleCancelMatch,
   };
 }

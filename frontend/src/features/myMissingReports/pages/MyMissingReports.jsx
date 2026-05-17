@@ -38,7 +38,7 @@ export function MyMissingReportsPage() {
               updateError={updateError}
               clearUpdateError={clearUpdateError}
               MatchDetailsModal={MissingMatchModal}
-              onDetails={handleMatchDetails}
+              onMatchDetails={handleMatchDetails}
               matchDetails={matchDetails}
               matchLoading={matchLoading}
             />

@@ -1,48 +1,48 @@
 import { CardProfile } from "../../../components/shared/list/CardProfile";
-import { useMyFoundReports } from "../hooks/useMyFoundReports";
-import { UpdateFoundModal } from "../components/UpdateFoundModal";
-import { DeleteFoundModal } from "../components/DeleteFoundModal";
-import { FoundMatchModal } from "../components/FoundMatchModal";
+import { useDatabaseMissing } from "../hooks/useDatabaseMissing";
+
+import { DeleteMissingModal } from "../../myMissingReports/components/DeleteMissingModal";
+import { MissingMatchModal } from "../../myMissingReports/components/MissingMatchModal";
+import { ViewMissingCaseModal } from "../components/ViewMissingCaseModal";
 import "../../../components/shared/list/CardsPage.css";
 
-export function MyFoundReportsPage() {
+export function DatabaseMissingPage() {
   const {
-    foundList,
-    getFoundList,
+    missingList,
+    handleGetMissingById,
+    missingLoading,
+    missing,
     handleDelete,
-    handleUpdate,
-    updateError,
-    clearUpdateError,
     handleMatchDetails,
     matchDetails,
     matchLoading,
     handleCancelMatch,
-  } = useMyFoundReports();
+  } = useDatabaseMissing();
 
   return (
     <div className="container pb-5">
       <h1 className="py-4 text-center topic">
-        قائمة المعثورين الذين <span>اضفتهم</span>
+        قاعدة بيانات <span>المفقودين</span>
       </h1>
       <div className="row g-1 pb-5 justify-content-center">
-        {foundList.map((profile) => (
+        {missingList.map((profile) => (
           <div
             key={profile.id}
             className="col-12 col-sm-6 col-lg-4 col-xl-3 d-flex justify-content-center"
           >
             <CardProfile
               profile={profile}
-              DeleteModal={DeleteFoundModal}
+              DeleteModal={DeleteMissingModal}
               onDelete={handleDelete}
-              UpdateModal={UpdateFoundModal}
-              onUpdate={handleUpdate}
-              updateError={updateError}
-              clearUpdateError={clearUpdateError}
-              MatchDetailsModal={FoundMatchModal}
+              MatchDetailsModal={MissingMatchModal}
               onMatchDetails={handleMatchDetails}
               matchDetails={matchDetails}
               matchLoading={matchLoading}
               onCancelMatch={handleCancelMatch}
+              ViewCaseProfileModal={ViewMissingCaseModal}
+              onCaseProfile={handleGetMissingById}
+              caseProfile={missing}
+              caseProfileLoading={missingLoading}
             />
           </div>
         ))}

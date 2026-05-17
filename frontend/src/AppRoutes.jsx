@@ -12,6 +12,7 @@ import { Unauthorized } from "./pages/Unauthorized.jsx";
 import { RequiredAuth } from "./components/auth/RequiredAuth.jsx";
 import { GuestOnly } from "./components/auth/GuestOnly.jsx";
 import { AuthorityDetailsPage } from "./features/Dashboard/pages/authorityDetialsPage.jsx";
+import { DatabaseMissingPage } from "./features/DatabaseMissing/pages/DatabaseMissingPage.jsx";
 
 export function AppRoutes() {
   return (
@@ -44,7 +45,7 @@ export function AppRoutes() {
         </Route>
 
         <Route element={<RequiredAuth role={["admin", "authority"]} />}>
-          <Route path="/missing-database" element={<Home />} />
+          <Route path="/missing-database" element={<DatabaseMissingPage />} />
           <Route path="/report-found" element={<FoundReportPage />} />
           <Route path="/my-found-reports" element={<MyFoundReportsPage />} />
         </Route>

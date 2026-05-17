@@ -3,24 +3,62 @@ import { ImageShow } from "../../../components/shared/ImageShow";
 import { CircularProgress } from "../../../components/shared/CircularProgress";
 import { LinearProgress } from "../../../components/shared/LinearProgress";
 import { MissingDetails } from "../../missingReport/components/result/MissingDetails";
+import { useState, useRef, useEffect } from "react";
 import "../../../components/shared/ReportResult.css";
 
-export function MissingMatchModal({ show, details, loading, onCancel }) {
+export function MissingMatchModal({
+  show,
+  details,
+  loading,
+  onCancel,
+  onCancelMatch,
+  matchId,
+}) {
+  const [showMatchCancelConfirm, setMatchCancelConfirm] = useState(false);
+
   const genderLabel = details?.gender === "male" ? "ذكر" : "أنثى";
   const percentage = details?.percentage
     ? `${Math.round(details.percentage * 100)}%`
     : null;
 
+  const confirmRef = useRef(null);
+
+  const handleCancel = () => {
+    setMatchCancelConfirm(false);
+    onCancel();
+  };
+
+  const handleCancelMatchClick = () => setMatchCancelConfirm(true);
+
+  const handleConfirmYes = () => {
+    setMatchCancelConfirm(false);
+    onCancelMatch(matchId);
+    onCancel();
+  };
+
+  const handleConfirmNo = () => setMatchCancelConfirm(false);
+
+  useEffect(() => {
+    if (showMatchCancelConfirm && confirmRef.current) {
+      const modalBody = confirmRef.current.closest(".modal-body");
+      if (modalBody) {
+        modalBody.scrollTop = modalBody.scrollHeight;
+      }
+    }
+  }, [showMatchCancelConfirm]);
+
   return (
     <BaseModal
       show={show}
       title="تفاصيل التطابق"
-      onCancel={onCancel}
+      onCancel={handleCancel}
       customClass="custome-modal"
       footer={
-        <button className="btn btn-secondary" onClick={onCancel}>
-          إغلاق
-        </button>
+        <button
+          type="button"
+          className="btn-close"
+          onClick={handleCancel}
+        ></button>
       }
     >
       {loading && (
@@ -42,6 +80,34 @@ export function MissingMatchModal({ show, details, loading, onCancel }) {
             <p className="percentage">{percentage}</p>
             <LinearProgress value={details.percentage} color="green" />
             <MissingDetails details={details} />
+            {onCancelMatch && (
+              <button
+                className="btn btn-cancle-match w-100 mt-3"
+                onClick={handleCancelMatchClick}
+              >
+                إلغاء التطابق
+              </button>
+            )}
+
+            {showMatchCancelConfirm && (
+              <div ref={confirmRef} className="mt-3 text-center">
+                <p>هل أنت متأكد من إلغاء التطابق؟</p>
+                <div className="d-flex gap-2 justify-content-center">
+                  <button
+                    className="btn btn-danger w-25"
+                    onClick={handleConfirmYes}
+                  >
+                    نعم
+                  </button>
+                  <button
+                    className="btn btn-secondary w-25"
+                    onClick={handleConfirmNo}
+                  >
+                    لا
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </>
       )}

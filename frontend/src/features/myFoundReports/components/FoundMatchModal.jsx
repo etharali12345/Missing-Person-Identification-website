@@ -4,7 +4,7 @@ import { CircularProgress } from "../../../components/shared/CircularProgress";
 import { LinearProgress } from "../../../components/shared/LinearProgress";
 import { FoundDetails } from "../../foundReport/components/result/FoundDetails";
 import "../../../components/shared/ReportResult.css";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 
 export function FoundMatchModal({
   show,
@@ -21,6 +21,8 @@ export function FoundMatchModal({
     ? `${Math.round(details.percentage * 100)}%`
     : null;
 
+  const confirmRef = useRef(null);
+
   const handleCancel = () => {
     setMatchCancelConfirm(false);
     onCancel();
@@ -36,6 +38,15 @@ export function FoundMatchModal({
 
   const handleConfirmNo = () => setMatchCancelConfirm(false);
 
+  useEffect(() => {
+    if (showMatchCancelConfirm && confirmRef.current) {
+      const modalBody = confirmRef.current.closest(".modal-body");
+      if (modalBody) {
+        modalBody.scrollTop = modalBody.scrollHeight;
+      }
+    }
+  }, [showMatchCancelConfirm]);
+
   return (
     <BaseModal
       show={show}
@@ -43,9 +54,11 @@ export function FoundMatchModal({
       onCancel={handleCancel}
       customClass="custome-modal"
       footer={
-        <button className="btn btn-secondary" onClick={handleCancel}>
-          إغلاق
-        </button>
+        <button
+          type="button"
+          className="btn-close"
+          onClick={handleCancel}
+        ></button>
       }
     >
       {loading && (
@@ -77,7 +90,7 @@ export function FoundMatchModal({
             )}
 
             {showMatchCancelConfirm && (
-              <div className="mt-3 text-center">
+              <div ref={confirmRef} className="mt-3 text-center">
                 <p>هل أنت متأكد من إلغاء التطابق؟</p>
                 <div className="d-flex gap-2 justify-content-center">
                   <button

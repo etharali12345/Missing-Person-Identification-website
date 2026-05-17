@@ -41,7 +41,7 @@ export const updateMissing = async (id, updatedData) => {
 
 export const getMatchDetails = async (matchId) => {
   try {
-    const res = await api.get(`/missing-match/${matchId}`);
+    const res = await api.get(`/my-missing-match/${matchId}`);
     const data = res.data;
     if (data?.image_path) {
       data.image_path = `${BASE_URL}/${data.image_path}`;

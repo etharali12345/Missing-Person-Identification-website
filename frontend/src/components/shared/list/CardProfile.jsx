@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { CardImage } from "./CardImage";
-import { SquarePen, Trash2 } from "lucide-react";
+import { SquarePen, Trash2, BookText } from "lucide-react";
 
 export function CardProfile({
   profile,
@@ -11,14 +11,19 @@ export function CardProfile({
   updateError,
   clearUpdateError,
   MatchDetailsModal,
-  onDetails,
+  onMatchDetails,
   matchDetails,
   matchLoading,
   onCancelMatch,
+  ViewCaseProfileModal,
+  onCaseProfile,
+  caseProfile,
+  caseProfileLoading,
 }) {
   const isMatch = profile.status === "match";
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const [showCaseProfileModal, setShowCaseProfileModal] = useState(false);
   const [showMatchDetailsModal, setShowMatchDetailsModal] = useState(false);
 
   const handleDeleteConfirm = () => {
@@ -32,8 +37,13 @@ export function CardProfile({
   };
 
   const handleDetailsClick = () => {
-    onDetails(profile.matchId);
+    onMatchDetails(profile.matchId);
     setShowMatchDetailsModal(true);
+  };
+
+  const handelCaseProfileClick = () => {
+    onCaseProfile(profile.id);
+    setShowCaseProfileModal(true);
   };
 
   return (
@@ -55,13 +65,21 @@ export function CardProfile({
         {isMatch ? (
           <>
             <div className="btn-edit-contaier">
-              <button
-                className="btn-edit"
-                onClick={() => setShowUpdateModal(true)}
-              >
-                تعديل
-                <SquarePen size={18} />
-              </button>
+              {UpdateModal && (
+                <button
+                  className="btn-edit"
+                  onClick={() => setShowUpdateModal(true)}
+                >
+                  تعديل
+                  <SquarePen size={18} />
+                </button>
+              )}
+              {ViewCaseProfileModal && (
+                <button className="btn-edit" onClick={handelCaseProfileClick}>
+                  تفاصيل البلاغ
+                  <BookText size={18} />
+                </button>
+              )}
             </div>
             <div className="action-row">
               <button
@@ -85,13 +103,21 @@ export function CardProfile({
               حذف البلاغ
               <Trash2 size={18} />
             </button>
-            <button
-              className="btn-edit"
-              onClick={() => setShowUpdateModal(true)}
-            >
-              تعديل
-              <SquarePen size={18} />
-            </button>
+            {UpdateModal && (
+              <button
+                className="btn-edit"
+                onClick={() => setShowUpdateModal(true)}
+              >
+                تعديل
+                <SquarePen size={18} />
+              </button>
+            )}
+            {ViewCaseProfileModal && (
+              <button className="btn-edit" onClick={handelCaseProfileClick}>
+                تفاصيل البلاغ
+                <BookText size={18} />
+              </button>
+            )}
           </div>
         )}
       </div>
@@ -102,16 +128,27 @@ export function CardProfile({
         onCancel={() => setShowDeleteModal(false)}
       />
 
-      <UpdateModal
-        show={showUpdateModal}
-        profile={profile}
-        onConfirm={handleUpdateConfirm}
-        onCancel={() => {
-          clearUpdateError();
-          setShowUpdateModal(false);
-        }}
-        updateError={updateError}
-      />
+      {UpdateModal && (
+        <UpdateModal
+          show={showUpdateModal}
+          profile={profile}
+          onConfirm={handleUpdateConfirm}
+          onCancel={() => {
+            clearUpdateError();
+            setShowUpdateModal(false);
+          }}
+          updateError={updateError}
+        />
+      )}
+
+      {ViewCaseProfileModal && (
+        <ViewCaseProfileModal
+          show={showCaseProfileModal}
+          profile={caseProfile}
+          loading={caseProfileLoading}
+          onCancel={() => setShowCaseProfileModal(false)}
+        />
+      )}
 
       <MatchDetailsModal
         show={showMatchDetailsModal}
