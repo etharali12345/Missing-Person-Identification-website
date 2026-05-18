@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { useAuth } from "../../../context/AuthContext.jsx";
+import { Eye, EyeOff } from "lucide-react";
 
 export function LoginForm() {
   const { login } = useAuth();
@@ -10,6 +11,7 @@ export function LoginForm() {
   const [error, setError] = useState(null);
   const [validated, setValidated] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleEmailOrPhoneChange = (e) => {
     setEmailOrPhone(e.target.value);
@@ -34,6 +36,7 @@ export function LoginForm() {
       await login(email_or_phone, password);
       navigate("/");
     } catch (err) {
+      setValidated(false);
       setError(err.message);
     } finally {
       setLoading(false);
@@ -63,14 +66,30 @@ export function LoginForm() {
 
         <div className="mb-4">
           <label className="form-label">كلمة المرور</label>
-          <input
-            type="password"
-            className="form-control"
-            required
-            minLength={6}
-            value={password}
-            onChange={handlePasswordChange}
-          />
+          <div className="position-relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              className="form-control"
+              required
+              minLength={6}
+              value={password}
+              onChange={handlePasswordChange}
+            />
+
+            <span
+              onClick={() => setShowPassword((prev) => !prev)}
+              style={{
+                position: "absolute",
+                left: "10px",
+                top: "50%",
+                transform: "translateY(-50%)",
+                cursor: "pointer",
+                color: "#6c757d",
+              }}
+            >
+              {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+            </span>
+          </div>
           <div className="invalid-feedback">الرجاء إدخال كلمة المرور</div>
         </div>
         {error && (

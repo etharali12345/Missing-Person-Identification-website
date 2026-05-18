@@ -86,3 +86,7 @@
 .location-input-group .form-control {
   padding-right: 2.5rem;
 }
+
+.position-relative {
+  position: relative;
+}

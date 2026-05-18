@@ -22,7 +22,7 @@ export const loginService = async (email_or_phone, password) => {
     });
     return res.data.user;
   } catch (error) {
-    throw new Error("بيانات تسجيل الدخول غير صحيحة");
+    throw new Error(error.response?.data?.message || "بيانات الدخول غير صحيحة");
   }
 };
 

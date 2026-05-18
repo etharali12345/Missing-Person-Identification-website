@@ -4,6 +4,7 @@ import { useAuth } from "../../../context/AuthContext";
 import { NormalSignUpForm } from "./NormalSignUpForm";
 import { AuthoritySignUpForm } from "./AuthoritySignUpForm";
 import { CircleCheckBig } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 
 export function SignUpForm() {
   const { signup } = useAuth();
@@ -24,6 +25,7 @@ export function SignUpForm() {
     license_number: "",
     document: null,
   });
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleDataChange = (data) => {
     setUserData((prev) => ({ ...prev, ...data }));
@@ -32,6 +34,8 @@ export function SignUpForm() {
   const handleRoleChange = (e) => {
     setRole(e.target.value);
     setValidated(false);
+    setError(null);
+    setSubmitted(false);
   };
 
   const handleEmailOrPhoneChange = (e) => {
@@ -154,14 +158,32 @@ export function SignUpForm() {
 
             <div className="mb-4">
               <label className="form-label">كلمة المرور</label>
-              <input
-                type="password"
-                required
-                minLength={6}
-                className="form-control w-100"
-                value={userData.password}
-                onChange={handlePasswordChange}
-              />
+
+              <div className="position-relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  required
+                  minLength={6}
+                  className="form-control w-100"
+                  value={userData.password}
+                  onChange={handlePasswordChange}
+                />
+
+                <span
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  style={{
+                    position: "absolute",
+                    left: "10px",
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    cursor: "pointer",
+                    color: "#6c757d",
+                  }}
+                >
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </span>
+              </div>
+
               <div className="invalid-feedback">
                 يجب أن تكون كلمة المرور 6 أحرف على الأقل
               </div>
