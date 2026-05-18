@@ -1,0 +1,134 @@
+.filter-search {
+  flex: 3 1 500px;
+}
+
+.filter-status {
+  flex: 1 1 180px;
+}
+
+.filter-button {
+  flex: 0 1 120px;
+}
+
+.filter-container {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.filter-wrapper {
+  padding: 0px;
+  max-width: 1500px;
+  margin: 0px auto;
+  margin-bottom: 40px;
+}
+
+.custom-filter-card {
+  background-color: #ffffff;
+  border: none !important;
+  border-radius: 7px;
+  padding: 12px 24px;
+  box-shadow: 0 1px 2px 1px rgba(0, 0, 0, 0.1);
+}
+
+.custom-search-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.custom-search-input {
+  width: 100%;
+  background-color: #f3f4f6;
+  border: none !important;
+  border-radius: 50px;
+  padding: 10px 48px 10px 20px;
+  color: #2d3748;
+  outline: none;
+  text-align: right;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.custom-search-input::placeholder {
+  color: #8c8c8c;
+  font-weight: 500;
+}
+
+.custom-search-input:focus {
+  background-color: #ffffff;
+  box-shadow:
+    0 0 0 3px rgba(27, 127, 74, 0.15),
+    inset 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+.custom-search-icon {
+  position: absolute;
+  right: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+}
+
+.custom-select-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.custom-select-input {
+  width: 100%;
+  background-color: #f3f4f6;
+  border: none !important;
+  border-radius: 50px;
+  padding: 10px 20px 10px 38px;
+  color: #4a5568;
+  outline: none;
+  text-align: right;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.custom-select-input:focus {
+  background-color: #ffffff;
+  box-shadow:
+    0 0 0 3px rgba(27, 127, 74, 0.15),
+    inset 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+.custom-select-chevron {
+  position: absolute;
+  left: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+}
+
+.custom-submit-btn {
+  background: #1b7f4a;
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: 7px;
+  padding: 10px 24px;
+  font-weight: 700;
+  width: 100%;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.custom-submit-btn:hover {
+  background-color: #145f37;
+}
+
+.custom-submit-btn:active {
+  transform: scale(0.97);
+}

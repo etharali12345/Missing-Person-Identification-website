@@ -64,24 +64,68 @@ export function CardProfile({
 
         {isMatch ? (
           <>
-            <div className="btn-edit-contaier">
-              {UpdateModal && (
-                <button
-                  className="btn-edit"
-                  onClick={() => setShowUpdateModal(true)}
-                >
-                  تعديل
-                  <SquarePen size={18} />
+            {!DeleteModal && (
+              <div className="action-row">
+                <button className="btn-details" onClick={handleDetailsClick}>
+                  تفاصيل التطابق
                 </button>
-              )}
-              {ViewCaseProfileModal && (
-                <button className="btn-edit" onClick={handelCaseProfileClick}>
-                  تفاصيل البلاغ
-                  <BookText size={18} />
-                </button>
-              )}
-            </div>
-            <div className="action-row">
+                {UpdateModal && (
+                  <button
+                    className="btn-edit"
+                    onClick={() => setShowUpdateModal(true)}
+                  >
+                    تعديل
+                    <SquarePen size={18} />
+                  </button>
+                )}
+                {ViewCaseProfileModal && (
+                  <button className="btn-edit" onClick={handelCaseProfileClick}>
+                    تفاصيل البلاغ
+                    <BookText size={18} />
+                  </button>
+                )}
+              </div>
+            )}
+            {DeleteModal && (
+              <>
+                <div className="btn-edit-contaier">
+                  {UpdateModal && (
+                    <button
+                      className="btn-edit"
+                      onClick={() => setShowUpdateModal(true)}
+                    >
+                      تعديل
+                      <SquarePen size={18} />
+                    </button>
+                  )}
+                  {ViewCaseProfileModal && (
+                    <button
+                      className="btn-edit"
+                      onClick={handelCaseProfileClick}
+                    >
+                      تفاصيل البلاغ
+                      <BookText size={18} />
+                    </button>
+                  )}
+                </div>
+                <div className="action-row">
+                  <button
+                    className="btn-delete"
+                    onClick={() => setShowDeleteModal(true)}
+                  >
+                    حذف البلاغ
+                    <Trash2 size={18} />
+                  </button>
+                  <button className="btn-details" onClick={handleDetailsClick}>
+                    تفاصيل التطابق
+                  </button>
+                </div>
+              </>
+            )}
+          </>
+        ) : (
+          <div className="action-row">
+            {DeleteModal && (
               <button
                 className="btn-delete"
                 onClick={() => setShowDeleteModal(true)}
@@ -89,20 +133,7 @@ export function CardProfile({
                 حذف البلاغ
                 <Trash2 size={18} />
               </button>
-              <button className="btn-details" onClick={handleDetailsClick}>
-                تفاصيل التطابق
-              </button>
-            </div>
-          </>
-        ) : (
-          <div className="action-row">
-            <button
-              className="btn-delete"
-              onClick={() => setShowDeleteModal(true)}
-            >
-              حذف البلاغ
-              <Trash2 size={18} />
-            </button>
+            )}
             {UpdateModal && (
               <button
                 className="btn-edit"
@@ -122,11 +153,13 @@ export function CardProfile({
         )}
       </div>
 
-      <DeleteModal
-        show={showDeleteModal}
-        onConfirm={handleDeleteConfirm}
-        onCancel={() => setShowDeleteModal(false)}
-      />
+      {DeleteModal && (
+        <DeleteModal
+          show={showDeleteModal}
+          onConfirm={handleDeleteConfirm}
+          onCancel={() => setShowDeleteModal(false)}
+        />
+      )}
 
       {UpdateModal && (
         <UpdateModal
