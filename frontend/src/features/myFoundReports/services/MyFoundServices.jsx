@@ -1,12 +1,4 @@
-import axios from "axios";
-import { Phone } from "lucide-react";
-
-const BASE_URL = "http://localhost:5000";
-
-const api = axios.create({
-  baseURL: `${BASE_URL}/api`,
-  withCredentials: true,
-});
+import { api, BASE_URL } from "../../../api/axios";
 
 export const getFounds = async () => {
   try {

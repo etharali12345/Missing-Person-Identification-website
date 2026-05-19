@@ -1,12 +1,5 @@
-import axios from "axios";
+import { api, BASE_URL } from "../../../api/axios";
 import { Phone } from "lucide-react";
-
-const BASE_URL = "http://localhost:5000";
-
-const api = axios.create({
-  baseURL: `${BASE_URL}/api`,
-  withCredentials: true,
-});
 
 export const getMissings = async () => {
   try {

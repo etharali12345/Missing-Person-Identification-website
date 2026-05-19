@@ -1,15 +1,12 @@
-import axios from "axios";
-
-const api = axios.create({
-  baseURL: "http://localhost:5000/api",
-  withCredentials: true,
-});
+import { api } from "../api/axios";
 
 export const getMeService = async () => {
   try {
     const res = await api.get("/auth/me");
     return res.data.user;
+    console.log("user is returned:", res.data.user);
   } catch (error) {
+    console.log("An error occurr: ", error.response?.data);
     return null;
   }
 };
