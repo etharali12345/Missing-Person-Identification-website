@@ -2,6 +2,7 @@ import "./registrationPanel.css";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { ArrowLeft } from "lucide-react";
+import { formatDate } from "../../../utils/formatDate";
 
 export function RegistrationPanel({ authorities, getAuthorityById }) {
   const [filter, setFilter] = useState("all");
@@ -90,7 +91,7 @@ export function RegistrationPanel({ authorities, getAuthorityById }) {
                           ? "منظمة"
                           : item.authority_type}
                     </td>
-                    <td className="date-text">{item.created_at}</td>
+                    <td className="date-text">{formatDate(item.created_at)}</td>
                     <td className="status-text">{statusInfo.text}</td>
                     <td className="action-cell">
                       <button

@@ -2,6 +2,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { Landmark, ArrowRight, FileText, BadgeCheck } from "lucide-react";
 import { updateAuthorityStatus } from "../services/AuthorityRegisterService";
+import { formatDate } from "../../../utils/formatDate";
 import "./authorityDetailsPage.css";
 
 export function AuthorityDetailsPage() {
@@ -87,7 +88,9 @@ export function AuthorityDetailsPage() {
 
           <div className="info-item">
             <span className="info-label">تاريخ الطلب</span>
-            <span className="info-value">{authority.created_at}</span>
+            <span className="info-value">
+              {formatDate(authority.created_at)}
+            </span>
           </div>
 
           <div className="info-item">

@@ -2,7 +2,7 @@ import { api, BASE_URL } from "../../../api/axios";
 
 export const getAuthoritiesSVC = async () => {
   try {
-    const res = await api.get("/authorities");
+    const res = await api.get("/admin/authorities");
     const data = res.data;
     return data;
   } catch (error) {
@@ -14,7 +14,7 @@ export const getAuthoritiesSVC = async () => {
 
 export const getAuthorityByIdSVC = async (authorityId) => {
   try {
-    const res = await api.get(`/authorities/${authorityId}`);
+    const res = await api.get(`/admin/authorities/${authorityId}`);
     const data = res.data;
     return {
       ...data,
@@ -29,7 +29,7 @@ export const getAuthorityByIdSVC = async (authorityId) => {
 
 export const updateAuthorityStatus = async (authorityId, status) => {
   try {
-    await api.patch(`/authorities/${authorityId}/status`, { status });
+    await api.patch(`/admin/authorities/${authorityId}/status`, { status });
   } catch (error) {
     const message =
       error.response?.data?.message || "حدث خطأ أثناء تحديث حالة الطلب";
