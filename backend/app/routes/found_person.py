@@ -29,7 +29,6 @@ def _insert_found_person(cur, organization_id, fields, image_path):
     if hasattr(image_path, 'filename'):
         raise ValueError("image_path must be a string path, not FileStorage object")
 
-    # ✅ INSERT مرة واحدة بس (كان مكرر قبل كده - تم الحذف)
     cur.execute(
         """
         INSERT INTO found_persons
@@ -51,7 +50,6 @@ def _insert_found_person(cur, organization_id, fields, image_path):
             sanitize_value(fields.get("phone_number2"), "phone"),
         )
     )
-
     new_id = cur.lastrowid
     return new_id
 
@@ -100,27 +98,22 @@ def send_found_report():
     # MATCH (>= 0.677)
     # ------------------------------------------------------------------
     if distances is not None and distances[0][0] >= MATCH_THRESHOLD:
-        similarity = float(distances[0][0])
-        faiss_id   = int(indices[0][0])                                      # ✅ اسم واضح
-        matched_person = get_missing_person_by_faiss_id(mysql, faiss_id)     # ✅ نفس المتغير
+        similarity     = float(distances[0][0])
+        faiss_id       = int(indices[0][0])
+        matched_person = get_missing_person_by_faiss_id(mysql, faiss_id)
 
         if matched_person:
             cur = None
             try:
                 cur = mysql.connection.cursor()
 
-                # ✅ 1) أضف للـ FAISS الأول عشان تاخد faiss_id صحيح
-                new_faiss_id = add_embedding_to_index(embedding, category="found")
+                new_faiss_id  = add_embedding_to_index(embedding, category="found")
+                new_found_id  = _insert_found_person(cur, organization_id, fields, image_path)
 
-                # ✅ 2) احفظ في DB
-                new_found_id = _insert_found_person(cur, organization_id, fields, image_path)
-
-                # ✅ 3) ربط faiss_id بالـ found_person
                 cur.execute(
                     "UPDATE found_persons SET faiss_id = %s WHERE found_id = %s",
                     (new_faiss_id, new_found_id)
                 )
-
                 cur.execute(
                     """
                     INSERT INTO match_results
@@ -148,59 +141,43 @@ def send_found_report():
 
     # ------------------------------------------------------------------
     # UNCERTAIN (0.60 - 0.677)
+    # ✅ لا نحفظ في DB - نرجع كل البيانات للـ frontend ويقرر المستخدم
     # ------------------------------------------------------------------
     if distances is not None and UNCERTAIN_THRESHOLD <= distances[0][0] < MATCH_THRESHOLD:
         similarity = float(distances[0][0])
-        faiss_id   = int(indices[0][0])                                      # ✅ اسم موحد
+        faiss_id   = int(indices[0][0])
         candidate  = get_missing_person_by_faiss_id(mysql, faiss_id)
 
         if candidate:
-            cur = None
-            try:
-                cur = mysql.connection.cursor()
-                # ✅ UNCERTAIN مش بيضيف للـ FAISS - بس بيحفظ في DB وينتظر قرار المستخدم
-                new_found_id = _insert_found_person(cur, organization_id, fields, image_path)
-                mysql.connection.commit()
-            except Exception:
-                if cur: mysql.connection.rollback()
-                traceback.print_exc()
-                return jsonify({"success": False, "message": "Database error."}), 500
-            finally:
-                if cur: cur.close()
-
             return jsonify({
                 "success":    True,
                 "status":     "uncertain",
+                # ✅ missing_id الموجود في DB أصلاً - الـ frontend يحتفظ بيه ويبعته في validate
                 "matchId":    candidate.get("missing_id"),
-                "found_id":   new_found_id,
                 "percentage": round(similarity, 4),
                 "details":    attach_image_url(candidate),
+                # ✅ كل بيانات الفورم ترجع للـ frontend عشان يبعتها في validate
                 "formData": {
                     **fields,
                     "image_path": image_path,
-                    "image_url":  build_image_url(image_path)       # ✅ image_path موجود هنا
+                    "image_url":  build_image_url(image_path)
                 }
             }), 200
 
     # ------------------------------------------------------------------
-    # NO MATCH
+    # NO MATCH - احفظ في found_persons وأضف للـ FAISS
     # ------------------------------------------------------------------
     cur = None
     try:
         cur = mysql.connection.cursor()
 
-        # ✅ 1) أضف للـ FAISS الأول
         new_faiss_id = add_embedding_to_index(embedding, category="found")
-
-        # ✅ 2) احفظ في DB
         new_found_id = _insert_found_person(cur, organization_id, fields, image_path)
 
-        # ✅ 3) ربط faiss_id بالـ found_person
         cur.execute(
             "UPDATE found_persons SET faiss_id = %s WHERE found_id = %s",
             (new_faiss_id, new_found_id)
         )
-
         mysql.connection.commit()
 
         return jsonify({
@@ -221,39 +198,71 @@ def send_found_report():
 @found_person_bp.route("/report/<int:matchId>/validate", methods=["POST"])
 @jwt_required()
 def validate_found_match(matchId):
+    """
+    matchId  = missing_id (من الـ URL - نفس الـ matchId اللي رجع من uncertain)
+    الـ body بيبعت:
+      - decision:    "confirmed" | "rejected"
+      - percentage:  similarity score
+      - formData:    كل بيانات الفورم اللي رجعت من uncertain response
+    """
+    organization_id = 5
     body       = request.get_json(silent=True) or {}
     decision   = body.get("decision")
     similarity = body.get("percentage", 0)
-    found_id   = body.get("found_id")
+    form_data  = body.get("formData")  # ✅ البيانات اللي رجعت من uncertain
+    if not form_data:
+        return jsonify({"success": False, "message": "formData مطلوب"}), 400
 
-    organization_id = 5
+    image_path = form_data.get("image_path")
+    if not image_path:
+        return jsonify({"success": False, "message": "image_path مطلوب في formData"}), 400
+
+    status_val = "match" if decision == "confirmed" else "no_match"
+
     cur = None
     try:
         cur = mysql.connection.cursor()
 
-        if not found_id:
-            return jsonify({"success": False, "message": "Missing found_id"}), 400
+        # ✅ استخرج الـ embedding من الصورة المحفوظة مسبقاً
+        embedding = extract_embedding(image_path)
+        if embedding is None:
+            return jsonify({"success": False, "message": "فشل استخراج الوجه من الصورة"}), 422
 
-        cur.execute("SELECT found_id FROM found_persons WHERE found_id = %s", (found_id,))
-        if not cur.fetchone():
-            return jsonify({"success": False, "message": f"found_id {found_id} not found"}), 404
+        # ✅ أضف للـ FAISS وخذ الـ faiss_id
+        new_faiss_id = add_embedding_to_index(embedding, category="found")
 
-        status_val = 'match' if decision == "confirmed" else 'no_match'
+        # ✅ احفظ في DB الآن بعد قرار المستخدم
+        new_found_id = _insert_found_person(cur, organization_id, form_data, image_path)
 
+        # ✅ ربط faiss_id
+        cur.execute(
+            "UPDATE found_persons SET faiss_id = %s WHERE found_id = %s",
+            (new_faiss_id, new_found_id)
+        )
+
+        # ✅ سجل في match_results - matchId هو missing_id الموجود في DB
         cur.execute(
             """
             INSERT INTO match_results
                 (missing_id, found_id, organization_id, similarity_score, status)
             VALUES (%s, %s, %s, %s, %s)
             """,
-            (matchId, found_id, organization_id, similarity, status_val)
+            (matchId, new_found_id, organization_id, similarity, status_val)
         )
         mysql.connection.commit()
-        return jsonify({"success": True, "message": "تمت العملية بنجاح"}), 200
+
+        msg = "تم تأكيد المطابقة" if decision == "confirmed" else "تم رفض المطابقة وحفظه كبلاغ جديد"
+        return jsonify({
+            "success":  True,
+            "message":  msg,
+            "status":   status_val,
+            "found_id": 14
+        }), 200
 
     except Exception as e:
         if mysql.connection: mysql.connection.rollback()
         print(f"[ERROR] validate_found_match: {e}")
+        traceback.print_exc()
         return jsonify({"success": False, "message": str(e)}), 500
     finally:
         if cur: cur.close()

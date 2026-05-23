@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { ImageUp } from "lucide-react";
 import "./imagePreview.css";
 
-export const ImagePreview = ({ image, setImage }) => {
+export const ImagePreview = ({ image, setImage, isMissing = true }) => {
   const [previewUrl, setPreviewUrl] = useState(null);
   const fileInputRef = useRef(null);
 
@@ -36,7 +36,7 @@ export const ImagePreview = ({ image, setImage }) => {
     <>
       <div
         onClick={handleContainerClick}
-        className={`imagePreview-container ${previewUrl ? "state-has-image" : "state-empty"}`}
+        className={`imagePreview-container upload-icon-area ${previewUrl ? "state-has-image" : "state-empty"}`}
       >
         <input
           type="file"
@@ -48,12 +48,14 @@ export const ImagePreview = ({ image, setImage }) => {
 
         {!previewUrl ? (
           <div className="text-center p-4">
-            <ImageUp
-              size={50}
-              color="rgba(143, 143, 143, 0.75)"
-              strokeWidth={1.7}
-            />
-            <p className="upload-text">اضغط هنا لرفع صورة</p>
+            <div className="upload-icon-container">
+              <ImageUp size={50} strokeWidth={1.7} className="image-icon" />
+            </div>
+            {isMissing ? (
+              <p className="upload-text">اضغط هنا لرفع صورة المفقود</p>
+            ) : (
+              <p className="upload-text">اضغط هنا لرفع صورة المعثور عليه</p>
+            )}
           </div>
         ) : (
           <div className="w-100 h-100 position-relative">

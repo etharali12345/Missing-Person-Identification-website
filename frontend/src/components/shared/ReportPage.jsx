@@ -23,9 +23,9 @@ export function ReportPage({
   }, [result]);
 
   return (
-    <div className="container text-center my-3">
+    <div className="container text-center my-3 pt-1">
       <InstructionsModal />
-      <h6>
+      <h6 className="m-4 instruction-text">
         قبل رفع الصورة الرجاء اقراء التعليمات{" "}
         <span
           data-bs-toggle="modal"

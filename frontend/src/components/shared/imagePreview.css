@@ -2,7 +2,7 @@
   height: 235px;
   max-width: 340px;
   cursor: pointer;
-  border-radius: 20px;
+  border-radius: 20px 20px 0px 0px;
   overflow: hidden;
   background: #f8f9fa;
   display: flex;
@@ -27,5 +27,26 @@
 .upload-text {
   margin: 0;
   font-weight: 500;
-  color: #212529;
+  color: #6c6d6e;
+}
+
+.upload-icon-container {
+  transition: transform 0.3s ease;
+}
+
+.image-icon {
+  color: rgba(143, 143, 143, 0.75);
+}
+.upload-icon-area:hover .upload-icon-container {
+  transform: scale(1.1) rotate(10deg);
+  color: #165ea5;
+}
+
+.upload-icon-area:hover .image-icon {
+  color: rgb(110, 137, 209);
+}
+
+.upload-icon-area:hover .upload-text {
+  font-weight: 600;
+  color: rgb(110, 137, 209);
 }

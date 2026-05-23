@@ -20,13 +20,14 @@
   position: relative;
   z-index: 1;
   text-align: center;
-  padding-top: 80px;
+  padding-top: 10px;
 }
 
 .hero-content h1 {
   font-family:
     Aref Ruqaa,
     arial;
-  color: #e0e0c6;
-  text-shadow: 1px 5px 6px rgb(0, 0, 0);
+  color: #f0ede8;
+  text-shadow: 1px 7px 6px rgb(0, 0, 0);
+  font-size: 3rem;
 }

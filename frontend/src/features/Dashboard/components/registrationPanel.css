@@ -1,0 +1,139 @@
+.dashboard-container {
+  padding: 40px 20px;
+  font-family: "Noto Sans Arabic", sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.main-card {
+  background: white;
+  border-radius: 0px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  max-width: 1100px;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-header-custom {
+  padding: 15px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.title-text {
+  font-size: 1.2rem;
+  color: #374151;
+  font-weight: 600;
+  margin: 0;
+}
+
+.filter-group {
+  padding: 3px;
+  border-radius: 50px;
+  display: flex;
+}
+
+.filter-btn {
+  border: none;
+  padding: 8px 24px;
+  border-radius: 50px;
+  background: transparent;
+  color: #6b7280;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.filter-btn.active {
+  background-color: #1a8a5f;
+  color: white;
+}
+
+.table-scroll-area {
+  overflow-y: auto;
+  max-height: 310px;
+  position: relative;
+}
+
+.table-scroll-area::-webkit-scrollbar {
+  width: 6px;
+}
+.table-scroll-area::-webkit-scrollbar-track {
+  background: #f9fafb;
+}
+.table-scroll-area::-webkit-scrollbar-thumb {
+  background-color: #1a8a5f;
+  border-radius: 20px;
+}
+
+.custom-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center;
+}
+
+.custom-table thead {
+  box-shadow: 0 0px 5px rgba(0, 0, 0, 0.3);
+}
+
+.custom-table thead th {
+  position: sticky;
+  top: 0;
+  background-color: #ffffff;
+  padding: 18px 10px;
+  font-weight: 400;
+  font-size: 1rem;
+  border-bottom: 1px solid #f3f4f6;
+  z-index: 10;
+}
+
+.custom-table td {
+  padding: 18px 10px;
+  border-bottom: 1px solid #f9fafb;
+  color: #4b5563;
+}
+
+.id-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.status-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+}
+
+.id-text {
+  color: #6b7280;
+}
+.name-text {
+  font-weight: 400;
+  color: #374151;
+}
+.type-text,
+.date-text,
+.status-text {
+  color: #6b7280;
+}
+
+.more-btn {
+  background: none;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+}
+
+.more-btn:hover {
+  color: #1a8a5f;
+  text-decoration: underline;
+}
+
+tr:hover td {
+  background-color: #fafafa;
+}

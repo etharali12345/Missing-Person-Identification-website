@@ -1,6 +1,6 @@
 import { UserRound, MapPin, Phone, Calendar } from "lucide-react";
 
-export function FoundDetails({ details }) {
+export function FoundMatchDetails({ details }) {
   return (
     <>
       {details.full_name && (
@@ -56,7 +56,7 @@ export function FoundDetails({ details }) {
         <div className="info-group">
           <div className="label-row">
             <Phone size={18} className="icon" />
-            <span className="label-text">للتواصل مع الشخص</span>
+            <span className="label-text"> للتواصل مع ذويه</span>
           </div>
           <div className="value-text contact-row">
             {details.phone_number1 && <span>{details.phone_number1}</span>}

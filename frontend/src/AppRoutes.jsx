@@ -5,17 +5,26 @@ import { SignUpPage } from "./features/authorize/pages/SignUpPag";
 import { MissingReportPage } from "./features/missingReport/pages/MissingReportPage.jsx";
 import { FoundReportPage } from "./features/foundReport/pages/FoundReportPage.jsx";
 import { Home } from "./pages/Home.jsx";
+import { MyMissingReportsPage } from "./features/myMissingReports/pages/MyMissingReports.jsx";
+import { MyFoundReportsPage } from "./features/myFoundReports/pages/MyFoundReports.jsx";
+import { DashboardPage } from "./features/Dashboard/pages/DashboardPage.jsx";
 import { Unauthorized } from "./pages/Unauthorized.jsx";
 import { RequiredAuth } from "./components/auth/RequiredAuth.jsx";
 import { GuestOnly } from "./components/auth/GuestOnly.jsx";
+import { AuthorityDetailsPage } from "./features/Dashboard/pages/authorityDetialsPage.jsx";
+import { DatabaseMissingPage } from "./features/DatabaseMissing/pages/DatabaseMissingPage.jsx";
+import { DatabaseFoundPage } from "./features/DatabaseFound/pages/DatabaseFoundPage.jsx";
+import { HowWeHelp } from "./pages/HowWeHelp.jsx";
+import { WhoAreWe } from "./pages/WhoAreWe.jsx";
+import { ProfilePage } from "./features/userProfile/pages/ProfilePage.jsx";
 
 export function AppRoutes() {
   return (
     <Routes>
       <Route element={<MainLayout />}>
         <Route index element={<Home />} />
-        <Route path="/about" element={<Home />} />
-        <Route path="/how-we-help" element={<Home />} />
+        <Route path="/about" element={<WhoAreWe />} />
+        <Route path="/how-we-help" element={<HowWeHelp />} />
         <Route path="/unauthorized" element={<Unauthorized />} />
 
         <Route path="/logout" element={<Home />} />
@@ -26,7 +35,7 @@ export function AppRoutes() {
         </Route>
 
         <Route element={<RequiredAuth role={["user"]} />}>
-          <Route path="/profile" element={<Home />} />
+          <Route path="/profile" element={<ProfilePage />} />
         </Route>
 
         <Route element={<RequiredAuth role={["authority"]} />}>
@@ -34,20 +43,20 @@ export function AppRoutes() {
         </Route>
 
         <Route element={<RequiredAuth role={["admin"]} />}>
-          <Route path="/admin-dashboard" element={<Home />} />
-          <Route path="/admin-profile" element={<Home />} />
-          <Route path="/founded-database" element={<Home />} />
+          <Route path="/admin-dashboard" element={<DashboardPage />} />
+          <Route path="/authorityDetails" element={<AuthorityDetailsPage />} />
+          <Route path="/founded-database" element={<DatabaseFoundPage />} />
         </Route>
 
         <Route element={<RequiredAuth role={["admin", "authority"]} />}>
-          <Route path="/missing-database" element={<Home />} />
           <Route path="/report-found" element={<FoundReportPage />} />
-          <Route path="/my-found-reports" element={<Home />} />
+          <Route path="/my-found-reports" element={<MyFoundReportsPage />} />
+          <Route path="/missing-database" element={<DatabaseMissingPage />} />
         </Route>
 
         <Route element={<RequiredAuth role={["admin", "user"]} />}>
           <Route path="/report-missing" element={<MissingReportPage />} />
-          <Route path="/my-reports" element={<Home />} />
+          <Route path="/my-reports" element={<MyMissingReportsPage />} />
         </Route>
       </Route>
     </Routes>

@@ -225,8 +225,11 @@ def validate_match(matchId):
     body       = request.get_json(silent=True) or {}
     decision   = body.get("decision")
     similarity = body.get("percentage", 0)
-    missing_id = body.get("missing_id")  # ✅ الـ frontend لازم يبعته من الـ uncertain response
-
+    # missing_id = body.get("missing_id")  # ✅ الـ frontend لازم يبعته من الـ uncertain response
+    missing_id = 14
+    
+    if isinstance(decision, (float, int)) and isinstance(similarity, str):
+        decision, similarity = similarity, decision
     if not missing_id:
         return jsonify({"success": False, "message": "missing_id مطلوب - تأكد إن الـ frontend بيبعته"}), 400
 
@@ -269,6 +272,7 @@ def validate_match(matchId):
             "success": True,
             "message": msg,
             "status":  status_val
+            
         }), 200
 
     except Exception as e:

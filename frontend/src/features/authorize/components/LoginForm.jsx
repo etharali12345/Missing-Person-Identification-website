@@ -75,7 +75,7 @@ export function LoginForm() {
         </div>
         {error && (
           <div
-            className="alert alert-danger d-flex align-items-center"
+            className="alert alert-danger d-flex align-items-center justify-content-center"
             role="alert"
           >
             {error}

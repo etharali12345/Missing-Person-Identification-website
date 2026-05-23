@@ -1,0 +1,92 @@
+import { useState, useCallback, useEffect } from "react";
+import {
+  getFoundDB,
+  getFoundById,
+  deleteFound,
+  getMatchDetails,
+  cancelMatch,
+} from "../services/DatabaseFoundService";
+
+export function useDatabaseFound() {
+  const [foundList, setFoundList] = useState([]);
+  const [found, setFound] = useState(null);
+  const [foundLoading, setFoundLoading] = useState(false);
+  const [matchDetails, setMatchDetails] = useState(null);
+  const [matchLoading, setMatchLoading] = useState(false);
+
+  const getFoundDBList = useCallback(async () => {
+    try {
+      const response = await getFoundDB();
+      setFoundList(response);
+    } catch (err) {
+      console.error(err);
+    }
+  }, []);
+
+  const handleGetFoundById = useCallback(async (id) => {
+    try {
+      setFound(null);
+      setFoundLoading(true);
+      const data = await getFoundById(id);
+      setFound(data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setFoundLoading(false);
+    }
+  }, []);
+
+  const handleDelete = useCallback(async (id) => {
+    try {
+      await deleteFound(id);
+      setFoundList((prev) => prev.filter((item) => item.id !== id));
+    } catch (err) {
+      console.error(err);
+    }
+  }, []);
+
+  const handleMatchDetails = useCallback(async (matchId) => {
+    try {
+      setMatchDetails(null);
+      setMatchLoading(true);
+      const data = await getMatchDetails(matchId);
+      setMatchDetails(data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setMatchLoading(false);
+    }
+  }, []);
+
+  const handleCancelMatch = useCallback(async (matchId) => {
+    try {
+      await cancelMatch(matchId);
+      setFoundList((prev) =>
+        prev.map((item) =>
+          item.matchId === matchId
+            ? { ...item, status: "no_match", matchId: undefined }
+            : item,
+        ),
+      );
+    } catch (err) {
+      console.error(err);
+    }
+  }, []);
+
+  useEffect(() => {
+    getFoundDBList();
+  }, [getFoundDBList]);
+
+  return {
+    getFoundDBList,
+    foundList,
+    handleGetFoundById,
+    found,
+    foundLoading,
+    handleDelete,
+    handleMatchDetails,
+    matchDetails,
+    matchLoading,
+    handleCancelMatch,
+  };
+}

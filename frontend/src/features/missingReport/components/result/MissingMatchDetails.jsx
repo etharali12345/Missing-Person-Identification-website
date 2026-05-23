@@ -1,6 +1,6 @@
 import { UserRound, MapPin, Phone, Building2 } from "lucide-react";
 
-export function MissingDetails({ details }) {
+export function MissingMatchDetails({ details }) {
   return (
     <>
       {details.full_name && (
