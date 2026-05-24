@@ -10,7 +10,7 @@ export function MissingReportForm({ submitReport, error, loading }) {
     name: "",
     age: "",
     gender: "",
-    last_seen_data: "",
+    last_seen_date: "",
     last_seen_location: "",
     phone_number1: "",
     phone_number2: "",
@@ -45,8 +45,8 @@ export function MissingReportForm({ submitReport, error, loading }) {
     formData.append("phone_number1", uploadData.phone_number1);
     formData.append("phone_number2", uploadData.phone_number2);
 
-    if (uploadData.last_seen_data) {
-      formData.append("last_seen_data", uploadData.last_seen_data);
+    if (uploadData.last_seen_date) {
+      formData.append("last_seen_date", uploadData.last_seen_date);
     }
     if (uploadData.last_seen_location) {
       formData.append("last_seen_location", uploadData.last_seen_location);

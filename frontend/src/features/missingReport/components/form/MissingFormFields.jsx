@@ -74,7 +74,7 @@ export function MissingFormFields({ handleInputChange, validated, submitted }) {
           <label className="form-label">تاريخ آخر ظهور</label>
           <input
             type="date"
-            name="last_seen_data"
+            name="last_seen_date"
             className="form-control"
             onChange={handleInputChange}
             disabled={submitted}
