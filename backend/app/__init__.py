@@ -8,7 +8,7 @@ from .extensions import mysql, jwt
 from .routes.auth import auth_bp
 from .routes.missing_person import missing_person_bp
 from .routes.found_person import found_person_bp
-
+from .extensions import mysql, jwt, mail
 def create_app():
     root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     static_dir = os.path.join(root_dir, 'static')
@@ -27,6 +27,7 @@ def create_app():
 
     mysql.init_app(app)
     jwt.init_app(app)
+    mail.init_app(app)
 
     app.register_blueprint(auth_bp, url_prefix="/api/auth")
     app.register_blueprint(missing_person_bp, url_prefix="/api")
@@ -46,4 +47,10 @@ def create_app():
         print(f"[SERVE] file exists: {os.path.exists(full_path)}")
         
         return send_from_directory(uploads_dir, filename)
+    
+
+    @app.route('/uploads/<path:filename>')
+    def serve_file(filename):
+            uploads_dir = os.path.join(os.path.dirname(__file__), 'static', 'uploads')
+            return send_from_directory(uploads_dir, filename)
     return app
