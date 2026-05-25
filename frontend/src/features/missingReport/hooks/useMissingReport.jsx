@@ -23,7 +23,7 @@ export const useMissingReport = () => {
   }, []);
 
   const validateUncertain = useCallback(
-    async (matchId, decision, percentage) => {
+    async (matchId, percentage, decision) => {
       try {
         await validateUncertainSVC(matchId, percentage, decision);
         if (decision === "confirmed") {

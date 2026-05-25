@@ -4,9 +4,7 @@ export const getMeService = async () => {
   try {
     const res = await api.get("/auth/me");
     return res.data.user;
-    console.log("user is returned:", res.data.user);
   } catch (error) {
-    console.log("An error occurr: ", error.response?.data);
     return null;
   }
 };
@@ -31,6 +29,7 @@ export const singupService = async (data) => {
     });
     return res.data.user;
   } catch (error) {
+    console.log(error.response.data);
     throw new Error(error.response?.data?.message || "فشل التسجيل");
   }
 };

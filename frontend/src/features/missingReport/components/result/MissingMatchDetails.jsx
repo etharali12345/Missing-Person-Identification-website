@@ -1,4 +1,5 @@
 import { UserRound, MapPin, Phone, Building2 } from "lucide-react";
+import { formatDate } from "../../../../utils/formatDate";
 
 export function MissingMatchDetails({ details }) {
   return (
@@ -43,7 +44,7 @@ export function MissingMatchDetails({ details }) {
           {details.found_date && (
             <div className="info-group">
               <span className="label-text">تاريخ العثور</span>
-              <div className="value-text">{details.found_date}</div>
+              <div className="value-text">{formatDate(details.found_date)}</div>
             </div>
           )}
         </div>

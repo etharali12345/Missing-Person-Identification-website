@@ -1,4 +1,5 @@
 import { UserRound, MapPin, Phone, Calendar } from "lucide-react";
+import { formatDate } from "../../../../utils/formatDate";
 
 export function FoundMatchDetails({ details }) {
   return (
@@ -38,7 +39,7 @@ export function FoundMatchDetails({ details }) {
             <Calendar size={18} className="icon" />
             <span className="label-text">تاريخ آخر مشاهدة</span>
           </div>
-          <div className="value-text">{details.last_seen_date}</div>
+          <div className="value-text">{formatDate(details.last_seen_date)}</div>
         </div>
       )}
 
