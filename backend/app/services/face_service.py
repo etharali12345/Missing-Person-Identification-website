@@ -87,7 +87,6 @@ def _save_faiss_index(index: faiss.Index, category: str) -> None:
 def add_embedding_to_index(embedding: np.ndarray, category: str) -> int:
     index = load_faiss_index(category)
     vec   = embedding.astype(np.float32).reshape(1, -1)
-    faiss.normalize_L2(vec)
     index.add(vec)
     faiss_id = index.ntotal - 1
     _save_faiss_index(index, category)
@@ -104,7 +103,6 @@ def search_faiss_index(
         return None, None
 
     vec = embedding.astype(np.float32).reshape(1, -1)
-    faiss.normalize_L2(vec)
     distances, indices = index.search(vec, top_k)
     logger.debug(
         "[FAISS] Search '%s': similarity=%.4f idx=%d",
@@ -128,7 +126,6 @@ def _get_insight_app():
         _insight_app.prepare(ctx_id=0, det_size=(640, 640))
         logger.info("[InsightFace] Model loaded")
     return _insight_app
-
 
 # ---------------------------------------------------------------------------
 # Image I/O
@@ -243,14 +240,26 @@ def get_found_person_by_faiss_id(mysql, faiss_id: int) -> Optional[dict]:
         cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         cur.execute(
             """
-            SELECT fp.found_id, fp.full_name, fp.approximate_age, fp.gender,
-                   fp.health_status, fp.found_date, fp.found_location,
-                   fp.image_path, fp.phone_number1, fp.phone_number2,
-                   fp.faiss_id, a.authority_name
-            FROM   found_persons fp
-            LEFT JOIN authority a ON fp.authority_id = a.authority_id
-            WHERE  fp.faiss_id = %s
-            LIMIT  1
+            SELECT
+                fp.found_id, fp.full_name, fp.approximate_age, fp.gender, fp.health_status, 
+                fp.found_date, fp.found_location, fp.image_path, fp.phone_number1, fp.phone_number2,
+                fp.faiss_id,
+                COALESCE(
+                    a.authority_name,
+                    CONCAT(u.first_name, ' ', u.last_name)
+                ) AS authority_name,
+
+                CASE
+                    WHEN fp.authority_id IS NOT NULL THEN 'authority'
+                    WHEN fp.uploaded_by_admin_id IS NOT NULL THEN 'admin'
+                END AS uploaded_by_type
+            FROM found_persons fp
+            LEFT JOIN authority a
+                ON fp.authority_id = a.authority_id
+            LEFT JOIN users u
+                ON fp.uploaded_by_admin_id = u.user_id
+            WHERE fp.faiss_id = %s
+            LIMIT 1
             """,
             (faiss_id,),
         )

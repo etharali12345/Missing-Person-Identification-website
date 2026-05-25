@@ -1,4 +1,4 @@
-import { UserRound, MapPin, Phone, Building2 } from "lucide-react";
+import { UserRound, MapPin, Phone, Building2, Shield } from "lucide-react";
 import { formatDate } from "../../../../utils/formatDate";
 
 export function MissingMatchDetails({ details }) {
@@ -63,9 +63,19 @@ export function MissingMatchDetails({ details }) {
       {details.authority_name && (
         <div className="info-group">
           <div className="label-row">
-            <Building2 size={18} className="icon" />
-            <span className="label-text">جهة العثور</span>
+            {details.uploaded_by_type === "authority" ? (
+              <>
+                <Building2 size={18} className="icon" />
+                <span className="label-text">جهة العثور</span>
+              </>
+            ) : (
+              <>
+                <Shield size={18} className="icon" />
+                <span className="label-text">تم العثور بواسطة الإدارة</span>
+              </>
+            )}
           </div>
+
           <div className="value-text faded">{details.authority_name}</div>
         </div>
       )}

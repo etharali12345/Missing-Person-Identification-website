@@ -20,7 +20,6 @@ found_person_bp = Blueprint("found_person", __name__)
 MATCH_THRESHOLD     = 0.677
 UNCERTAIN_THRESHOLD = 0.60
 
-
 # ─────────────────────────────────────────────────────────────────────────────
 # Response helpers
 # ─────────────────────────────────────────────────────────────────────────────
@@ -45,18 +44,26 @@ def _err(message: str, http: int = 400):
 # DB helpers
 # ─────────────────────────────────────────────────────────────────────────────
 
-def _db_insert_found(cur, authority_id: int, fields: dict, image_path: str) -> int:
-    """Insert into found_persons. faiss_id is set right after via UPDATE."""
+def _db_insert_found(cur, uploader_id: int, role: str, fields: dict, image_path: str) -> int:
+    if role == "admin":
+        authority_id_val  = None
+        admin_id_val      = uploader_id
+    else:
+        authority_id_val  = uploader_id
+        admin_id_val      = None
+
     cur.execute(
         """
         INSERT INTO found_persons
-            (authority_id, full_name, approximate_age, gender,
+            (authority_id, uploaded_by_admin_id,
+             full_name, approximate_age, gender,
              found_location, found_date, health_status, image_path,
              phone_number1, phone_number2)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """,
         (
-            authority_id,
+            authority_id_val,
+            admin_id_val,
             sanitize_value(fields.get("full_name", "Unknown")),
             sanitize_value(fields.get("approximate_age"), "int"),
             sanitize_value(fields.get("gender")),
@@ -64,15 +71,14 @@ def _db_insert_found(cur, authority_id: int, fields: dict, image_path: str) -> i
             sanitize_value(fields.get("found_date")),
             sanitize_value(fields.get("health_status")),
             image_path,
-            sanitize_value(fields.get("phone_number1"),   "phone"),
-            sanitize_value(fields.get("phone_number2"),   "phone"),
+            sanitize_value(fields.get("phone_number1"), "phone"),
+            sanitize_value(fields.get("phone_number2"), "phone"),
         ),
     )
     return cur.lastrowid
 
 
 def _db_insert_match_result(cur, missing_id: int, found_id: int, similarity: float, status: str) -> int:
-    """Insert into match_results and return the new match_id."""
     cur.execute(
         """
         INSERT INTO match_results
@@ -84,6 +90,10 @@ def _db_insert_match_result(cur, missing_id: int, found_id: int, similarity: flo
     return cur.lastrowid
 
 
+def _owner_col(role: str) -> str:
+    return "uploaded_by_admin_id" if role == "admin" else "authority_id"
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # POST /found-report/send
 # ─────────────────────────────────────────────────────────────────────────────
@@ -92,7 +102,8 @@ def _db_insert_match_result(cur, missing_id: int, found_id: int, similarity: flo
 @jwt_required()
 def send_found_report():
     current_identity = get_jwt_identity()
-    authority_id = current_identity.get("id")
+    uploader_id = current_identity.get("id")
+    role        = current_identity.get("role")
 
     required = ["phone_number1", "phone_number2"]
     missing  = [f for f in required if not (request.form.get(f) or "").strip()]
@@ -135,7 +146,7 @@ def send_found_report():
 
     if distances is not None and indices is not None:
         raw_idx = int(indices[0][0])
-        if raw_idx >= 0:                      
+        if raw_idx >= 0:
             sim        = float(distances[0][0])
             similarity = (sim + 1) / 2
             faiss_id   = raw_idx
@@ -158,14 +169,14 @@ def send_found_report():
                 "MATCH score %.4f but faiss_id=%s absent from DB — treating as NO_MATCH",
                 similarity, faiss_id,
             )
-            is_match = False           # fall through to NO_MATCH
+            is_match = False       
         else:
             cur = None
             try:
                 cur = mysql.connection.cursor()
 
                 new_faiss_id = add_embedding_to_index(embedding, category="found")
-                new_found_id = _db_insert_found(cur, authority_id, fields, image_path)
+                new_found_id = _db_insert_found(cur, uploader_id, role, fields, image_path)
                 cur.execute(
                     "UPDATE found_persons SET faiss_id = %s WHERE found_id = %s",
                     (new_faiss_id, new_found_id),
@@ -187,7 +198,7 @@ def send_found_report():
 
             return _ok("match", {
                 "found_id":   new_found_id,
-                "matchId":    match_result_id,  
+                "matchId":    match_result_id,
                 "percentage": round(similarity, 4),
                 "details":    matched,
             }, "Match found.")
@@ -203,21 +214,19 @@ def send_found_report():
                 "UNCERTAIN score %.4f but faiss_id=%s absent from DB — treating as NO_MATCH",
                 similarity, faiss_id,
             )
-            is_uncertain = False      
+            is_uncertain = False
         else:
             cur = None
             try:
                 cur = mysql.connection.cursor()
 
-                # FIX: always assign faiss_id on insert
                 new_faiss_id = add_embedding_to_index(embedding, category="found")
-                new_found_id = _db_insert_found(cur, authority_id, fields, image_path)
+                new_found_id = _db_insert_found(cur, uploader_id, role, fields, image_path)
                 cur.execute(
                     "UPDATE found_persons SET faiss_id = %s WHERE found_id = %s",
                     (new_faiss_id, new_found_id),
                 )
 
-                # FIX: save uncertain case in match_results immediately
                 match_result_id = _db_insert_match_result(
                     cur, candidate["missing_id"], new_found_id, similarity, "uncertain"
                 )
@@ -234,7 +243,7 @@ def send_found_report():
 
             return _ok("uncertain", {
                 "found_id":   new_found_id,
-                "matchId":    match_result_id,  
+                "matchId":    match_result_id,
                 "percentage": round(similarity, 4),
                 "details":    candidate,
             }, "Possible match found. Please validate.")
@@ -247,7 +256,7 @@ def send_found_report():
         cur = mysql.connection.cursor()
 
         new_faiss_id = add_embedding_to_index(embedding, category="found")
-        new_found_id = _db_insert_found(cur, authority_id, fields, image_path)
+        new_found_id = _db_insert_found(cur, uploader_id, role, fields, image_path)
         cur.execute(
             "UPDATE found_persons SET faiss_id = %s WHERE found_id = %s",
             (new_faiss_id, new_found_id),
@@ -275,9 +284,11 @@ def send_found_report():
 @jwt_required()
 def validate_found_match(match_id: int):
     current_identity = get_jwt_identity()
-    authority_id = current_identity.get("id")
+    uploader_id = current_identity.get("id")
+    role = current_identity.get("role")
+    owner_col = _owner_col(role)
 
-    body     = request.get_json(silent=True) or {}
+    body = request.get_json(silent=True) or {}
     decision = (body.get("decision") or "").strip()
 
     if decision not in ("confirmed", "rejected"):
@@ -290,15 +301,15 @@ def validate_found_match(match_id: int):
         cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
 
         cur.execute(
-            """
+            f"""
             SELECT mr.match_id, mr.missing_id, mr.found_id
             FROM match_results mr
             JOIN found_persons fp ON mr.found_id = fp.found_id
-            WHERE mr.match_id    = %s
-              AND fp.authority_id = %s
-              AND mr.status       = 'uncertain'
+            WHERE mr.match_id      = %s
+              AND fp.{owner_col}   = %s
+              AND mr.status        = 'uncertain'
             """,
-            (match_id, authority_id),
+            (match_id, uploader_id),
         )
         row = cur.fetchone()
         if not row:
@@ -321,5 +332,5 @@ def validate_found_match(match_id: int):
 
     msg = "Match confirmed." if decision == "confirmed" else "Match rejected. Report saved independently."
     return _ok(status_val, {
-        "match_id":   match_id,
+        "match_id": match_id,
     }, msg)

@@ -8,6 +8,7 @@ from .routes.auth import auth_bp
 from .routes.missing_person import missing_person_bp
 from .routes.found_person import found_person_bp
 from .routes.my_missing_cases import my_missing_bp
+from .routes.my_found_cases import my_found_bp
 from .extensions import mysql, jwt, mail
 from .routes.admin import admin_bp #rawan should add
 
@@ -40,6 +41,7 @@ def create_app():
     app.register_blueprint(missing_person_bp, url_prefix="/api")
     app.register_blueprint(found_person_bp, url_prefix="/api")
     app.register_blueprint(my_missing_bp, url_prefix="/api")
+    app.register_blueprint(my_found_bp, url_prefix="/api")
     
     @app.route('/static/uploads/<path:filename>')
     def serve_image(filename):

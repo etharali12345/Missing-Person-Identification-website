@@ -11,7 +11,7 @@ ALLOWED_FIELDS = {
     "phone_number1", "phone_number2"
 }
 
-REQUIRED_IF_SENT = {"full_name", "phone_number1"}
+REQUIRED_IF_SENT = {"full_name", "phone_number1", "phone_number2"}
 
 
 @my_missing_bp.route("/my-missing-cases", methods=["GET"])
@@ -195,30 +195,36 @@ def get_match_details(match_id):
     try:
         cur = mysql.connection.cursor()
         cur.execute("""
-            SELECT
-                mr.similarity_score,
-                fp.full_name,
-                fp.approximate_age,
-                fp.gender,
-                fp.health_status,
-                fp.found_date,
-                fp.found_location,
-                fp.image_path,
-                fp.phone_number1,
-                fp.phone_number2,
-                COALESCE(a.authority_name,
-                         CONCAT(u.first_name, ' ', u.last_name)) AS uploaded_by
-            FROM match_results mr
-            JOIN found_persons fp
-                ON fp.found_id = mr.found_id
-            JOIN missing_persons mp
-                ON mp.missing_id = mr.missing_id
-            LEFT JOIN authority a
-                ON a.authority_id = fp.authority_id
-            LEFT JOIN users u
-                ON u.user_id = fp.uploaded_by_admin_id
-            WHERE mr.match_id = %s
-              AND mp.user_id = %s
+        SELECT
+            mr.similarity_score,
+            fp.full_name,
+            fp.approximate_age,
+            fp.gender,
+            fp.health_status,
+            fp.found_date,
+            fp.found_location,
+            fp.image_path,
+            fp.phone_number1,
+            fp.phone_number2,
+            COALESCE(
+                a.authority_name,
+                CONCAT(u.first_name, ' ', u.last_name)
+            ) AS authority_name,
+            CASE
+                WHEN fp.authority_id IS NOT NULL THEN 'authority'
+                WHEN fp.uploaded_by_admin_id IS NOT NULL THEN 'admin'
+            END AS uploaded_by_type
+        FROM match_results mr
+        JOIN found_persons fp
+            ON fp.found_id = mr.found_id
+        JOIN missing_persons mp
+            ON mp.missing_id = mr.missing_id
+        LEFT JOIN authority a
+            ON a.authority_id = fp.authority_id
+        LEFT JOIN users u
+            ON u.user_id = fp.uploaded_by_admin_id
+        WHERE mr.match_id = %s
+        AND mp.user_id = %s
         """, (match_id, user_id))
 
         row = cur.fetchone()
@@ -230,7 +236,7 @@ def get_match_details(match_id):
         (
             similarity_score, full_name, approximate_age, gender,
             health_status, found_date, found_location, image_path,
-            phone_number1, phone_number2, authority_name
+            phone_number1, phone_number2, authority_name, uploaded_by_type
         ) = row
 
         return jsonify({
@@ -245,6 +251,7 @@ def get_match_details(match_id):
             "phone_number1": phone_number1,
             "phone_number2": phone_number2,
             "authority_name": authority_name,
+            "uploaded_by_type": uploaded_by_type,
         }), 200
 
     except Exception as e:
