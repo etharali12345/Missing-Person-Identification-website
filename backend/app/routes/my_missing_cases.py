@@ -240,7 +240,7 @@ def get_match_details(match_id):
         ) = row
 
         return jsonify({
-            "percentage": round(float(similarity_score), 2),
+            "percentage": round(float(similarity_score), 4),
             "full_name": full_name,
             "approximate_age": approximate_age,
             "gender": gender,

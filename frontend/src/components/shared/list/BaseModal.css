@@ -11,29 +11,35 @@
 .custome-modal .modal-content {
   max-height: 90vh;
   max-width: 480px;
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: stretch;
   justify-content: center;
+  overflow-x: hidden;
 }
 
 .custome-modal .modal-body {
   overflow-y: auto;
   flex: 1;
   padding: 5px 55px;
+  overflow-x: hidden;
+  min-width: 0;
 }
 
 .custome-image {
   background: rgba(213, 223, 216, 0.356);
   border-radius: 10px 10px 0 0;
-  margin: 0px 10px;
   height: 225px;
-  text-align: start;
-  flex: 1;
+  width: 80%;
+  max-width: 340px;
+  margin: 0 auto;
 }
 
 .custome-image img {
   object-fit: contain;
+  max-width: 100%;
+  height: auto;
 }
 
 .custome-form {
@@ -41,6 +47,12 @@
   border-radius: 10px;
   flex: 1;
   position: relative;
+}
+
+.custome-form,
+.custome-image {
+  width: 100%;
+  min-width: 0;
 }
 
 .circular-contaier {

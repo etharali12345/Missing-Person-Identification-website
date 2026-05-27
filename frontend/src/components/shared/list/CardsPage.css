@@ -62,8 +62,8 @@
   padding: 13px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
   width: 100%;
-  max-width: 250px;
-  min-width: 250px;
+  max-width: 240px;
+  min-width: 240px;
   transition: transform 0.3s ease;
   margin-bottom: 30px;
   --btn-del-bg: #3d3d3d;
@@ -76,7 +76,7 @@
 
 .profile-card:hover {
   transform: translateY(-8px);
-  box-shadow: 0 4px 12px rgba(9, 35, 185, 0.24);
+  box-shadow: 0 4px 12px rgba(9, 35, 185, 0.3);
 }
 
 .profile-text {
@@ -107,7 +107,7 @@
 .action-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 9px;
+  gap: 10px;
   margin-top: auto;
 }
 
@@ -155,7 +155,7 @@
   background-color: var(--btn-det-bg);
   border: none;
   border-radius: 10px;
-  padding: 7px 10px;
+  padding: 7px 5px;
   flex: 1;
   font-weight: 600;
   font-size: 0.95rem;

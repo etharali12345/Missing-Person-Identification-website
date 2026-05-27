@@ -71,7 +71,7 @@ export function MissingMatchDetails({ details }) {
             ) : (
               <>
                 <Shield size={18} className="icon" />
-                <span className="label-text">تم العثور بواسطة الإدارة</span>
+                <span className="label-text">تم العثور بواسطة المشرف</span>
               </>
             )}
           </div>

@@ -10,7 +10,9 @@ from .routes.found_person import found_person_bp
 from .routes.my_missing_cases import my_missing_bp
 from .routes.my_found_cases import my_found_bp
 from .extensions import mysql, jwt, mail
-from .routes.admin import admin_bp #rawan should add
+from .routes.admin import admin_bp 
+from .routes.missing_database import missing_db_bp
+from .routes.found_database import found_db_bp
 
 def create_app():
     root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -42,6 +44,8 @@ def create_app():
     app.register_blueprint(found_person_bp, url_prefix="/api")
     app.register_blueprint(my_missing_bp, url_prefix="/api")
     app.register_blueprint(my_found_bp, url_prefix="/api")
+    app.register_blueprint(missing_db_bp, url_prefix="/api")
+    app.register_blueprint(found_db_bp, url_prefix="/api")
     
     @app.route('/static/uploads/<path:filename>')
     def serve_image(filename):
