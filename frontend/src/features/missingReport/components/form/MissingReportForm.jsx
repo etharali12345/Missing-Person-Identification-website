@@ -51,8 +51,12 @@ export function MissingReportForm({ submitReport, error, loading }) {
     if (uploadData.last_seen_location) {
       formData.append("last_seen_location", uploadData.last_seen_location);
     }
-    await submitReport(formData);
-    setSubmitted(true);
+    try {
+      await submitReport(formData);
+      setSubmitted(true);
+    } catch (e) {
+      setSubmitted(false);
+    }
   };
 
   return (
@@ -75,7 +79,10 @@ export function MissingReportForm({ submitReport, error, loading }) {
           </p>
         )}
         {error && (
-          <div className="alert alert-danger center-flex p-3" role="alert">
+          <div
+            className="alert alert-danger center-flex p-3 text-center"
+            role="alert"
+          >
             {error}
           </div>
         )}

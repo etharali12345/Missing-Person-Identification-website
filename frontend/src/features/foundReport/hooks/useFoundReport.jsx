@@ -17,6 +17,7 @@ export const useFoundReport = () => {
       setResult(response);
     } catch (err) {
       setError(err.message);
+      throw err;
     } finally {
       setLoading(false);
     }

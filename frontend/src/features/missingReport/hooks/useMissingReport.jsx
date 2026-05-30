@@ -17,6 +17,7 @@ export const useMissingReport = () => {
       setResult(response);
     } catch (err) {
       setError(err.message);
+      throw err;
     } finally {
       setLoading(false);
     }

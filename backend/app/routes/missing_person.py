@@ -26,7 +26,7 @@ UNCERTAIN_THRESHOLD = 0.60
 # ─────────────────────────────────────────────────────────────────────────────
 
 def _resp(success: bool, status: str, data: dict | None, message: str, http: int):
-    response = {"status": status}
+    response = {"status": status, "message": message}
     if data:
         response.update(data)
     return jsonify(response), http
@@ -114,13 +114,13 @@ def send_missing_report():
 
     try:
         image_path: str = save_image(image_file, category="missing")
-        embedding        = extract_embedding(image_path)
+        embedding, rejection_reason = extract_embedding(image_path)
     except Exception:
         logger.exception("Image save/embedding failed")
-        return _err("Image processing failed.", 500)
+        return _err("فشلت معالجة الصورة، يرجى المحاولة مرة أخرى", 500)
 
     if embedding is None:
-        return _err("لم يتم اكتشاف أي وجه في الصورة، يرجى رفع صورة أوضح والمحاولة مرة أخرى", 422)
+        return _err(rejection_reason, 422)
 
     try:
         distances, indices = search_faiss_index(embedding, category="found", top_k=1)

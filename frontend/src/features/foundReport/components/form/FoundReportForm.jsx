@@ -56,8 +56,12 @@ export function FoundReportForm({ submitReport, error, loading }) {
     if (uploadData.found_location)
       formData.append("found_location", uploadData.found_location);
 
-    await submitReport(formData);
-    setSubmitted(true);
+    try {
+      await submitReport(formData);
+      setSubmitted(true);
+    } catch (e) {
+      setSubmitted(false);
+    }
   };
 
   return (
@@ -85,7 +89,10 @@ export function FoundReportForm({ submitReport, error, loading }) {
           </p>
         )}
         {error && (
-          <div className="alert alert-danger center-flex p-3" role="alert">
+          <div
+            className="alert alert-danger center-flex p-3 text-center"
+            role="alert"
+          >
             {error}
           </div>
         )}

@@ -1,19 +1,16 @@
 from __future__ import annotations
 import logging
 import os
-import traceback
 import uuid
-from typing import Optional, Tuple, Union
+from typing import Optional, Tuple
 import MySQLdb.cursors
 import cv2
 import faiss
 import numpy as np
+import onnxruntime as ort
 
 logger = logging.getLogger(__name__)
 
-# ---------------------------------------------------------------------------
-# Paths & constants
-# ---------------------------------------------------------------------------
 
 BASE_DIR   = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 STATIC_DIR = os.path.join(BASE_DIR, "static")
@@ -28,12 +25,15 @@ FOUND_FAISS_PATH = os.environ.get(
     "FOUND_FAISS_PATH", os.path.join(BASE_DIR, "faiss_indexes", "found_persons.index")
 )
 
-FACE_EMBEDDING_DIM = 512
-BASE_URL = os.environ.get("BASE_URL", "http://localhost:5000")
+ATTRIB_MODEL_PATH = os.environ.get(
+    "ATTRIB_MODEL_PATH", os.path.join(BASE_DIR, "models", "model.onnx")
+)
 
-# ---------------------------------------------------------------------------
-# Directory bootstrap
-# ---------------------------------------------------------------------------
+FACE_EMBEDDING_DIM = 512
+
+# ============================================================================
+# Directory helpers
+# ============================================================================
 
 def _ensure_dirs() -> None:
     for d in (
@@ -45,9 +45,9 @@ def _ensure_dirs() -> None:
         os.makedirs(d, exist_ok=True)
 
 
-# ---------------------------------------------------------------------------
-# FAISS — in-memory cache
-# ---------------------------------------------------------------------------
+# ============================================================================
+# FAISS index management
+# ============================================================================
 
 _faiss_cache: dict[str, faiss.Index] = {}
 
@@ -61,7 +61,6 @@ def _faiss_path(category: str) -> str:
 
 
 def load_faiss_index(category: str) -> faiss.Index:
-    """Return cached index, loading from disk or creating fresh if needed."""
     if category in _faiss_cache:
         return _faiss_cache[category]
 
@@ -85,8 +84,8 @@ def _save_faiss_index(index: faiss.Index, category: str) -> None:
 
 
 def add_embedding_to_index(embedding: np.ndarray, category: str) -> int:
-    index = load_faiss_index(category)
-    vec   = embedding.astype(np.float32).reshape(1, -1)
+    index  = load_faiss_index(category)
+    vec    = embedding.astype(np.float32).reshape(1, -1)
     index.add(vec)
     faiss_id = index.ntotal - 1
     _save_faiss_index(index, category)
@@ -111,25 +110,185 @@ def search_faiss_index(
     return distances, indices
 
 
-# ---------------------------------------------------------------------------
-# InsightFace singleton
-# ---------------------------------------------------------------------------
+# ============================================================================
+# Stage 1 — Detection only (RetinaFace via buffalo_l, no recognition)
+# ============================================================================
+
+_detector_app = None
+
+def _get_detector_app():
+    global _detector_app
+    if _detector_app is None:
+        from insightface.app import FaceAnalysis
+        _detector_app = FaceAnalysis(
+            name="buffalo_l",
+            allowed_modules=["detection"],
+            providers=["CUDAExecutionProvider", "CPUExecutionProvider"],
+        )
+        _detector_app.prepare(ctx_id=0, det_size=(320, 320))
+        logger.info("[InsightFace] Detection-only model loaded")
+    return _detector_app
+
+
+# ============================================================================
+# Stage 2 — FaceAttribNet: mask / sunglasses / eye state check
+# ============================================================================
+
+_attrib_session = None
+
+def _get_attrib_session() -> ort.InferenceSession:
+    global _attrib_session
+    if _attrib_session is None:
+        _attrib_session = ort.InferenceSession(
+            ATTRIB_MODEL_PATH,
+            providers=["CUDAExecutionProvider", "CPUExecutionProvider"],
+        )
+        logger.info("[AttribNet] ONNX session loaded from %s", ATTRIB_MODEL_PATH)
+    return _attrib_session
+
+
+def _align_face_crop(img: np.ndarray, face) -> np.ndarray:
+    kps = face.kps 
+
+    left_eye  = kps[0]
+    right_eye = kps[1]
+
+    dx = right_eye[0] - left_eye[0]
+    dy = right_eye[1] - left_eye[1]
+    angle = np.degrees(np.arctan2(dy, dx)) 
+
+    eye_center = ((left_eye[0] + right_eye[0]) / 2,
+                  (left_eye[1] + right_eye[1]) / 2)
+
+    h, w = img.shape[:2]
+    M = cv2.getRotationMatrix2D(eye_center, angle, scale=1.0)
+    aligned = cv2.warpAffine(img, M, (w, h), flags=cv2.INTER_LINEAR)
+
+    x1, y1, x2, y2 = face.bbox.astype(int)
+    x1, y1 = max(0, x1), max(0, y1)
+    x2, y2 = min(w, x2), min(h, y2)
+
+    return aligned[y1:y2, x1:x2]
+
+def _preprocess_attrib(face_crop: np.ndarray) -> np.ndarray:
+    face = cv2.resize(face_crop, (128, 128))
+    face = cv2.cvtColor(face, cv2.COLOR_BGR2RGB)
+    face = face.astype(np.uint8)
+    face = np.transpose(face, (2, 0, 1))   
+    return face[None, ...]                
+
+
+def _run_attrib_check(face_crop: np.ndarray, threshold: int = 200) -> Tuple[bool, str]:
+    session = _get_attrib_session()
+    x = _preprocess_attrib(face_crop)
+    pred = session.run(["probability"], {"image": x})[0][0]
+
+    left_eye_score = int(pred[0])
+    right_eye_score  = int(pred[1])
+    mask_score = int(pred[3])
+    sunglasses_score = int(pred[4])
+
+    logger.debug(
+        "[AttribNet] left_eye=%d right_eye=%d mask=%d sunglasses=%d",
+        left_eye_score, right_eye_score, mask_score, sunglasses_score,
+    )
+
+    if mask_score > threshold:
+        return True,  "تظهر الصورة شخص يرتدي كمامة أو ما يشابهها، يرجى رفع صورة تظهر ملامح الوجه بوضوح"
+
+    if sunglasses_score > threshold:
+        return True, "تظهر الصورة شخص يرتدي نظارة شمسية أو ما يشابهها، يرجى رفع صورة تظهر العينين بوضوح"
+
+    eye_open_threshold = 80
+    left_closed = left_eye_score  < eye_open_threshold
+    right_closed = right_eye_score < eye_open_threshold
+
+    if left_closed and right_closed:
+        return True, "العينان غير واضحتين أو مغلقتين في الصورة، يرجى رفع صورة أوضح"
+    if left_closed:
+        return True, "العين اليسرى غير واضحة أو مغلقة في الصورة، يرجى رفع صورة أوضح"
+    if right_closed:
+        return True, "العين اليمنى غير واضحة أو مغلقة في الصورة، يرجى رفع صورة أوضح"
+
+    return False, "ok"
+
+
+# ============================================================================
+# Stage 3 — Full buffalo_l recognition model (ArcFace embedding)
+# ============================================================================
 
 _insight_app = None
 
 
 def _get_insight_app():
+    """Load full buffalo_l with recognition for embedding extraction."""
     global _insight_app
     if _insight_app is None:
         from insightface.app import FaceAnalysis
-        _insight_app = FaceAnalysis(name="buffalo_l", providers=["CPUExecutionProvider"])
+        _insight_app = FaceAnalysis(
+            name="buffalo_l",
+            providers=["CUDAExecutionProvider", "CPUExecutionProvider"],
+        )
         _insight_app.prepare(ctx_id=0, det_size=(640, 640))
-        logger.info("[InsightFace] Model loaded")
+        logger.info("[InsightFace] Full recognition model loaded")
     return _insight_app
 
-# ---------------------------------------------------------------------------
-# Image I/O
-# ---------------------------------------------------------------------------
+
+def extract_embedding(image_path: str) -> Tuple[Optional[np.ndarray], Optional[str]]:
+    full_path = os.path.join(BASE_DIR, image_path) if not os.path.isabs(image_path) else image_path
+    img = cv2.imread(full_path)
+    if img is None:
+        logger.warning("[PIPELINE] Cannot read image: %s", full_path)
+        return None, "تعذّر قراءة الصورة المرفوعة."
+
+    # ── Stage 1: Detection only ──────────────────────────────────────────────
+    detector = _get_detector_app()
+    faces = detector.get(img)
+
+    if len(faces) == 0:
+        logger.info("[PIPELINE] No face detected in %s", full_path)
+        return None, "لم يتم اكتشاف أي وجه في الصورة، يرجى رفع صورة أوضح."
+
+    if len(faces) > 1:
+        logger.info("[PIPELINE] Multiple faces (%d) in %s", len(faces), full_path)
+        return None, "تم اكتشاف أكثر من وجه في الصورة، يرجى رفع صورة تحتوي على وجه واحد فقط."
+
+    # ── Stage 2: Attribute check ─────────────────────────────────────────────
+    face = faces[0]
+    h, w  = img.shape[:2]
+
+    crop = _align_face_crop(img, face)
+    if crop is None or crop.size == 0:
+        return None, "تعذر اقتصاص الوجه المكتشف، يرجى تجربة صورة مختلفة."
+
+    rejected, reason = _run_attrib_check(crop)
+    if rejected:
+        logger.info("[PIPELINE] Attribute rejection: %s", reason)
+        return None, reason
+
+    # ── Stage 3: Full recognition embedding ──────────────────────────────────
+    app = _get_insight_app()
+    faces_full = app.get(img)
+
+    if not faces_full:
+        pad = int(max(h, w) * 0.3)
+        img_padded = cv2.copyMakeBorder(
+            img, pad, pad, pad, pad, cv2.BORDER_CONSTANT, value=(0, 0, 0)
+        )
+        faces_full = app.get(img_padded)
+
+    if not faces_full:
+        return None, "تعذر التعرف على الوجه، يرجى رفع صورة أوضح"
+
+    best_face = max(faces_full, key=lambda f: f.det_score)
+    embedding = best_face.normed_embedding.astype(np.float32)
+    logger.info("[PIPELINE] Embedding extracted successfully from %s", full_path)
+    return embedding, None
+
+
+# ============================================================================
+# Image helpers
+# ============================================================================
 
 def save_image(file_storage, category: str) -> str:
     if not hasattr(file_storage, "save"):
@@ -152,42 +311,6 @@ def save_image(file_storage, category: str) -> str:
     return rel_path
 
 
-# ---------------------------------------------------------------------------
-# Embedding extraction
-# ---------------------------------------------------------------------------
-
-def extract_embedding(image_path: str) -> Optional[np.ndarray]:
-    full_path = os.path.join(BASE_DIR, image_path) if not os.path.isabs(image_path) else image_path
-    img = cv2.imread(full_path)
-    if img is None:
-        logger.warning("[EMBED] Cannot read image: %s", full_path)
-        return None
-
-    app   = _get_insight_app()
-    faces = app.get(img)
-
-    if not faces:
-        h, w      = img.shape[:2]
-        pad       = int(max(h, w) * 0.3)
-        img_padded = cv2.copyMakeBorder(
-            img, pad, pad, pad, pad, cv2.BORDER_CONSTANT, value=(0, 0, 0)
-        )
-        faces = app.get(img_padded)
-
-    if not faces:
-        logger.info("[EMBED] No face detected in: %s", full_path)
-        return None
-
-    # Pick the face with the highest detection confidence ___change this
-    face = max(faces, key=lambda f: f.det_score)
-    embedding = face.normed_embedding.astype(np.float32)
-    return embedding
-
-
-# ---------------------------------------------------------------------------
-# Sanitisation
-# ---------------------------------------------------------------------------
-
 def sanitize_value(value, expected_type: str = "str"):
     if hasattr(value, "read") or hasattr(value, "filename"):
         raise ValueError("FileStorage object passed to sanitize_value — use image path instead")
@@ -205,13 +328,12 @@ def sanitize_value(value, expected_type: str = "str"):
         cleaned = str(value).strip()
         return cleaned if cleaned else None
 
-    # default: str
     return str(value).strip() or None
 
 
-# ---------------------------------------------------------------------------
-# Database lookup helpers
-# ---------------------------------------------------------------------------
+# ============================================================================
+# Database helpers
+# ============================================================================
 
 def get_missing_person_by_faiss_id(mysql, faiss_id: int) -> Optional[dict]:
     try:
@@ -241,14 +363,13 @@ def get_found_person_by_faiss_id(mysql, faiss_id: int) -> Optional[dict]:
         cur.execute(
             """
             SELECT
-                fp.found_id, fp.full_name, fp.approximate_age, fp.gender, fp.health_status, 
+                fp.found_id, fp.full_name, fp.approximate_age, fp.gender, fp.health_status,
                 fp.found_date, fp.found_location, fp.image_path, fp.phone_number1, fp.phone_number2,
                 fp.faiss_id,
                 COALESCE(
                     a.authority_name,
                     CONCAT(u.first_name, ' ', u.last_name)
                 ) AS authority_name,
-
                 CASE
                     WHEN fp.authority_id IS NOT NULL THEN 'authority'
                     WHEN fp.uploaded_by_admin_id IS NOT NULL THEN 'admin'
@@ -269,4 +390,3 @@ def get_found_person_by_faiss_id(mysql, faiss_id: int) -> Optional[dict]:
     except Exception:
         logger.exception("[DB] get_found_person_by_faiss_id failed for faiss_id=%s", faiss_id)
         return None
-

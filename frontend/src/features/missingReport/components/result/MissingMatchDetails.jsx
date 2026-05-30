@@ -8,7 +8,7 @@ export function MissingMatchDetails({ details }) {
         <div className="info-group">
           <div className="label-row">
             <UserRound size={18} className="icon" />
-            <span className="label-text">ا لاسم</span>
+            <span className="label-text">الاسم</span>
           </div>
           <div className="value-text">{details.full_name}</div>
         </div>

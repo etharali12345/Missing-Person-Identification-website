@@ -25,7 +25,7 @@ UNCERTAIN_THRESHOLD = 0.60
 # ─────────────────────────────────────────────────────────────────────────────
 
 def _resp(success: bool, status: str, data: dict | None, message: str, http: int):
-    response = {"status": status}
+    response = {"status": status, "message": message}
     if data:
         response.update(data)
     return jsonify(response), http
@@ -127,13 +127,13 @@ def send_found_report():
 
     try:
         image_path: str = save_image(image_file, category="found")
-        embedding        = extract_embedding(image_path)
+        embedding, rejection_reason = extract_embedding(image_path)
     except Exception:
         logger.exception("Image save/embedding failed")
         return _err("Image processing failed.", 500)
 
     if embedding is None:
-        return _err("No face detected in the uploaded image.", 422)
+        return _err(rejection_reason, 422)
 
     try:
         distances, indices = search_faiss_index(embedding, category="missing", top_k=1)
@@ -147,7 +147,7 @@ def send_found_report():
     if distances is not None and indices is not None:
         raw_idx = int(indices[0][0])
         if raw_idx >= 0:
-            sim        = float(distances[0][0])
+            sim = float(distances[0][0])
             similarity = (sim + 1) / 2
             faiss_id   = raw_idx
 
