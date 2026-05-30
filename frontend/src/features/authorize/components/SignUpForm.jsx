@@ -6,19 +6,19 @@ import { AuthoritySignUpForm } from "./AuthoritySignUpForm";
 import { CircleCheckBig } from "lucide-react";
 import { Eye, EyeOff } from "lucide-react";
 
-export function SignUpForm() {
+export function SignUpForm({ submitted, setSubmitted }) {
   const { signup } = useAuth();
   const navigate = useNavigate();
   const [role, setRole] = useState("user");
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [validated, setValidated] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
   const [userData, setUserData] = useState({
     email_or_phone: "",
     password: "",
     first_name: "",
     last_name: "",
+    email: "",
     authority_type: "service",
     authority_name: "",
     location: "",
@@ -36,10 +36,6 @@ export function SignUpForm() {
     setValidated(false);
     setError(null);
     setSubmitted(false);
-  };
-
-  const handleEmailOrPhoneChange = (e) => {
-    handleDataChange({ email_or_phone: e.target.value });
   };
 
   const handlePasswordChange = (e) => {
@@ -76,7 +72,7 @@ export function SignUpForm() {
         form.append("authority_type", userData.authority_type);
         form.append("location", userData.location);
         form.append("document", userData.document);
-        form.append("email_or_phone", userData.email_or_phone);
+        form.append("email", userData.email);
         form.append("password", userData.password);
         if (userData.authority_type === "organization") {
           form.append("license_number", userData.license_number);
@@ -100,7 +96,8 @@ export function SignUpForm() {
           </div>
           <h5 className="fw-bold mb-2">تم إرسال طلبك بنجاح</h5>
           <p className="text-muted">
-            طلب تسجيل جهتك قيد المراجعة. سيتم إشعارك بعد موافقة المشرف.
+            طلب تسجيل جهتك قيد المراجعة. سيتم إشعارك عبر البريد الإلكتروني بعد
+            موافقة المشرف.
           </p>
         </div>
       ) : (
@@ -140,21 +137,6 @@ export function SignUpForm() {
                 handleDataChange={handleDataChange}
               />
             )}
-
-            <div className="mb-3">
-              <label className="form-label">البريد الإلكتروني أو الهاتف</label>
-              <input
-                type="text"
-                required
-                pattern="(\+?[0-9]{7,15}|[^\s@]+@[^\s@]+\.[^\s@]+)"
-                className="form-control w-100"
-                value={userData.email_or_phone}
-                onChange={handleEmailOrPhoneChange}
-              />
-              <div className="invalid-feedback">
-                يرجى إدخال بريد إلكتروني صحيح أو رقم هاتف صحيح
-              </div>
-            </div>
 
             <div className="mb-4">
               <label className="form-label">كلمة المرور</label>

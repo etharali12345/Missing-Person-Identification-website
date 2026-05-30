@@ -77,7 +77,7 @@ def signup():
 
             auth_type = request.form.get("authority_type")
             auth_name = request.form.get("authority_name")
-            email_or_phone = request.form.get("email_or_phone")
+            email = request.form.get("email")
             password = generate_password_hash(request.form.get("password"))
             location = request.form.get("location")
             license_num = request.form.get("license_number")
@@ -86,10 +86,10 @@ def signup():
             try:
                 cur.execute("""
                     INSERT INTO authority
-                        (authority_type, authority_name, email_or_phone, password,
+                        (authority_type, authority_name, email, password,
                          location, license_number, status, document)
                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-                """, (auth_type, auth_name, email_or_phone, password,
+                """, (auth_type, auth_name, email, password,
                       location, license_num, "pending", doc_path))
                 mysql.connection.commit()
 
@@ -100,7 +100,7 @@ def signup():
                 document.save(full_save_path)
 
             except IntegrityError:
-                return jsonify({"message": "البريد الإلكتروني أو رقم الهاتف مسجل مسبقاً"}), 409
+                return jsonify({"message": "البريد الإلكتروني مسجل مسبقاً"}), 409
             finally:
                 cur.close()
 
@@ -143,7 +143,7 @@ def login():
             set_access_cookies(response, access_token)
             return response, 200
 
-        cur.execute("SELECT * FROM authority WHERE email_or_phone = %s", (email_or_phone,))
+        cur.execute("SELECT * FROM authority WHERE email = %s", (email_or_phone,))
         auth_user = cur.fetchone()
         cur.close()
 

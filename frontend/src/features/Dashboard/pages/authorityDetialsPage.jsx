@@ -108,8 +108,8 @@ export function AuthorityDetailsPage() {
           <div
             className={`${authority.license_number ? "full-width-item" : "info-item"}`}
           >
-            <span className="info-label">البريد الإلكتروني أو الهاتف</span>
-            <span className="info-value">{authority.email_or_phone}</span>
+            <span className="info-label">البريد الإلكتروني</span>
+            <span className="info-value">{authority.email}</span>
           </div>
         </div>
 

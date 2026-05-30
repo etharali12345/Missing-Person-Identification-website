@@ -1,10 +1,13 @@
 import { SignUpForm } from "../components/SignUpForm";
 import { UserRoundKey } from "lucide-react";
 import { NavLink } from "react-router";
+import { useState } from "react";
 import "../login.css";
 import "../signup.css";
 
 export function SignUpPage() {
+  const [submitted, setSubmitted] = useState(false);
+
   return (
     <div className="container-fluid p-5 d-flex justify-content-center min-vh-100   login-container">
       <div className="glass-card">
@@ -13,11 +16,13 @@ export function SignUpPage() {
             <UserRoundKey size={48} strokeWidth={2} color="#27a86c" />
           </div>
           <h1 className="h4 fw-bold text-dark">إنشاء حساب</h1>
-          <p className="text-secondary small">
-            اختر نوع الحساب وأكمل البيانات{" "}
-          </p>
+          {!submitted && (
+            <p className="text-secondary small">
+              اختر نوع الحساب وأكمل البيانات
+            </p>
+          )}
         </div>
-        <SignUpForm />
+        <SignUpForm submitted={submitted} setSubmitted={setSubmitted} />
         <p className="text-center text-secondary small mt-3">
           لديك حساب بالفعل؟{" "}
           <NavLink

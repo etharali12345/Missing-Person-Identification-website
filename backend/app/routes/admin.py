@@ -59,7 +59,7 @@ def get_authority_by_id(authority_id):
     try:
         cur.execute("""
             SELECT authority_id, authority_type, authority_name,
-                   email_or_phone, location, document,
+                   email, location, document,
                    license_number, status, created_at
             FROM authority
             WHERE authority_id = %s
@@ -73,7 +73,7 @@ def get_authority_by_id(authority_id):
             "authority_id": row[0],
             "authority_type": row[1],
             "authority_name": row[2],
-            "email_or_phone": row[3],
+            "email": row[3],
             "location": row[4],
             "document": f"uploads/{row[5]}" if row[5] else None,
             "license_number": row[6],
@@ -102,7 +102,7 @@ def update_authority_status(authority_id):
 
     cur = mysql.connection.cursor()
     try:
-        cur.execute("SELECT authority_name, email_or_phone FROM authority WHERE authority_id = %s", (authority_id,))
+        cur.execute("SELECT authority_name, email FROM authority WHERE authority_id = %s", (authority_id,))
         authority = cur.fetchone()
 
         if not authority:
@@ -115,7 +115,7 @@ def update_authority_status(authority_id):
         mysql.connection.commit()
 
         messages = {
-            "approved": "تهانينا! تم اعتماد حسابكم بنجاح. يمكنكم الآن تسجيل الدخول.",
+            "approved": "تهانينا! تم اعتماد حسابكم بنجاح. يمكنكم الان تسجيل الدخول.",
             "rejected": "نأسف لإبلاغكم بأنه تم رفض طلب تسجيل حسابكم.",
             "pending":  "تم إعادة حسابكم إلى قيد المراجعة."
         }
@@ -123,8 +123,19 @@ def update_authority_status(authority_id):
         msg = Message(
             subject="تحديث حالة حسابكم",
             recipients=[email],
-            body=f"عزيزنا {authority_name}،\n\n{messages[status]}\n\nشكراً لكم."
         )
+
+        msg.html = f"""
+        <div dir="rtl" style="text-align:right;">
+            <p>عزيزنا {authority_name}،</p>
+
+            <p>{messages[status]}</p>
+
+            <p>شكراً لكم.</p>
+        </div>
+        """
+
+        msg.body = f"عزيزنا {authority_name}،\n\n{messages[status]}\n\nشكراً لكم."
 
         thread = threading.Thread(
             target=send_email_async,
