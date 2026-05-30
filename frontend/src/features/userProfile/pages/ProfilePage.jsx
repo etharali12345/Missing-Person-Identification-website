@@ -1,6 +1,5 @@
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback, useState } from "react";
 import { UserRoundPen, BadgeCheck, Eye, EyeOff } from "lucide-react";
-import { useState } from "react";
 import { useProfile } from "../hooks/useProfile";
 import "./profilePage.css";
 
@@ -36,6 +35,16 @@ export function ProfilePage() {
       }));
     }
   }, [profile]);
+
+  useEffect(() => {
+    if (successMessage) {
+      setFormData((prev) => ({
+        ...prev,
+        old_password: "",
+        new_password: "",
+      }));
+    }
+  }, [successMessage]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -171,6 +180,7 @@ export function ProfilePage() {
                 <input
                   type={showOldPassword ? "text" : "password"}
                   name="old_password"
+                  value={formData.old_password}
                   className={`form-control ${fieldErrors.old_password ? "is-invalid" : ""}`}
                   placeholder="أدخل كلمة المرور القديمة"
                   onChange={handleInputChange}
@@ -204,6 +214,7 @@ export function ProfilePage() {
                 <input
                   type={showNewPassword ? "text" : "password"}
                   name="new_password"
+                  value={formData.new_password}
                   className={`form-control ${fieldErrors.new_password ? "is-invalid" : ""}`}
                   placeholder="أدخل كلمة المرور الجديدة"
                   onChange={handleInputChange}

@@ -150,7 +150,7 @@ def _get_attrib_session() -> ort.InferenceSession:
 def _align_face_crop(img: np.ndarray, face) -> np.ndarray:
     kps = face.kps 
 
-    left_eye  = kps[0]
+    left_eye = kps[0]
     right_eye = kps[1]
 
     dx = right_eye[0] - left_eye[0]

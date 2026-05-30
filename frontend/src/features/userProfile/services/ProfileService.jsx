@@ -13,6 +13,9 @@ export const updateUserProfile = async (updatedData) => {
   try {
     await api.put("/user-profile", updatedData);
   } catch (error) {
-    throw new Error("فشل تحديث المستخدم، يرجى التحقق من البيانات");
+    throw new Error(
+      error.response?.data?.error ||
+        "فشل تحديث المستخدم، يرجى التحقق من البيانات",
+    );
   }
 };
