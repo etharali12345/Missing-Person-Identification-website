@@ -1,4 +1,4 @@
-import { api, BASE_URL } from "../../../api/axios";
+import { api } from "../../../api/axios";
 
 export const getUserProfile = async () => {
   try {
@@ -9,13 +9,24 @@ export const getUserProfile = async () => {
   }
 };
 
-export const updateUserProfile = async (updatedData) => {
+export const updateUserInfo = async (updatedData) => {
   try {
-    await api.put("/user-profile", updatedData);
+    await api.put("/user-profile/info", updatedData);
   } catch (error) {
     throw new Error(
       error.response?.data?.error ||
-        "فشل تحديث المستخدم، يرجى التحقق من البيانات",
+        "فشل تحديث البيانات، يرجى التحقق من المدخلات",
+    );
+  }
+};
+
+export const updateUserPassword = async (updatedData) => {
+  try {
+    await api.put("/user-profile/password", updatedData);
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.error ||
+        "فشل تحديث كلمة المرور، يرجى التحقق من البيانات",
     );
   }
 };
