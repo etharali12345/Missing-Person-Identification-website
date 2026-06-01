@@ -66,7 +66,7 @@ export function MissingReportForm({ submitReport, error, loading }) {
       className={`needs-validation ${validated && !submitted ? "was-validated" : ""} center-flex flex-column w-100`}
     >
       <ImagePreview image={uploadData.image} setImage={handleImageChange} />
-      <div className="glass-reportCard">
+      <div className="glass-reportCard d-flex flex-column">
         <h6>ادخل بيانات الشخص المفقود</h6>
         <MissingFormFields
           handleInputChange={handleInputChange}
@@ -86,13 +86,15 @@ export function MissingReportForm({ submitReport, error, loading }) {
             {error}
           </div>
         )}
-        <button
-          type="submit"
-          className="btn btn-success w-100"
-          disabled={submitted || loading}
-        >
-          ارسال
-        </button>
+        <div className="mt-auto">
+          <button
+            type="submit"
+            className="btn btn-success w-100"
+            disabled={submitted || loading}
+          >
+            ارسال
+          </button>
+        </div>
       </div>
     </form>
   );

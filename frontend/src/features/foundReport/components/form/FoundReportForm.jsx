@@ -76,7 +76,7 @@ export function FoundReportForm({ submitReport, error, loading }) {
         isMissing={false}
       />
 
-      <div className="glass-reportCard">
+      <div className="glass-reportCard d-flex flex-column">
         <h6>ادخل بيانات الشخص المعثور عليه</h6>
         <FoundFormFields
           handleInputChange={handleInputChange}
@@ -96,13 +96,15 @@ export function FoundReportForm({ submitReport, error, loading }) {
             {error}
           </div>
         )}
-        <button
-          type="submit"
-          className="btn btn-success w-100"
-          disabled={submitted || loading}
-        >
-          ارسال
-        </button>
+        <div className="mt-auto">
+          <button
+            type="submit"
+            className="btn btn-success w-100 mt-auto"
+            disabled={submitted || loading}
+          >
+            ارسال
+          </button>
+        </div>
       </div>
     </form>
   );

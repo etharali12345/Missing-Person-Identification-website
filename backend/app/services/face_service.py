@@ -107,6 +107,7 @@ def search_faiss_index(
         "[FAISS] Search '%s': similarity=%.4f idx=%d",
         category, distances[0][0], indices[0][0],
     )
+    print(f"[FAISS] Search '{category}': similarity={distances[0][0]:.4f} idx={indices[0][0]}")
     return distances, indices
 
 
@@ -148,27 +149,34 @@ def _get_attrib_session() -> ort.InferenceSession:
 
 
 def _align_face_crop(img: np.ndarray, face) -> np.ndarray:
-    kps = face.kps 
+    kps = face.kps
+    h, w = img.shape[:2]
 
-    left_eye = kps[0]
-    right_eye = kps[1]
+    x1, y1, x2, y2 = face.bbox.astype(int)
+    pad = int(max(x2 - x1, y2 - y1) * 0.4)
+    x1c = max(0, x1 - pad)
+    y1c = max(0, y1 - pad)
+    x2c = min(w, x2 + pad)
+    y2c = min(h, y2 + pad)
+    crop = img[y1c:y2c, x1c:x2c]
+
+
+    left_eye  = kps[0] - np.array([x1c, y1c])
+    right_eye = kps[1] - np.array([x1c, y1c])
 
     dx = right_eye[0] - left_eye[0]
     dy = right_eye[1] - left_eye[1]
-    angle = np.degrees(np.arctan2(dy, dx)) 
+    angle = np.degrees(np.arctan2(dy, dx))
 
-    eye_center = ((left_eye[0] + right_eye[0]) / 2,
-                  (left_eye[1] + right_eye[1]) / 2)
-
-    h, w = img.shape[:2]
+    eye_center = (
+        float((left_eye[0] + right_eye[0]) / 2),
+        float((left_eye[1] + right_eye[1]) / 2),
+    )
+    ch, cw = crop.shape[:2]
     M = cv2.getRotationMatrix2D(eye_center, angle, scale=1.0)
-    aligned = cv2.warpAffine(img, M, (w, h), flags=cv2.INTER_LINEAR)
+    aligned_crop = cv2.warpAffine(crop, M, (cw, ch), flags=cv2.INTER_LINEAR)
 
-    x1, y1, x2, y2 = face.bbox.astype(int)
-    x1, y1 = max(0, x1), max(0, y1)
-    x2, y2 = min(w, x2), min(h, y2)
-
-    return aligned[y1:y2, x1:x2]
+    return aligned_crop
 
 def _preprocess_attrib(face_crop: np.ndarray) -> np.ndarray:
     face = cv2.resize(face_crop, (128, 128))
@@ -178,7 +186,7 @@ def _preprocess_attrib(face_crop: np.ndarray) -> np.ndarray:
     return face[None, ...]                
 
 
-def _run_attrib_check(face_crop: np.ndarray, threshold: int = 200) -> Tuple[bool, str]:
+def _run_attrib_check(face_crop: np.ndarray, threshold: int = 250) -> Tuple[bool, str]:
     session = _get_attrib_session()
     x = _preprocess_attrib(face_crop)
     pred = session.run(["probability"], {"image": x})[0][0]
@@ -198,7 +206,8 @@ def _run_attrib_check(face_crop: np.ndarray, threshold: int = 200) -> Tuple[bool
 
     if sunglasses_score > threshold:
         return True, "تظهر الصورة شخص يرتدي نظارة شمسية أو ما يشابهها، يرجى رفع صورة تظهر العينين بوضوح"
-
+     
+    """
     eye_open_threshold = 80
     left_closed = left_eye_score  < eye_open_threshold
     right_closed = right_eye_score < eye_open_threshold
@@ -209,6 +218,7 @@ def _run_attrib_check(face_crop: np.ndarray, threshold: int = 200) -> Tuple[bool
         return True, "العين اليسرى غير واضحة أو مغلقة في الصورة، يرجى رفع صورة أوضح"
     if right_closed:
         return True, "العين اليمنى غير واضحة أو مغلقة في الصورة، يرجى رفع صورة أوضح"
+    """
 
     return False, "ok"
 
