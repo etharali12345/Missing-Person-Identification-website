@@ -20,9 +20,6 @@ found_person_bp = Blueprint("found_person", __name__)
 MATCH_THRESHOLD     = 0.677
 UNCERTAIN_THRESHOLD = 0.60
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Response helpers
-# ─────────────────────────────────────────────────────────────────────────────
 
 def _resp(success: bool, status: str, data: dict | None, message: str, http: int):
     response = {"status": status, "message": message}
@@ -39,11 +36,7 @@ def _created(status: str, data: dict, message: str = ""):
 def _err(message: str, http: int = 400):
     return _resp(False, "error", None, message, http)
 
-
-# ─────────────────────────────────────────────────────────────────────────────
-# DB helpers
-# ─────────────────────────────────────────────────────────────────────────────
-
+# ===========================================================================
 def _db_insert_found(cur, uploader_id: int, role: str, fields: dict, image_path: str) -> int:
     if role == "admin":
         authority_id_val  = None
@@ -93,10 +86,7 @@ def _db_insert_match_result(cur, missing_id: int, found_id: int, similarity: flo
 def _owner_col(role: str) -> str:
     return "uploaded_by_admin_id" if role == "admin" else "authority_id"
 
-
-# ─────────────────────────────────────────────────────────────────────────────
-# POST /found-report/send
-# ─────────────────────────────────────────────────────────────────────────────
+# ===========================================================================
 
 @found_person_bp.route("/found-report/send", methods=["POST"])
 @jwt_required()
@@ -158,9 +148,7 @@ def send_found_report():
         and similarity >= UNCERTAIN_THRESHOLD
     )
 
-    # ══════════════════════════════════════════════════════════════════════════
-    # MATCH
-    # ══════════════════════════════════════════════════════════════════════════
+    # ====================================== Match
     if is_match:
         matched = get_missing_person_by_faiss_id(mysql, faiss_id)
 
@@ -203,9 +191,7 @@ def send_found_report():
                 "details":    matched,
             }, "Match found.")
 
-    # ══════════════════════════════════════════════════════════════════════════
-    # UNCERTAIN
-    # ══════════════════════════════════════════════════════════════════════════
+    # ====================================== UNCERTAIN
     if is_uncertain:
         candidate = get_missing_person_by_faiss_id(mysql, faiss_id)
 
@@ -248,9 +234,7 @@ def send_found_report():
                 "details":    candidate,
             }, "Possible match found. Please validate.")
 
-    # ══════════════════════════════════════════════════════════════════════════
-    # NO MATCH
-    # ══════════════════════════════════════════════════════════════════════════
+    # ====================================== NO MATCH
     cur = None
     try:
         cur = mysql.connection.cursor()
@@ -277,9 +261,7 @@ def send_found_report():
     }, "Report submitted. No match found.")
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# POST /found-report/<match_id>/validate
-# ─────────────────────────────────────────────────────────────────────────────
+
 @found_person_bp.route("/found-report/<int:match_id>/validate", methods=["POST"])
 @jwt_required()
 def validate_found_match(match_id: int):

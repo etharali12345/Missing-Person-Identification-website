@@ -32,8 +32,6 @@ ATTRIB_MODEL_PATH = os.environ.get(
 FACE_EMBEDDING_DIM = 512
 
 # ============================================================================
-# Directory helpers
-# ============================================================================
 
 def _ensure_dirs() -> None:
     for d in (
@@ -45,8 +43,6 @@ def _ensure_dirs() -> None:
         os.makedirs(d, exist_ok=True)
 
 
-# ============================================================================
-# FAISS index management
 # ============================================================================
 
 _faiss_cache: dict[str, faiss.Index] = {}
@@ -111,8 +107,7 @@ def search_faiss_index(
     return distances, indices
 
 
-# ============================================================================
-# Stage 1 — Detection only (RetinaFace via buffalo_l, no recognition)
+
 # ============================================================================
 
 _detector_app = None
@@ -130,10 +125,6 @@ def _get_detector_app():
         logger.info("[InsightFace] Detection-only model loaded")
     return _detector_app
 
-
-# ============================================================================
-# Stage 2 — FaceAttribNet: mask / sunglasses / eye state check
-# ============================================================================
 
 _attrib_session = None
 
@@ -159,7 +150,6 @@ def _align_face_crop(img: np.ndarray, face) -> np.ndarray:
     x2c = min(w, x2 + pad)
     y2c = min(h, y2 + pad)
     crop = img[y1c:y2c, x1c:x2c]
-
 
     left_eye  = kps[0] - np.array([x1c, y1c])
     right_eye = kps[1] - np.array([x1c, y1c])
@@ -207,25 +197,9 @@ def _run_attrib_check(face_crop: np.ndarray, threshold: int = 250) -> Tuple[bool
     if sunglasses_score > threshold:
         return True, "تظهر الصورة شخص يرتدي نظارة شمسية أو ما يشابهها، يرجى رفع صورة تظهر العينين بوضوح"
      
-    """
-    eye_open_threshold = 80
-    left_closed = left_eye_score  < eye_open_threshold
-    right_closed = right_eye_score < eye_open_threshold
-
-    if left_closed and right_closed:
-        return True, "العينان غير واضحتين أو مغلقتين في الصورة، يرجى رفع صورة أوضح"
-    if left_closed:
-        return True, "العين اليسرى غير واضحة أو مغلقة في الصورة، يرجى رفع صورة أوضح"
-    if right_closed:
-        return True, "العين اليمنى غير واضحة أو مغلقة في الصورة، يرجى رفع صورة أوضح"
-    """
 
     return False, "ok"
 
-
-# ============================================================================
-# Stage 3 — Full buffalo_l recognition model (ArcFace embedding)
-# ============================================================================
 
 _insight_app = None
 
@@ -251,7 +225,6 @@ def extract_embedding(image_path: str) -> Tuple[Optional[np.ndarray], Optional[s
         logger.warning("[PIPELINE] Cannot read image: %s", full_path)
         return None, "تعذّر قراءة الصورة المرفوعة."
 
-    # ── Stage 1: Detection only ──────────────────────────────────────────────
     detector = _get_detector_app()
     faces = detector.get(img)
 
@@ -263,7 +236,6 @@ def extract_embedding(image_path: str) -> Tuple[Optional[np.ndarray], Optional[s
         logger.info("[PIPELINE] Multiple faces (%d) in %s", len(faces), full_path)
         return None, "تم اكتشاف أكثر من وجه في الصورة، يرجى رفع صورة تحتوي على وجه واحد فقط."
 
-    # ── Stage 2: Attribute check ─────────────────────────────────────────────
     face = faces[0]
     h, w  = img.shape[:2]
 
@@ -276,7 +248,6 @@ def extract_embedding(image_path: str) -> Tuple[Optional[np.ndarray], Optional[s
         logger.info("[PIPELINE] Attribute rejection: %s", reason)
         return None, reason
 
-    # ── Stage 3: Full recognition embedding ──────────────────────────────────
     app = _get_insight_app()
     faces_full = app.get(img)
 
@@ -296,8 +267,7 @@ def extract_embedding(image_path: str) -> Tuple[Optional[np.ndarray], Optional[s
     return embedding, None
 
 
-# ============================================================================
-# Image helpers
+
 # ============================================================================
 
 def save_image(file_storage, category: str) -> str:
@@ -340,10 +310,6 @@ def sanitize_value(value, expected_type: str = "str"):
 
     return str(value).strip() or None
 
-
-# ============================================================================
-# Database helpers
-# ============================================================================
 
 def get_missing_person_by_faiss_id(mysql, faiss_id: int) -> Optional[dict]:
     try:

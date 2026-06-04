@@ -14,7 +14,6 @@ def allowed_file(filename):
 
 auth_bp = Blueprint("auth", __name__)
 
-#================= all the field required should be checked ===============
 @auth_bp.route("/signup", methods=["POST"])
 def signup():
     try:
@@ -24,6 +23,11 @@ def signup():
 
             if role != "user":
                 return jsonify({"message": "Invalid role for this endpoint"}), 400
+
+            required = ["first_name", "last_name", "email_or_phone", "password"]
+            missing = [f for f in required if not data.get(f)]
+            if missing:
+                return jsonify({"message": f"الحقول التالية مطلوبة: {', '.join(missing)}"}), 400
 
             hashed_password = generate_password_hash(data["password"])
 
@@ -65,6 +69,12 @@ def signup():
             if role != "authority":
                 return jsonify({"message": "Invalid role"}), 400
             
+
+            required = ["authority_type", "authority_name", "email", "password", "location", "license_number"]
+            missing = [f for f in required if not request.form.get(f)]
+            if missing:
+                return jsonify({"message": f"الحقول التالية مطلوبة: {', '.join(missing)}"}), 400
+
             document = request.files.get("document")
             doc_path = None
 
