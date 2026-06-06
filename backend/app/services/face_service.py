@@ -66,7 +66,8 @@ def load_faiss_index(category: str) -> faiss.Index:
         logger.info("[FAISS] Loaded %s index from disk (%d vectors)", category, index.ntotal)
     else:
         _ensure_dirs()
-        index = faiss.IndexFlatIP(FACE_EMBEDDING_DIM)
+        flat  = faiss.IndexFlatIP(FACE_EMBEDDING_DIM)
+        index = faiss.IndexIDMap2(flat)              # ← supports deletion
         logger.info("[FAISS] Created new %s index", category)
 
     _faiss_cache[category] = index
@@ -79,14 +80,26 @@ def _save_faiss_index(index: faiss.Index, category: str) -> None:
     _faiss_cache[category] = index
 
 
-def add_embedding_to_index(embedding: np.ndarray, category: str) -> int:
-    index  = load_faiss_index(category)
-    vec    = embedding.astype(np.float32).reshape(1, -1)
-    index.add(vec)
-    faiss_id = index.ntotal - 1
+def add_embedding_to_index(embedding: np.ndarray, category: str, faiss_id: int) -> int:
+    """Add embedding using an explicit ID (DB primary key). Returns the same faiss_id."""
+    index = load_faiss_index(category)
+    vec   = embedding.astype(np.float32).reshape(1, -1)
+    ids   = np.array([faiss_id], dtype=np.int64)
+    index.add_with_ids(vec, ids)
     _save_faiss_index(index, category)
     logger.debug("[FAISS] Added to '%s' index → faiss_id=%d", category, faiss_id)
     return faiss_id
+
+
+def delete_embedding_from_index(faiss_id: int, category: str) -> None:
+    try:
+        index  = load_faiss_index(category)
+        id_sel = faiss.IDSelectorBatch(np.array([faiss_id], dtype=np.int64))
+        removed = index.remove_ids(id_sel)
+        _save_faiss_index(index, category)
+        logger.debug("[FAISS] Removed faiss_id=%d from '%s' index (removed=%d)", faiss_id, category, removed)
+    except Exception:
+        logger.exception("[FAISS] Failed to delete faiss_id=%d from '%s' index", faiss_id, category)
 
 
 def search_faiss_index(
@@ -103,9 +116,7 @@ def search_faiss_index(
         "[FAISS] Search '%s': similarity=%.4f idx=%d",
         category, distances[0][0], indices[0][0],
     )
-    print(f"[FAISS] Search '{category}': similarity={distances[0][0]:.4f} idx={indices[0][0]}")
     return distances, indices
-
 
 
 # ============================================================================
@@ -168,12 +179,13 @@ def _align_face_crop(img: np.ndarray, face) -> np.ndarray:
 
     return aligned_crop
 
+
 def _preprocess_attrib(face_crop: np.ndarray) -> np.ndarray:
     face = cv2.resize(face_crop, (128, 128))
     face = cv2.cvtColor(face, cv2.COLOR_BGR2RGB)
     face = face.astype(np.uint8)
-    face = np.transpose(face, (2, 0, 1))   
-    return face[None, ...]                
+    face = np.transpose(face, (2, 0, 1))
+    return face[None, ...]
 
 
 def _run_attrib_check(face_crop: np.ndarray, threshold: int = 250) -> Tuple[bool, str]:
@@ -181,9 +193,9 @@ def _run_attrib_check(face_crop: np.ndarray, threshold: int = 250) -> Tuple[bool
     x = _preprocess_attrib(face_crop)
     pred = session.run(["probability"], {"image": x})[0][0]
 
-    left_eye_score = int(pred[0])
+    left_eye_score   = int(pred[0])
     right_eye_score  = int(pred[1])
-    mask_score = int(pred[3])
+    mask_score       = int(pred[3])
     sunglasses_score = int(pred[4])
 
     logger.debug(
@@ -192,11 +204,10 @@ def _run_attrib_check(face_crop: np.ndarray, threshold: int = 250) -> Tuple[bool
     )
 
     if mask_score > threshold:
-        return True,  "تظهر الصورة شخص يرتدي كمامة أو ما يشابهها، يرجى رفع صورة تظهر ملامح الوجه بوضوح"
+        return True, "تظهر الصورة شخص يرتدي كمامة أو ما يشابهها، يرجى رفع صورة تظهر ملامح الوجه بوضوح"
 
     if sunglasses_score > threshold:
         return True, "تظهر الصورة شخص يرتدي نظارة شمسية أو ما يشابهها، يرجى رفع صورة تظهر العينين بوضوح"
-     
 
     return False, "ok"
 
@@ -205,7 +216,6 @@ _insight_app = None
 
 
 def _get_insight_app():
-    """Load full buffalo_l with recognition for embedding extraction."""
     global _insight_app
     if _insight_app is None:
         from insightface.app import FaceAnalysis
@@ -237,7 +247,7 @@ def extract_embedding(image_path: str) -> Tuple[Optional[np.ndarray], Optional[s
         return None, "تم اكتشاف أكثر من وجه في الصورة، يرجى رفع صورة تحتوي على وجه واحد فقط."
 
     face = faces[0]
-    h, w  = img.shape[:2]
+    h, w = img.shape[:2]
 
     crop = _align_face_crop(img, face)
     if crop is None or crop.size == 0:
@@ -265,7 +275,6 @@ def extract_embedding(image_path: str) -> Tuple[Optional[np.ndarray], Optional[s
     embedding = best_face.normed_embedding.astype(np.float32)
     logger.info("[PIPELINE] Embedding extracted successfully from %s", full_path)
     return embedding, None
-
 
 
 # ============================================================================

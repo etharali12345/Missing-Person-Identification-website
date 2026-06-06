@@ -1,6 +1,9 @@
 from flask import Blueprint, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from ..extensions import mysql
+from ..services.face_service import delete_embedding_from_index 
+import MySQLdb.cursors
+
 
 found_db_bp = Blueprint("found_database", __name__)
 
@@ -148,25 +151,30 @@ def delete_found(found_id):
         return err
 
     try:
-        cur = mysql.connection.cursor()
+        cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)  # ← DictCursor
 
         cur.execute(
-            "SELECT found_id FROM found_persons WHERE found_id = %s",
+            "SELECT found_id, faiss_id FROM found_persons WHERE found_id = %s",
             (found_id,)
         )
-        if not cur.fetchone():
+        row = cur.fetchone()
+        if not row:
             cur.close()
             return jsonify({"message": "المعثور عليه غير موجود"}), 404
+
+        faiss_id = row["faiss_id"]  # ← grab before delete
 
         cur.execute("DELETE FROM found_persons WHERE found_id = %s", (found_id,))
         mysql.connection.commit()
         cur.close()
 
-        return jsonify({"message": "تم حذف البلاغ بنجاح"}), 200
-
     except Exception as e:
         return jsonify({"message": "فشل حذف البلاغ", "error": str(e)}), 500
 
+    if faiss_id is not None:
+        delete_embedding_from_index(faiss_id, category="found")
+
+    return jsonify({"message": "تم حذف البلاغ بنجاح"}), 200
 
 
 @found_db_bp.route("/found-database-match/<int:match_id>", methods=["GET"])

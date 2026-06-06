@@ -16,6 +16,7 @@ def admin_required():
         return jsonify({"message": "Admin access required"}), 403
     return None
 
+
 @admin_bp.route("/authorities", methods=["GET"])
 @jwt_required()
 def get_authorities():
@@ -147,5 +148,44 @@ def update_authority_status(authority_id):
 
     except Exception as e:
         return jsonify({"message": "فشل تحديث الحالة", "error": str(e)}), 500
+    finally:
+        cur.close()
+
+
+
+
+@admin_bp.route("/dashboard-stats", methods=["GET"])
+@jwt_required()
+def dashboard_stats():
+    err = admin_required()
+    if err:
+        return err
+
+    cur = mysql.connection.cursor()
+    try:
+        cur.execute("SELECT COUNT(*) FROM authority WHERE status = 'pending'")
+        pending_count = cur.fetchone()[0]
+
+        cur.execute("""
+            SELECT COUNT(*) FROM missing_persons
+            WHERE MONTH(created_at) = MONTH(CURDATE())
+              AND YEAR(created_at) = YEAR(CURDATE())
+        """)
+        missing_this_month = cur.fetchone()[0]
+
+        cur.execute("""
+            SELECT COUNT(*) FROM found_persons
+            WHERE MONTH(created_at) = MONTH(CURDATE())
+              AND YEAR(created_at) = YEAR(CURDATE())
+        """)
+        found_this_month = cur.fetchone()[0]
+
+        return jsonify({
+            "pending_count": pending_count,
+            "missing_this_month": missing_this_month,
+            "found_this_month": found_this_month,
+        }), 200
+    except Exception as e:
+        return jsonify({"message": "فشل جلب البيانات", "error": str(e)}), 500
     finally:
         cur.close()

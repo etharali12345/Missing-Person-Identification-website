@@ -151,11 +151,11 @@ def send_missing_report():
                 cur = mysql.connection.cursor()
 
                 # Always assign faiss_id on insert
-                new_faiss_id   = add_embedding_to_index(embedding, category="missing")
                 new_missing_id = _db_insert_missing(cur, user_id, fields, image_path)
+                add_embedding_to_index(embedding, category="missing", faiss_id=new_missing_id)
                 cur.execute(
                     "UPDATE missing_persons SET faiss_id = %s WHERE missing_id = %s",
-                    (new_faiss_id, new_missing_id),
+                    (new_missing_id, new_missing_id),
                 )
 
                 match_result_id = _db_insert_match_result(
@@ -194,11 +194,11 @@ def send_missing_report():
             try:
                 cur = mysql.connection.cursor()
 
-                new_faiss_id   = add_embedding_to_index(embedding, category="missing")
                 new_missing_id = _db_insert_missing(cur, user_id, fields, image_path)
+                add_embedding_to_index(embedding, category="missing", faiss_id=new_missing_id)
                 cur.execute(
                     "UPDATE missing_persons SET faiss_id = %s WHERE missing_id = %s",
-                    (new_faiss_id, new_missing_id),
+                    (new_missing_id, new_missing_id),
                 )
 
                 match_result_id = _db_insert_match_result(
@@ -227,11 +227,11 @@ def send_missing_report():
     try:
         cur = mysql.connection.cursor()
 
-        new_faiss_id   = add_embedding_to_index(embedding, category="missing")
         new_missing_id = _db_insert_missing(cur, user_id, fields, image_path)
+        add_embedding_to_index(embedding, category="missing", faiss_id=new_missing_id)
         cur.execute(
             "UPDATE missing_persons SET faiss_id = %s WHERE missing_id = %s",
-            (new_faiss_id, new_missing_id),
+            (new_missing_id, new_missing_id),
         )
         mysql.connection.commit()
 

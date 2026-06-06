@@ -51,7 +51,9 @@ export function AuthorityDetailsPage() {
     <div className="container d-flex justify-content-center ">
       <div className="details-card">
         <div className="header-icon-container">
-          <div className="header-icon-circle">
+          <div
+            className={`header-icon-circle ${currentStatus === "approved" ? "approved" : currentStatus === "rejected" ? "rejected" : ""}`}
+          >
             <Landmark size={38} strokeWidth={2.4} />
           </div>
         </div>

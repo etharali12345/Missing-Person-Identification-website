@@ -1,7 +1,8 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
+import MySQLdb.cursors
 from ..extensions import mysql
-from ..services.face_service import sanitize_value
+from ..services.face_service import sanitize_value, delete_embedding_from_index  # ← added
 
 my_missing_bp = Blueprint("my_missing", __name__)
 
@@ -100,27 +101,32 @@ def delete_missing_case(missing_id):
     user_id = current_user.get("id")
 
     try:
-        cur = mysql.connection.cursor()
+        #explain what does this do why do we need db???
+        cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)  # ← DictCursor to fetch faiss_id
 
         cur.execute(
-            "SELECT missing_id FROM missing_persons WHERE missing_id = %s AND user_id = %s",
+            "SELECT missing_id, faiss_id FROM missing_persons WHERE missing_id = %s AND user_id = %s",
             (missing_id, user_id)
         )
-        if not cur.fetchone():
+        row = cur.fetchone()
+        if not row:
             cur.close()
             return jsonify({"message": "البلاغ غير موجود أو لا تملك صلاحية حذفه"}), 404
 
-        cur.execute(
-            "DELETE FROM missing_persons WHERE missing_id = %s",
-            (missing_id,)
-        )
+        faiss_id = row["faiss_id"]  # ← grab before delete
+
+        cur.execute("DELETE FROM missing_persons WHERE missing_id = %s", (missing_id,))
         mysql.connection.commit()
         cur.close()
 
-        return jsonify({"message": "تم حذف البلاغ بنجاح"}), 200
-
     except Exception as e:
         return jsonify({"message": "فشل حذف البلاغ", "error": str(e)}), 500
+
+    # After DB delete succeeds, clean up FAISS
+    if faiss_id is not None:
+        delete_embedding_from_index(faiss_id, category="missing")
+
+    return jsonify({"message": "تم حذف البلاغ بنجاح"}), 200
 
 
 @my_missing_bp.route("/my-missing-cases/<int:missing_id>", methods=["PUT"])

@@ -1,0 +1,90 @@
+.stat-cards-wrapper {
+  direction: rtl;
+  font-family:
+    "Cairo",
+    system-ui,
+    -apple-system,
+    sans-serif;
+}
+
+.stat-card {
+  border-radius: 16px;
+  padding: 1.75rem 1.5rem;
+  min-height: 145px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  text-align: center;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+  border: none;
+}
+
+.stat-card-pending {
+  background-color: #ffffff;
+  box-shadow: 0 3px 5px rgba(3, 43, 23, 0.15);
+  border: 1px solid #ebebeb !important;
+}
+
+.stat-card-pending:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 10px 1px rgba(3, 43, 23, 0.15);
+}
+
+.stat-card-gradient {
+  background: linear-gradient(180deg, #0e5c38 0%, #032b17 100%);
+  box-shadow: 0 3px 5px rgba(3, 43, 23, 0.15);
+}
+
+.stat-card-gradient:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 10px 1px rgba(3, 43, 23, 0.15);
+}
+
+.stat-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 1.25rem;
+  letter-spacing: -0.01em;
+  user-select: none;
+}
+
+.stat-title-pending {
+  color: #117343;
+}
+
+.stat-title-gradient {
+  color: #ffffff;
+}
+
+/* Values and Icons */
+.stat-value-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.stat-value {
+  font-size: 2.5rem;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.stat-value-pending {
+  color: #108a4d;
+}
+
+.stat-value-gradient {
+  color: #ffffff;
+}
+
+.trend-icon {
+  width: 24px;
+  height: 24px;
+  opacity: 0.95;
+  margin-left: 0.5rem;
+}

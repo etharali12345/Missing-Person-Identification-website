@@ -163,11 +163,11 @@ def send_found_report():
             try:
                 cur = mysql.connection.cursor()
 
-                new_faiss_id = add_embedding_to_index(embedding, category="found")
                 new_found_id = _db_insert_found(cur, uploader_id, role, fields, image_path)
+                add_embedding_to_index(embedding, category="found", faiss_id=new_found_id)
                 cur.execute(
                     "UPDATE found_persons SET faiss_id = %s WHERE found_id = %s",
-                    (new_faiss_id, new_found_id),
+                    (new_found_id, new_found_id),
                 )
 
                 match_result_id = _db_insert_match_result(
@@ -206,11 +206,11 @@ def send_found_report():
             try:
                 cur = mysql.connection.cursor()
 
-                new_faiss_id = add_embedding_to_index(embedding, category="found")
                 new_found_id = _db_insert_found(cur, uploader_id, role, fields, image_path)
+                add_embedding_to_index(embedding, category="found", faiss_id=new_found_id)
                 cur.execute(
                     "UPDATE found_persons SET faiss_id = %s WHERE found_id = %s",
-                    (new_faiss_id, new_found_id),
+                    (new_found_id, new_found_id),
                 )
 
                 match_result_id = _db_insert_match_result(
@@ -239,11 +239,11 @@ def send_found_report():
     try:
         cur = mysql.connection.cursor()
 
-        new_faiss_id = add_embedding_to_index(embedding, category="found")
         new_found_id = _db_insert_found(cur, uploader_id, role, fields, image_path)
+        add_embedding_to_index(embedding, category="found", faiss_id=new_found_id)
         cur.execute(
             "UPDATE found_persons SET faiss_id = %s WHERE found_id = %s",
-            (new_faiss_id, new_found_id),
+            (new_found_id, new_found_id),
         )
         mysql.connection.commit()
 

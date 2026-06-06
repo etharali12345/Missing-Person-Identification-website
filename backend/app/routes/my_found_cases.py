@@ -1,7 +1,8 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
+import MySQLdb.cursors
 from ..extensions import mysql
-from ..services.face_service import sanitize_value
+from ..services.face_service import sanitize_value, delete_embedding_from_index  # ← added
 
 my_found_bp = Blueprint("my_found", __name__)
 
@@ -110,24 +111,31 @@ def delete_found_case(found_id):
     owner_col = _owner_col(role)
 
     try:
-        cur = mysql.connection.cursor()
+        cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)  # ← DictCursor to fetch faiss_id
 
         cur.execute(
-            f"SELECT found_id FROM found_persons WHERE found_id = %s AND {owner_col} = %s",
+            f"SELECT found_id, faiss_id FROM found_persons WHERE found_id = %s AND {owner_col} = %s",
             (found_id, uploader_id)
         )
-        if not cur.fetchone():
+        row = cur.fetchone()
+        if not row:
             cur.close()
             return jsonify({"message": "البلاغ غير موجود أو لا تملك صلاحية حذفه"}), 404
+
+        faiss_id = row["faiss_id"]  # ← grab before delete
 
         cur.execute("DELETE FROM found_persons WHERE found_id = %s", (found_id,))
         mysql.connection.commit()
         cur.close()
 
-        return jsonify({"message": "تم حذف البلاغ بنجاح"}), 200
-
     except Exception as e:
         return jsonify({"message": "فشل حذف البلاغ", "error": str(e)}), 500
+
+    # After DB delete succeeds, clean up FAISS
+    if faiss_id is not None:
+        delete_embedding_from_index(faiss_id, category="found")
+
+    return jsonify({"message": "تم حذف البلاغ بنجاح"}), 200
 
 
 @my_found_bp.route("/my-found-cases/<int:found_id>", methods=["PUT"])

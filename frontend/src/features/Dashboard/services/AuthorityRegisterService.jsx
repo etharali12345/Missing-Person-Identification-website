@@ -36,3 +36,14 @@ export const updateAuthorityStatus = async (authorityId, status) => {
     throw new Error(message);
   }
 };
+
+export const getDashboardStatsSVC = async () => {
+  try {
+    const res = await api.get("/admin/dashboard-stats");
+    return res.data;
+  } catch (error) {
+    const message =
+      error.response?.data?.message || "حدث خطأ أثناء جلب إحصائيات لوحة التحكم";
+    throw new Error(message);
+  }
+};

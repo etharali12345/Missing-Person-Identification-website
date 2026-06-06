@@ -50,6 +50,16 @@
   color: var(--primary);
 }
 
+.header-icon-circle.approved {
+  background-color: #198754;
+  color: #e6f7ea;
+}
+
+.header-icon-circle.rejected {
+  background-color: #a00010;
+  color: #fde8e8;
+}
+
 .card-header {
   text-align: center;
   margin-bottom: 30px;
