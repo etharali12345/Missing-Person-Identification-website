@@ -92,7 +92,17 @@ export function MissingReportForm({ submitReport, error, loading }) {
             className="btn btn-success w-100"
             disabled={submitted || loading}
           >
-            ارسال
+            {loading ? (
+              <>
+                <span
+                  className="spinner-border spinner-border-sm slow-spinner me-2"
+                  role="status"
+                  aria-hidden="true"
+                ></span>
+              </>
+            ) : (
+              "إرسال"
+            )}
           </button>
         </div>
       </div>
