@@ -4,9 +4,7 @@ import { ChartLine } from "lucide-react";
 export function StatCards({ pendingCount, missingCount, foundCount }) {
   return (
     <div className="stat-cards-wrapper container py-4 px-4">
-      {/* Bootstrap grid layout matching the card design */}
       <div className="row g-4 justify-content-center">
-        {/* Card 1: Pending Applications (عدد الطلبات قيد المراجعة) */}
         <div className="col-12 col-md-4">
           <div className="stat-card stat-card-pending">
             <span className="stat-title stat-title-pending">
@@ -18,7 +16,6 @@ export function StatCards({ pendingCount, missingCount, foundCount }) {
           </div>
         </div>
 
-        {/* Card 2: Missing Reports (عدد بلاغات المفقودين هذا الشهر) */}
         <div className="col-12 col-md-4">
           <div className="stat-card stat-card-gradient">
             <span className="stat-title stat-title-gradient">
@@ -33,7 +30,6 @@ export function StatCards({ pendingCount, missingCount, foundCount }) {
           </div>
         </div>
 
-        {/* Card 3: Found Reports (عدد بلاغات العثور هذا الشهر) */}
         <div className="col-12 col-md-4">
           <div className="stat-card stat-card-gradient">
             <span className="stat-title stat-title-gradient">
