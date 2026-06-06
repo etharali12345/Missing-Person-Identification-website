@@ -212,6 +212,21 @@ def _run_attrib_check(face_crop: np.ndarray, threshold: int = 250) -> Tuple[bool
     return False, "ok"
 
 
+def enhance_image(img):
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    mean_brightness = np.mean(gray)
+
+    target = 120.0
+    ratio = target / (mean_brightness + 1e-5)
+
+    # Cap at your safe limits — never exceed 1.1 alpha or 10 beta
+    alpha = float(np.clip(ratio, 0.9, 1.1))
+    beta = 10 if mean_brightness < 120 else 0  # only add brightness if image is dark
+
+    img = cv2.convertScaleAbs(img, alpha=alpha, beta=beta)
+    return img
+
+
 _insight_app = None
 
 
@@ -231,6 +246,7 @@ def _get_insight_app():
 def extract_embedding(image_path: str) -> Tuple[Optional[np.ndarray], Optional[str]]:
     full_path = os.path.join(BASE_DIR, image_path) if not os.path.isabs(image_path) else image_path
     img = cv2.imread(full_path)
+    img = enhance_image(img)
     if img is None:
         logger.warning("[PIPELINE] Cannot read image: %s", full_path)
         return None, "تعذّر قراءة الصورة المرفوعة."
