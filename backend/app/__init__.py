@@ -2,7 +2,6 @@ from fileinput import filename
 import os
 from flask import Flask, app,send_from_directory, jsonify
 from flask_cors import CORS
-from .config import Config
 from .extensions import mysql, jwt
 from .routes.auth import auth_bp
 from .routes.missing_person import missing_person_bp
@@ -24,9 +23,10 @@ def create_app():
                 static_url_path='/static')
     
     try:
-        app.config.from_object('config.Config')  
+        from .config import Config
+        app.config.from_object(Config)  
     except:
-        app.config.from_object('config_railway.Config') 
+        app.config.from_object('config_railway.Config')  
 
     CORS(
         app,
