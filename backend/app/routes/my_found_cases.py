@@ -111,7 +111,7 @@ def delete_found_case(found_id):
     owner_col = _owner_col(role)
 
     try:
-        cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)  # ← DictCursor to fetch faiss_id
+        cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor) 
 
         cur.execute(
             f"SELECT found_id, faiss_id FROM found_persons WHERE found_id = %s AND {owner_col} = %s",
@@ -122,7 +122,7 @@ def delete_found_case(found_id):
             cur.close()
             return jsonify({"message": "البلاغ غير موجود أو لا تملك صلاحية حذفه"}), 404
 
-        faiss_id = row["faiss_id"]  # ← grab before delete
+        faiss_id = row["faiss_id"] 
 
         cur.execute("DELETE FROM found_persons WHERE found_id = %s", (found_id,))
         mysql.connection.commit()
@@ -131,7 +131,6 @@ def delete_found_case(found_id):
     except Exception as e:
         return jsonify({"message": "فشل حذف البلاغ", "error": str(e)}), 500
 
-    # After DB delete succeeds, clean up FAISS
     if faiss_id is not None:
         delete_embedding_from_index(faiss_id, category="found")
 

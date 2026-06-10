@@ -67,7 +67,7 @@ def load_faiss_index(category: str) -> faiss.Index:
     else:
         _ensure_dirs()
         flat  = faiss.IndexFlatIP(FACE_EMBEDDING_DIM)
-        index = faiss.IndexIDMap2(flat)              # ← supports deletion
+        index = faiss.IndexIDMap2(flat)           
         logger.info("[FAISS] Created new %s index", category)
 
     _faiss_cache[category] = index
@@ -81,10 +81,9 @@ def _save_faiss_index(index: faiss.Index, category: str) -> None:
 
 
 def add_embedding_to_index(embedding: np.ndarray, category: str, faiss_id: int) -> int:
-    """Add embedding using an explicit ID (DB primary key). Returns the same faiss_id."""
     index = load_faiss_index(category)
-    vec   = embedding.astype(np.float32).reshape(1, -1)
-    ids   = np.array([faiss_id], dtype=np.int64)
+    vec = embedding.astype(np.float32).reshape(1, -1)
+    ids = np.array([faiss_id], dtype=np.int64)
     index.add_with_ids(vec, ids)
     _save_faiss_index(index, category)
     logger.debug("[FAISS] Added to '%s' index → faiss_id=%d", category, faiss_id)
@@ -219,7 +218,6 @@ def enhance_image(img):
     target = 120.0
     ratio = target / (mean_brightness + 1e-5)
 
-    # Cap at your safe limits — never exceed 1.1 alpha or 10 beta
     alpha = float(np.clip(ratio, 0.9, 1.1))
     beta = 10 if mean_brightness < 120 else 0  # only add brightness if image is dark
 
@@ -302,7 +300,7 @@ def save_image(file_storage, category: str) -> str:
     _ensure_dirs()
     dest_dir = MISSING_IMG_DIR if category == "missing" else FOUND_IMG_DIR
 
-    ext      = os.path.splitext(file_storage.filename or "")[1].lower() or ".jpg"
+    ext = os.path.splitext(file_storage.filename or "")[1].lower() or ".jpg"
     filename = f"{uuid.uuid4().hex}{ext}"
     abs_path = os.path.join(dest_dir, filename)
 
@@ -391,3 +389,5 @@ def get_found_person_by_faiss_id(mysql, faiss_id: int) -> Optional[dict]:
     except Exception:
         logger.exception("[DB] get_found_person_by_faiss_id failed for faiss_id=%s", faiss_id)
         return None
+
+

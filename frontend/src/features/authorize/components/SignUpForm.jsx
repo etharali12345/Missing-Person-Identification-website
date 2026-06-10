@@ -150,7 +150,6 @@ export function SignUpForm({ submitted, setSubmitted }) {
                   value={userData.password}
                   onChange={handlePasswordChange}
                 />
-
                 <span
                   onClick={() => setShowPassword((prev) => !prev)}
                   style={{
@@ -164,6 +163,9 @@ export function SignUpForm({ submitted, setSubmitted }) {
                 >
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </span>
+                <div className="invalid-feedback">
+                  يجب أن تكون كلمة المرور 6 أحرف على الأقل
+                </div>
               </div>
 
               <div className="invalid-feedback">

@@ -101,8 +101,7 @@ def delete_missing_case(missing_id):
     user_id = current_user.get("id")
 
     try:
-        #explain what does this do why do we need db???
-        cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)  # ← DictCursor to fetch faiss_id
+        cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor) 
 
         cur.execute(
             "SELECT missing_id, faiss_id FROM missing_persons WHERE missing_id = %s AND user_id = %s",
@@ -122,7 +121,6 @@ def delete_missing_case(missing_id):
     except Exception as e:
         return jsonify({"message": "فشل حذف البلاغ", "error": str(e)}), 500
 
-    # After DB delete succeeds, clean up FAISS
     if faiss_id is not None:
         delete_embedding_from_index(faiss_id, category="missing")
 

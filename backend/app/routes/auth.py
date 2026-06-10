@@ -162,12 +162,12 @@ def login():
 
             if status == "pending":
                 return jsonify({
-                    "message": "حسابك لا يزال قيد المراجعة. يرجى الانتظار حتى يتم اعتماده."
+                    "message": "طلبك لا يزال قيد المراجعة. يرجى الانتظار حتى يتم اعتماده"
                 }), 403
 
             if status == "rejected":
                 return jsonify({
-                    "message": "تم رفض تسجيل حسابك."
+                    "message": "تم رفض طلب تسجيل حسابك."
                 }), 403
 
             access_token = create_access_token(identity={

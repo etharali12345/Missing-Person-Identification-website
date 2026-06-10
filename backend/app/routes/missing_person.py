@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 missing_person_bp = Blueprint("missing_person", __name__)
 
-MATCH_THRESHOLD     = 0.677
+MATCH_THRESHOLD = 0.677
 UNCERTAIN_THRESHOLD = 0.60
 
 
@@ -39,7 +39,6 @@ def _err(message: str, http: int = 400):
 
 
 def _db_insert_missing(cur, user_id: int, fields: dict, image_path: str) -> int:
-    """Insert into missing_persons. faiss_id is set right after via UPDATE."""
     cur.execute(
         """
         INSERT INTO missing_persons
@@ -64,7 +63,6 @@ def _db_insert_missing(cur, user_id: int, fields: dict, image_path: str) -> int:
 
 
 def _db_insert_match_result(cur, missing_id: int, found_id: int, similarity: float, status: str) -> int:
-    """Insert into match_results and return the new match_id."""
     cur.execute(
         """
         INSERT INTO match_results
@@ -106,6 +104,7 @@ def send_missing_report():
         image_path: str = save_image(image_file, category="missing")
         embedding, rejection_reason = extract_embedding(image_path)
     except Exception:
+        #add deletion 
         logger.exception("Image save/embedding failed")
         return _err("فشلت معالجة الصورة، يرجى المحاولة مرة أخرى", 500)
 
@@ -150,7 +149,6 @@ def send_missing_report():
             try:
                 cur = mysql.connection.cursor()
 
-                # Always assign faiss_id on insert
                 new_missing_id = _db_insert_missing(cur, user_id, fields, image_path)
                 add_embedding_to_index(embedding, category="missing", faiss_id=new_missing_id)
                 cur.execute(
@@ -179,7 +177,7 @@ def send_missing_report():
                 "details":    matched,
             }, "Match found.")
 
-    # ====================================== Uncertain
+    # ====================================== uncertain
     if is_uncertain:
         candidate = get_found_person_by_faiss_id(mysql, faiss_id)
 
@@ -222,7 +220,7 @@ def send_missing_report():
                 "details":    candidate,
             }, "Possible match found. Please validate.")
 
-    # ====================================== NO MATCH
+    # ====================================== no Match
     cur = None
     try:
         cur = mysql.connection.cursor()

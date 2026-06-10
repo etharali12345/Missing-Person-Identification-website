@@ -75,7 +75,6 @@ export function LoginForm() {
               value={password}
               onChange={handlePasswordChange}
             />
-
             <span
               onClick={() => setShowPassword((prev) => !prev)}
               style={{
@@ -89,8 +88,9 @@ export function LoginForm() {
             >
               {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
             </span>
+            <div className="invalid-feedback">الرجاء إدخال كلمة المرور</div>{" "}
+            {/* ← moved inside */}
           </div>
-          <div className="invalid-feedback">الرجاء إدخال كلمة المرور</div>
         </div>
         {error && (
           <div

@@ -148,7 +148,7 @@ def delete_missing(missing_id):
             cur.close()
             return jsonify({"message": "المفقود غير موجود"}), 404
 
-        faiss_id = row["faiss_id"]  # ← grab before delete
+        faiss_id = row["faiss_id"] 
 
         cur.execute("DELETE FROM missing_persons WHERE missing_id = %s", (missing_id,))
         mysql.connection.commit()

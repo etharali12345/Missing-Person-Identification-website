@@ -151,7 +151,7 @@ def delete_found(found_id):
         return err
 
     try:
-        cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)  # ← DictCursor
+        cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)  
 
         cur.execute(
             "SELECT found_id, faiss_id FROM found_persons WHERE found_id = %s",
@@ -162,7 +162,7 @@ def delete_found(found_id):
             cur.close()
             return jsonify({"message": "المعثور عليه غير موجود"}), 404
 
-        faiss_id = row["faiss_id"]  # ← grab before delete
+        faiss_id = row["faiss_id"]  
 
         cur.execute("DELETE FROM found_persons WHERE found_id = %s", (found_id,))
         mysql.connection.commit()

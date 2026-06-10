@@ -6,8 +6,8 @@ export function Home() {
         <div className="hero-overlay" />
         <div className="hero-content">
           <h1>
-            في رحلة البحث عن أحبائك، تتلألأ شجاعتك ونحن معك حتى
-            <br /> تشرق الحقيقة وتعود الأحباب
+            إلي كل قلب اثقله الفقد وكسره الفراق قاتل الله الفقد <br /> وجمعنا
+            بمن نحب في خير وعافيه
           </h1>
         </div>
       </section>

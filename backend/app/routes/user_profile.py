@@ -42,8 +42,8 @@ def update_user_info():
     if not data:
         return jsonify({"error": "لا توجد بيانات"}), 400
 
-    first_name     = sanitize_value(data.get("first_name"))
-    last_name      = sanitize_value(data.get("last_name"))
+    first_name  = sanitize_value(data.get("first_name"))
+    last_name  = sanitize_value(data.get("last_name"))
     email_or_phone = sanitize_value(data.get("email_or_phone"), expected_type="phone")
 
     if not first_name or not last_name or not email_or_phone:
