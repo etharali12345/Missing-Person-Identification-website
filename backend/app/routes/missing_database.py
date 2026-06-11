@@ -56,11 +56,18 @@ def get_missing_database():
         for row in rows:
             missing_id, full_name, image_path, match_id, match_status = row
 
+            if match_status == "match":
+                frontend_status = "match"
+            elif match_status == "uncertain":
+                frontend_status = "uncertain"
+            else:
+                frontend_status = "nomatch"
+
             entry = {
                 "id":         missing_id,
                 "full_name":  full_name,
                 "image_path": image_path,
-                "status":     "match" if match_status == "match" else "nomatch",
+                "status":     frontend_status,
             }
 
             if match_id and match_status in ("match", "uncertain"):
