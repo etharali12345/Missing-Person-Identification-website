@@ -55,3 +55,23 @@ export const cancelMatch = async (matchId) => {
     throw new Error(message);
   }
 };
+
+export const confirmUncertainMatch = async (matchId) => {
+  try {
+    await api.patch(`/found-match/${matchId}/confirm`);
+  } catch (error) {
+    const message =
+      error.response?.data?.message || "حدث خطأ أثناء تأكيد التطابق";
+    throw new Error(message);
+  }
+};
+
+export const rejectUncertainMatch = async (matchId) => {
+  try {
+    await api.patch(`/found-match/${matchId}/reject`);
+  } catch (error) {
+    const message =
+      error.response?.data?.message || "حدث خطأ أثناء رفض التطابق";
+    throw new Error(message);
+  }
+};

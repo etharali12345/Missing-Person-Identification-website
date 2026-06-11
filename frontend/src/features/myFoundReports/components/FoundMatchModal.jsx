@@ -1,6 +1,4 @@
 import { BaseModal } from "../../../components/shared/list/BaseModal";
-import { ImageShow } from "../../../components/shared/ImageShow";
-import { CircularProgress } from "../../../components/shared/CircularProgress";
 import { LinearProgress } from "../../../components/shared/LinearProgress";
 import { FoundMatchDetails } from "../../foundReport/components/result/FoundMatchDetails";
 import "../../../components/shared/ReportResult.css";
@@ -12,11 +10,17 @@ export function FoundMatchModal({
   loading,
   onCancel,
   onCancelMatch,
+  onConfirmMatch,
+  onRejectMatch,
   matchId,
+  status = "match",
+  allowUncertainHandle = false,
 }) {
   const [showMatchCancelConfirm, setMatchCancelConfirm] = useState(false);
 
-  const genderLabel = details?.gender === "male" ? "ذكر" : "أنثى";
+  const isUncertain = status === "uncertain";
+  const isMatch = status === "match";
+
   const percentage = details?.percentage
     ? `${Math.round(details.percentage * 100)}%`
     : null;
@@ -38,14 +42,25 @@ export function FoundMatchModal({
 
   const handleConfirmNo = () => setMatchCancelConfirm(false);
 
+  const handleConfirmMatch = () => {
+    onConfirmMatch(matchId);
+    onCancel();
+  };
+
+  const handleRejectMatch = () => {
+    onRejectMatch(matchId);
+    onCancel();
+  };
+
   useEffect(() => {
     if (showMatchCancelConfirm && confirmRef.current) {
       const modalBody = confirmRef.current.closest(".modal-body");
-      if (modalBody) {
-        modalBody.scrollTop = modalBody.scrollHeight;
-      }
+      if (modalBody) modalBody.scrollTop = modalBody.scrollHeight;
     }
   }, [showMatchCancelConfirm]);
+
+  const showCancelMatch = isMatch && onCancelMatch;
+  const showUncertainActions = isUncertain && allowUncertainHandle;
 
   return (
     <BaseModal
@@ -54,11 +69,7 @@ export function FoundMatchModal({
       onCancel={handleCancel}
       customClass="custome-modal"
       footer={
-        <button
-          type="button"
-          className="btn-close"
-          onClick={handleCancel}
-        ></button>
+        <button type="button" className="btn-close" onClick={handleCancel} />
       }
     >
       {loading && (
@@ -77,10 +88,41 @@ export function FoundMatchModal({
             <h5 className="text-center">معلومات المفقود</h5>
 
             <p className="text-center mb-0">نسبة التطابق:</p>
-            <p className="percentage">{percentage}</p>
-            <LinearProgress value={details.percentage} color="green" />
+            <p
+              className="percentage"
+              style={{ color: isUncertain ? "#ce9c07" : "green" }}
+            >
+              {percentage}
+            </p>
+            <LinearProgress
+              value={details.percentage}
+              color={isUncertain ? "yellow" : "green"}
+            />
             <FoundMatchDetails details={details} />
-            {onCancelMatch && (
+
+            {showUncertainActions && (
+              <>
+                <p className="text-center fw-bold mb-3 mt-2">
+                  هل هذا هو نفس الشخص؟
+                </p>
+                <div className="d-flex gap-2">
+                  <button
+                    className="btn btn-ok w-50"
+                    onClick={handleConfirmMatch}
+                  >
+                    نعم، نفس الشخص
+                  </button>
+                  <button
+                    className="btn btn-no w-50"
+                    onClick={handleRejectMatch}
+                  >
+                    لا، ليس نفس الشخص
+                  </button>
+                </div>
+              </>
+            )}
+
+            {showCancelMatch && (
               <button
                 className="btn btn-cancle-match w-100 mt-3"
                 onClick={handleCancelMatchClick}

@@ -50,7 +50,7 @@ def get_my_found_cases():
                     SELECT match_id
                     FROM match_results
                     WHERE found_id = fp.found_id
-                      AND status = 'match'
+                      AND status IN ('match', 'uncertain') 
                     ORDER BY similarity_score DESC
                     LIMIT 1
                 )
@@ -91,7 +91,7 @@ def get_my_found_cases():
                 "status": frontend_status,
             }
 
-            if match_id and match_status == "match":
+            if match_id and match_status in ("match", "uncertain"):
                 entry["matchId"] = match_id
 
             results.append(entry)
@@ -305,3 +305,70 @@ def cancel_match(match_id):
 
     except Exception as e:
         return jsonify({"message": "فشل إلغاء التطابق", "error": str(e)}), 500
+    
+
+
+
+@my_found_bp.route("/found-match/<int:match_id>/confirm", methods=["PATCH"])
+@jwt_required()
+def confirm_uncertain_match(match_id):
+    current_user = get_jwt_identity()
+    uploader_id = current_user.get("id")
+    role = current_user.get("role")
+    owner_col = _owner_col(role)
+
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute(f"""
+            SELECT mr.match_id FROM match_results mr
+            JOIN found_persons fp ON fp.found_id = mr.found_id
+            WHERE mr.match_id = %s AND mr.status = 'uncertain'
+              AND fp.{owner_col} = %s
+        """, (match_id, uploader_id))
+        if not cur.fetchone():
+            cur.close()
+            return jsonify({"message": "التطابق غير موجود أو لا تملك صلاحية تعديله"}), 404
+
+        cur.execute(
+            "UPDATE match_results SET status = 'match' WHERE match_id = %s",
+            (match_id,)
+        )
+        mysql.connection.commit()
+        cur.close()
+        return jsonify({"message": "تم تأكيد التطابق"}), 200
+
+    except Exception as e:
+        return jsonify({"message": "فشل تأكيد التطابق", "error": str(e)}), 500
+
+
+
+@my_found_bp.route("/found-match/<int:match_id>/reject", methods=["PATCH"])
+@jwt_required()
+def reject_uncertain_match(match_id):
+    current_user = get_jwt_identity()
+    uploader_id = current_user.get("id")
+    role = current_user.get("role")
+    owner_col = _owner_col(role)
+
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute(f"""
+            SELECT mr.match_id FROM match_results mr
+            JOIN found_persons fp ON fp.found_id = mr.found_id
+            WHERE mr.match_id = %s AND mr.status = 'uncertain'
+              AND fp.{owner_col} = %s
+        """, (match_id, uploader_id))
+        if not cur.fetchone():
+            cur.close()
+            return jsonify({"message": "التطابق غير موجود أو لا تملك صلاحية تعديله"}), 404
+
+        cur.execute(
+            "UPDATE match_results SET status = 'no_match' WHERE match_id = %s",
+            (match_id,)
+        )
+        mysql.connection.commit()
+        cur.close()
+        return jsonify({"message": "تم رفض التطابق"}), 200
+
+    except Exception as e:
+        return jsonify({"message": "فشل رفض التطابق", "error": str(e)}), 500

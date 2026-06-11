@@ -17,6 +17,8 @@ export function MyFoundReportsPage() {
     matchDetails,
     matchLoading,
     handleCancelMatch,
+    handleConfirmMatch,
+    handleRejectMatch,
   } = useMyFoundReports();
 
   return (
@@ -48,6 +50,9 @@ export function MyFoundReportsPage() {
                 matchDetails={matchDetails}
                 matchLoading={matchLoading}
                 onCancelMatch={handleCancelMatch}
+                allowUncertainHandle={true}
+                onConfirmMatch={handleConfirmMatch}
+                onRejectMatch={handleRejectMatch}
               />
             </div>
           ))

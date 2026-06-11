@@ -5,6 +5,8 @@ import {
   updateFound,
   getMatchDetails,
   cancelMatch,
+  confirmUncertainMatch,
+  rejectUncertainMatch,
 } from "../services/MyFoundServices";
 
 export function useMyFoundReports() {
@@ -79,6 +81,34 @@ export function useMyFoundReports() {
     }
   }, []);
 
+  const handleConfirmMatch = useCallback(async (matchId) => {
+    try {
+      await confirmUncertainMatch(matchId);
+      setFoundList((prev) =>
+        prev.map((item) =>
+          item.matchId === matchId ? { ...item, status: "match" } : item,
+        ),
+      );
+    } catch (err) {
+      console.error(err);
+    }
+  }, []);
+
+  const handleRejectMatch = useCallback(async (matchId) => {
+    try {
+      await rejectUncertainMatch(matchId);
+      setFoundList((prev) =>
+        prev.map((item) =>
+          item.matchId === matchId
+            ? { ...item, status: "nomatch", matchId: undefined }
+            : item,
+        ),
+      );
+    } catch (err) {
+      console.error(err);
+    }
+  }, []);
+
   useEffect(() => {
     getFoundList();
   }, [getFoundList]);
@@ -94,5 +124,7 @@ export function useMyFoundReports() {
     matchDetails,
     matchLoading,
     handleCancelMatch,
+    handleConfirmMatch,
+    handleRejectMatch,
   };
 }
