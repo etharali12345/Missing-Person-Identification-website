@@ -19,8 +19,11 @@ export function CardProfile({
   onCaseProfile,
   caseProfile,
   caseProfileLoading,
+  allowUncertainHandle,
+  onConfirmMatch,
+  onRejectMatch,
 }) {
-  const isMatch = profile.status === "match";
+  const hasMatch = profile.status === "match" || profile.status === "uncertain";
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [showCaseProfileModal, setShowCaseProfileModal] = useState(false);
@@ -58,11 +61,16 @@ export function CardProfile({
         <div className="profile-text">
           <div className="profile-name">{profile.full_name}</div>
           <div className="profile-status-label">
-            الحالة: {isMatch ? "تطابق" : "لا تطابق"}
+            الحالة:{" "}
+            {profile.status === "match"
+              ? "تطابق"
+              : profile.status === "uncertain"
+                ? " تطابق محتمل"
+                : "لا تطابق"}
           </div>
         </div>
 
-        {isMatch ? (
+        {hasMatch ? (
           <>
             {!DeleteModal && (
               <div className="action-row">
@@ -190,6 +198,10 @@ export function CardProfile({
         onCancel={() => setShowMatchDetailsModal(false)}
         onCancelMatch={onCancelMatch}
         matchId={profile.matchId}
+        status={profile.status}
+        allowUncertainHandle={allowUncertainHandle}
+        onConfirmMatch={onConfirmMatch}
+        onRejectMatch={onRejectMatch}
       />
     </>
   );

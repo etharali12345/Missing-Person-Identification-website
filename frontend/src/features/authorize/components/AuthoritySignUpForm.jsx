@@ -61,7 +61,7 @@ export function AuthoritySignUpForm({ role, userData, handleDataChange }) {
                   onChange={handleAuthorityTypeChange}
                 />
                 <span className="custom-radio-circle"></span>
-                <span className="small">جهة خدمية</span>
+                <span className="small">جهة حكومية</span>
               </label>
             </div>
           </div>

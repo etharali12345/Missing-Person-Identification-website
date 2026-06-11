@@ -27,3 +27,27 @@
 .slow-spinner {
   animation-duration: 0.5s !important;
 }
+
+.btn-ok {
+  background-color: #7c7c7c;
+  border-color: none;
+  color: white;
+}
+
+.btn-ok:hover {
+  background-color: #157347;
+  border-color: #146c43;
+  color: white;
+}
+
+.btn-no {
+  background-color: #7c7c7c;
+  border-color: none;
+  color: white;
+}
+
+.btn-no:hover {
+  background-color: #d31f31;
+  border-color: #b02a37;
+  color: white;
+}

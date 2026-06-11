@@ -23,6 +23,10 @@
   background: linear-gradient(#fd0000 0%, #700505 100%);
 }
 
+.status-uncertain {
+  background: linear-gradient(#ffdc19 0%, #a38602 100%);
+}
+
 /*image*/
 .image-outer-box {
   position: relative;

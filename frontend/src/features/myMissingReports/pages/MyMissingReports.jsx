@@ -16,6 +16,8 @@ export function MyMissingReportsPage() {
     handleMatchDetails,
     matchDetails,
     matchLoading,
+    handleConfirmMatch,
+    handleRejectMatch,
   } = useMyMissingReports();
 
   return (
@@ -47,6 +49,9 @@ export function MyMissingReportsPage() {
                   onMatchDetails={handleMatchDetails}
                   matchDetails={matchDetails}
                   matchLoading={matchLoading}
+                  allowUncertainHandle={true}
+                  onConfirmMatch={handleConfirmMatch}
+                  onRejectMatch={handleRejectMatch}
                 />
               </div>
             ))

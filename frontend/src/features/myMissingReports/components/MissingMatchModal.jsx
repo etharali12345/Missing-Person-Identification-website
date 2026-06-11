@@ -13,8 +13,15 @@ export function MissingMatchModal({
   onCancel,
   onCancelMatch,
   matchId,
+  status = "match",
+  allowUncertainHandle = false,
+  onConfirmMatch,
+  onRejectMatch,
 }) {
   const [showMatchCancelConfirm, setMatchCancelConfirm] = useState(false);
+
+  const isUncertain = status === "uncertain";
+  const isMatch = status === "match";
 
   const genderLabel = details?.gender === "male" ? "ذكر" : "أنثى";
   const percentage = details?.percentage
@@ -38,14 +45,26 @@ export function MissingMatchModal({
 
   const handleConfirmNo = () => setMatchCancelConfirm(false);
 
+  const handleConfirmMatch = () => {
+    onConfirmMatch(matchId);
+    onCancel();
+  };
+
+  const handleRejectMatch = () => {
+    onRejectMatch(matchId);
+    onCancel();
+  };
+
   useEffect(() => {
     if (showMatchCancelConfirm && confirmRef.current) {
       const modalBody = confirmRef.current.closest(".modal-body");
-      if (modalBody) {
-        modalBody.scrollTop = modalBody.scrollHeight;
-      }
+      if (modalBody) modalBody.scrollTop = modalBody.scrollHeight;
     }
   }, [showMatchCancelConfirm]);
+
+  // Derive which action section to show
+  const showCancelMatch = isMatch && onCancelMatch;
+  const showUncertainActions = isUncertain && allowUncertainHandle;
 
   return (
     <BaseModal
@@ -54,11 +73,7 @@ export function MissingMatchModal({
       onCancel={handleCancel}
       customClass="custome-modal"
       footer={
-        <button
-          type="button"
-          className="btn-close"
-          onClick={handleCancel}
-        ></button>
+        <button type="button" className="btn-close" onClick={handleCancel} />
       }
     >
       {loading && (
@@ -77,10 +92,46 @@ export function MissingMatchModal({
             <h5 className="text-center">معلومات المعثور عليه</h5>
 
             <p className="text-center mb-0">نسبة التطابق:</p>
-            <p className="percentage">{percentage}</p>
-            <LinearProgress value={details.percentage} color="green" />
+            <p
+              className="percentage"
+              style={{ color: isUncertain ? "#ce9c07" : "green" }}
+            >
+              {percentage}
+            </p>
+
+            <LinearProgress
+              value={details.percentage}
+              color={isUncertain ? "yellow" : "green"}
+            />
             <MissingMatchDetails details={details} />
-            {onCancelMatch && (
+
+            {/* Uncertain: confirm or reject */}
+            {showUncertainActions && (
+              <>
+                <p className="text-center t fw-bold mb-3 mt-2">
+                  هل هذا هو نفس الشخص؟
+                </p>
+
+                <div className="d-flex gap-2">
+                  <button
+                    className="btn btn-ok w-50"
+                    onClick={handleConfirmMatch}
+                  >
+                    نعم، نفس الشخص
+                  </button>
+
+                  <button
+                    className="btn btn-no w-50"
+                    onClick={handleRejectMatch}
+                  >
+                    لا، ليس نفس الشخص
+                  </button>
+                </div>
+              </>
+            )}
+
+            {/* Match: cancel (not shown for uncertain) */}
+            {showCancelMatch && (
               <button
                 className="btn btn-cancle-match w-100 mt-3"
                 onClick={handleCancelMatchClick}

@@ -14,6 +14,7 @@ ALLOWED_FIELDS = {
 
 REQUIRED_IF_SENT = {"full_name", "phone_number1", "phone_number2"}
 
+#add status IN ('match', 'uncertain')
 
 @my_missing_bp.route("/my-missing-cases", methods=["GET"])
 @jwt_required()
@@ -43,7 +44,7 @@ def get_my_missing_cases():
                     SELECT match_id
                     FROM match_results
                     WHERE missing_id = mp.missing_id
-                      AND status = 'match'
+                      AND status IN ('match', 'uncertain') 
                     ORDER BY similarity_score DESC
                     LIMIT 1
                 )
@@ -260,3 +261,62 @@ def get_match_details(match_id):
 
     except Exception as e:
         return jsonify({"message": "فشل جلب تفاصيل التطابق", "error": str(e)}), 500
+
+
+
+@my_missing_bp.route("/my-missing-match/<int:match_id>/confirm", methods=["PATCH"])
+@jwt_required()
+def confirm_uncertain_match(match_id):
+    current_user = get_jwt_identity()
+    user_id = current_user.get("id")
+
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute("""
+            SELECT mr.match_id FROM match_results mr
+            JOIN missing_persons mp ON mp.missing_id = mr.missing_id
+            WHERE mr.match_id = %s AND mr.status = 'uncertain' AND mp.user_id = %s
+        """, (match_id, user_id))
+        if not cur.fetchone():
+            cur.close()
+            return jsonify({"message": "التطابق غير موجود أو لا تملك صلاحية تعديله"}), 404
+
+        cur.execute(
+            "UPDATE match_results SET status = 'match' WHERE match_id = %s",
+            (match_id,)
+        )
+        mysql.connection.commit()
+        cur.close()
+        return jsonify({"message": "تم تأكيد التطابق"}), 200
+
+    except Exception as e:
+        return jsonify({"message": "فشل تأكيد التطابق", "error": str(e)}), 500
+
+
+@my_missing_bp.route("/my-missing-match/<int:match_id>/reject", methods=["PATCH"])
+@jwt_required()
+def reject_uncertain_match(match_id):
+    current_user = get_jwt_identity()
+    user_id = current_user.get("id")
+
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute("""
+            SELECT mr.match_id FROM match_results mr
+            JOIN missing_persons mp ON mp.missing_id = mr.missing_id
+            WHERE mr.match_id = %s AND mr.status = 'uncertain' AND mp.user_id = %s
+        """, (match_id, user_id))
+        if not cur.fetchone():
+            cur.close()
+            return jsonify({"message": "التطابق غير موجود أو لا تملك صلاحية تعديله"}), 404
+
+        cur.execute(
+            "UPDATE match_results SET status = 'no_match' WHERE match_id = %s",
+            (match_id,)
+        )
+        mysql.connection.commit()
+        cur.close()
+        return jsonify({"message": "تم رفض التطابق"}), 200
+
+    except Exception as e:
+        return jsonify({"message": "فشل رفض التطابق", "error": str(e)}), 500
