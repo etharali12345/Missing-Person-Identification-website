@@ -42,7 +42,7 @@ def get_missing_database():
                     SELECT match_id
                     FROM match_results
                     WHERE missing_id = mp.missing_id
-                      AND status = 'match'
+                      AND status IN ('match', 'uncertain')
                     ORDER BY similarity_score DESC
                     LIMIT 1
                 )
@@ -63,7 +63,7 @@ def get_missing_database():
                 "status":     "match" if match_status == "match" else "nomatch",
             }
 
-            if match_id and match_status == "match":
+            if match_id and match_status in ("match", "uncertain"):
                 entry["matchId"] = match_id
 
             results.append(entry)
