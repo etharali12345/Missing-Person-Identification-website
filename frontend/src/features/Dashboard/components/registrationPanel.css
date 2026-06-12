@@ -137,3 +137,45 @@
 tr:hover td {
   background-color: #e5e6e986;
 }
+
+.id-filter-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  margin-top: 20px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 2px;
+  width: fit-content;
+  align-self: flex-start;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.15);
+}
+
+.id-filter-label {
+  color: #6b7280;
+  white-space: nowrap;
+}
+
+.id-filter-input {
+  width: 120px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 4px 8px;
+  outline: none;
+  font-size: 0.85rem;
+  color: #111827;
+  text-align: right;
+  background: #e8edf1;
+}
+
+.id-filter-input:focus {
+  border-color: #6b7280;
+  background: #fff;
+  border-color: #9fd7e0;
+}
+
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+}

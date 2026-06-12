@@ -66,7 +66,9 @@ export function LoginForm() {
 
         <div className="mb-4">
           <label className="form-label">كلمة المرور</label>
-          <div className="position-relative">
+          <div className="position-relative" style={{ height: "38px" }}>
+            {" "}
+            {/* ← fix */}
             <input
               type={showPassword ? "text" : "password"}
               className="form-control"
@@ -80,7 +82,7 @@ export function LoginForm() {
               style={{
                 position: "absolute",
                 left: "10px",
-                top: "50%",
+                top: "45%",
                 transform: "translateY(-50%)",
                 cursor: "pointer",
                 color: "#6c757d",
@@ -88,8 +90,7 @@ export function LoginForm() {
             >
               {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
             </span>
-            <div className="invalid-feedback">الرجاء إدخال كلمة المرور</div>{" "}
-            {/* ← moved inside */}
+            <div className="invalid-feedback">الرجاء إدخال كلمة المرور</div>
           </div>
         </div>
         {error && (

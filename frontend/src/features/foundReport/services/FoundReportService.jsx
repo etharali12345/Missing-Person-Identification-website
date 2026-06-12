@@ -17,7 +17,7 @@ export const submitFoundReportSVC = async (formData) => {
 
 export const validateUncertainSVC = async (matchId, percentage, decision) => {
   try {
-    await api.post(`/report/${matchId}/validate`, {
+    await api.post(`/found-report/${matchId}/validate`, {
       matchId,
       percentage,
       decision,

@@ -141,7 +141,7 @@ export function SignUpForm({ submitted, setSubmitted }) {
             <div className="mb-4">
               <label className="form-label">كلمة المرور</label>
 
-              <div className="position-relative">
+              <div className="position-relative" style={{ height: "38px" }}>
                 <input
                   type={showPassword ? "text" : "password"}
                   required
@@ -155,7 +155,7 @@ export function SignUpForm({ submitted, setSubmitted }) {
                   style={{
                     position: "absolute",
                     left: "10px",
-                    top: "50%",
+                    top: "45%",
                     transform: "translateY(-50%)",
                     cursor: "pointer",
                     color: "#6c757d",
@@ -166,10 +166,6 @@ export function SignUpForm({ submitted, setSubmitted }) {
                 <div className="invalid-feedback">
                   يجب أن تكون كلمة المرور 6 أحرف على الأقل
                 </div>
-              </div>
-
-              <div className="invalid-feedback">
-                يجب أن تكون كلمة المرور 6 أحرف على الأقل
               </div>
             </div>
 

@@ -11,6 +11,7 @@ from ..services.face_service import (
     sanitize_value,
     save_image,
     search_faiss_index,
+    delete_image_safe,
 )
 
 logger = logging.getLogger(__name__)
@@ -104,11 +105,12 @@ def send_missing_report():
         image_path: str = save_image(image_file, category="missing")
         embedding, rejection_reason = extract_embedding(image_path)
     except Exception:
-        #add deletion 
+        delete_image_safe(image_path)
         logger.exception("Image save/embedding failed")
         return _err("فشلت معالجة الصورة، يرجى المحاولة مرة أخرى", 500)
 
     if embedding is None:
+        delete_image_safe(image_path)
         return _err(rejection_reason, 422)
 
     try:

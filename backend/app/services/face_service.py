@@ -391,3 +391,9 @@ def get_found_person_by_faiss_id(mysql, faiss_id: int) -> Optional[dict]:
         return None
 
 
+def delete_image_safe(image_path: str):
+    try:
+        if image_path and os.path.exists(image_path):
+            os.remove(image_path)
+    except Exception:
+        logger.warning("Could not delete orphaned image: %s", image_path)

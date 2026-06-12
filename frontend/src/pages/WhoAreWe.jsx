@@ -59,6 +59,14 @@ export function WhoAreWe() {
             </article>
           </div>
         </div>
+
+        <h5 className="text-center mt-5 text-muted">
+          للتواصل معنا يرجى الارسال على البريد الالكتروني:
+          <br />
+          <span style={{ color: "#08a06d", fontSize: "inherit" }}>
+            hopeplatform26@gmail.com
+          </span>
+        </h5>
       </section>
     </div>
   );

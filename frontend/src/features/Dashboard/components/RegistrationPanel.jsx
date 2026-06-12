@@ -6,12 +6,15 @@ import { formatDate } from "../../../utils/formatDate";
 
 export function RegistrationPanel({ authorities, getAuthorityById }) {
   const [filter, setFilter] = useState("all");
+  const [idInput, setIdInput] = useState("");
+  const [idFilter, setIdFilter] = useState("");
   const navigate = useNavigate();
 
-  const filteredData =
-    filter === "all"
-      ? authorities
-      : authorities.filter((item) => item.status === "pending");
+  const filteredData = authorities
+    .filter((item) => filter === "all" || item.status === "pending")
+    .filter((item) =>
+      idFilter === "" ? true : String(item.authority_id).includes(idFilter),
+    );
 
   const getStatusDisplay = (status) => {
     switch (status) {
@@ -38,7 +41,6 @@ export function RegistrationPanel({ authorities, getAuthorityById }) {
   return (
     <div className="dashboard-container">
       <div className="main-card">
-        {/* Header Section */}
         <div className="card-header-custom">
           <h2 className="title-text">لوحة إدارة طلبات تسجيل الجهات الرسمية</h2>
           <div className="filter-group">
@@ -107,6 +109,20 @@ export function RegistrationPanel({ authorities, getAuthorityById }) {
             </tbody>
           </table>
         </div>
+      </div>
+
+      <div className="id-filter-box">
+        <span className="id-filter-label">رقم الطلب</span>
+        <input
+          type="text"
+          className="id-filter-input"
+          value={idInput}
+          onChange={(e) => setIdInput(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") setIdFilter(idInput);
+          }}
+          placeholder=""
+        />
       </div>
     </div>
   );
