@@ -392,8 +392,16 @@ def get_found_person_by_faiss_id(mysql, faiss_id: int) -> Optional[dict]:
 
 
 def delete_image_safe(image_path: str):
+    logger.info("[CLEANUP] delete_image_safe called with: %s", image_path)
     try:
-        if image_path and os.path.exists(image_path):
-            os.remove(image_path)
+        if not image_path:
+            return
+        full_path = os.path.join(BASE_DIR, image_path) if not os.path.isabs(image_path) else image_path
+        logger.info("[CLEANUP] Resolved full path: %s", full_path)
+        if os.path.exists(full_path):
+            os.remove(full_path)
+            logger.info("[CLEANUP] Deleted successfully")
+        else:
+            logger.warning("[CLEANUP] File not found at: %s", full_path)
     except Exception:
         logger.warning("Could not delete orphaned image: %s", image_path)

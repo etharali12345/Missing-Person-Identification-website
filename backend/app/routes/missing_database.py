@@ -2,7 +2,7 @@ from flask import Blueprint, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from ..extensions import mysql
 import MySQLdb.cursors
-from ..services.face_service import delete_embedding_from_index 
+from ..services.face_service import delete_embedding_from_index, delete_image_safe 
 
 missing_db_bp = Blueprint("missing_database", __name__)
 
@@ -147,7 +147,7 @@ def delete_missing(missing_id):
         cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)  # ← DictCursor
 
         cur.execute(
-            "SELECT missing_id, faiss_id FROM missing_persons WHERE missing_id = %s",
+            "SELECT missing_id, faiss_id, image_path FROM missing_persons WHERE missing_id = %s",
             (missing_id,)
         )
         row = cur.fetchone()
@@ -156,6 +156,7 @@ def delete_missing(missing_id):
             return jsonify({"message": "المفقود غير موجود"}), 404
 
         faiss_id = row["faiss_id"] 
+        image_path = row["image_path"]
 
         cur.execute("DELETE FROM missing_persons WHERE missing_id = %s", (missing_id,))
         mysql.connection.commit()
@@ -166,6 +167,8 @@ def delete_missing(missing_id):
 
     if faiss_id is not None:
         delete_embedding_from_index(faiss_id, category="missing")
+    if image_path:
+        delete_image_safe(image_path)
 
     return jsonify({"message": "تم حذف البلاغ بنجاح"}), 200
 

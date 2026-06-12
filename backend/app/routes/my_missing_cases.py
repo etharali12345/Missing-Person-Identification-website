@@ -2,8 +2,7 @@ from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 import MySQLdb.cursors
 from ..extensions import mysql
-from ..services.face_service import sanitize_value, delete_embedding_from_index  # ← added
-
+from ..services.face_service import sanitize_value, delete_embedding_from_index, delete_image_safe
 my_missing_bp = Blueprint("my_missing", __name__)
 
 ALLOWED_FIELDS = {
@@ -105,7 +104,7 @@ def delete_missing_case(missing_id):
         cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor) 
 
         cur.execute(
-            "SELECT missing_id, faiss_id FROM missing_persons WHERE missing_id = %s AND user_id = %s",
+            "SELECT missing_id, faiss_id, image_path FROM missing_persons WHERE missing_id = %s AND user_id = %s",
             (missing_id, user_id)
         )
         row = cur.fetchone()
@@ -113,7 +112,8 @@ def delete_missing_case(missing_id):
             cur.close()
             return jsonify({"message": "البلاغ غير موجود أو لا تملك صلاحية حذفه"}), 404
 
-        faiss_id = row["faiss_id"]  # ← grab before delete
+        faiss_id = row["faiss_id"] 
+        image_path = row["image_path"]
 
         cur.execute("DELETE FROM missing_persons WHERE missing_id = %s", (missing_id,))
         mysql.connection.commit()
@@ -124,6 +124,8 @@ def delete_missing_case(missing_id):
 
     if faiss_id is not None:
         delete_embedding_from_index(faiss_id, category="missing")
+    if image_path:
+        delete_image_safe(image_path)
 
     return jsonify({"message": "تم حذف البلاغ بنجاح"}), 200
 

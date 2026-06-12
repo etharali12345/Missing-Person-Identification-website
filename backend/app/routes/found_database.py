@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from ..extensions import mysql
-from ..services.face_service import delete_embedding_from_index 
+from ..services.face_service import delete_embedding_from_index, delete_image_safe 
 import MySQLdb.cursors
 
 
@@ -161,7 +161,7 @@ def delete_found(found_id):
         cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)  
 
         cur.execute(
-            "SELECT found_id, faiss_id FROM found_persons WHERE found_id = %s",
+            "SELECT found_id, faiss_id, image_path FROM found_persons WHERE found_id = %s",
             (found_id,)
         )
         row = cur.fetchone()
@@ -170,6 +170,7 @@ def delete_found(found_id):
             return jsonify({"message": "المعثور عليه غير موجود"}), 404
 
         faiss_id = row["faiss_id"]  
+        image_path = row["image_path"]
 
         cur.execute("DELETE FROM found_persons WHERE found_id = %s", (found_id,))
         mysql.connection.commit()
@@ -180,6 +181,8 @@ def delete_found(found_id):
 
     if faiss_id is not None:
         delete_embedding_from_index(faiss_id, category="found")
+    if image_path:
+        delete_image_safe(image_path)
 
     return jsonify({"message": "تم حذف البلاغ بنجاح"}), 200
 
