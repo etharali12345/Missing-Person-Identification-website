@@ -57,13 +57,8 @@ def create_app():
     init_scheduler(app)
     @app.route('/static/uploads/<path:filename>')
     def serve_image(filename):
-        print(f"[SERVE] filename requested: '{filename}'")
-        print(f"[SERVE] static_dir: '{static_dir}'")
         uploads_dir = os.path.join(static_dir, 'uploads')
         full_path   = os.path.join(uploads_dir, filename)
-        print(f"[SERVE] full_path: '{full_path}'")
-        print(f"[SERVE] file exists: {os.path.exists(full_path)}")
-        
         return send_from_directory(uploads_dir, filename)
     
 
