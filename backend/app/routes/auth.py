@@ -70,7 +70,7 @@ def signup():
                 return jsonify({"message": "Invalid role"}), 400
             
 
-            required = ["authority_type", "authority_name", "email", "password", "location", "license_number"]
+            required = ["authority_type", "authority_name", "email", "password", "location",]
             missing = [f for f in required if not request.form.get(f)]
             if missing:
                 return jsonify({"message": f"الحقول التالية مطلوبة: {', '.join(missing)}"}), 400

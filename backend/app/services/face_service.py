@@ -67,7 +67,7 @@ def load_faiss_index(category: str) -> faiss.Index:
     else:
         _ensure_dirs()
         flat  = faiss.IndexFlatIP(FACE_EMBEDDING_DIM)
-        index = faiss.IndexIDMap2(flat)           
+        index = faiss.IndexIDMap2(flat)
         logger.info("[FAISS] Created new %s index", category)
 
     _faiss_cache[category] = index
@@ -120,23 +120,24 @@ def search_faiss_index(
 
 # ============================================================================
 
-_detector_app = None
+_insight_app = None
 
-def _get_detector_app():
-    global _detector_app
-    if _detector_app is None:
+
+def _get_insight_app():
+    global _insight_app
+    if _insight_app is None:
         from insightface.app import FaceAnalysis
-        _detector_app = FaceAnalysis(
+        _insight_app = FaceAnalysis(
             name="buffalo_l",
-            allowed_modules=["detection"],
             providers=["CUDAExecutionProvider", "CPUExecutionProvider"],
         )
-        _detector_app.prepare(ctx_id=0, det_size=(320, 320))
-        logger.info("[InsightFace] Detection-only model loaded")
-    return _detector_app
+        _insight_app.prepare(ctx_id=0, det_size=(320, 320))
+        logger.info("[InsightFace] buffalo_l loaded (detection + recognition)")
+    return _insight_app
 
 
 _attrib_session = None
+
 
 def _get_attrib_session() -> ort.InferenceSession:
     global _attrib_session
@@ -147,6 +148,14 @@ def _get_attrib_session() -> ort.InferenceSession:
         )
         logger.info("[AttribNet] ONNX session loaded from %s", ATTRIB_MODEL_PATH)
     return _attrib_session
+
+
+def preload_models() -> None:
+    logger.info("[PRELOAD] Loading InsightFace and AttribNet models…")
+    _get_insight_app()
+    _get_attrib_session()
+    logger.info("[PRELOAD] All models ready")
+
 
 
 def _align_face_crop(img: np.ndarray, face) -> np.ndarray:
@@ -211,7 +220,7 @@ def _run_attrib_check(face_crop: np.ndarray, threshold: int = 250) -> Tuple[bool
     return False, "ok"
 
 
-def enhance_image(img):
+def enhance_image(img: np.ndarray) -> np.ndarray:
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     mean_brightness = np.mean(gray)
 
@@ -219,38 +228,32 @@ def enhance_image(img):
     ratio = target / (mean_brightness + 1e-5)
 
     alpha = float(np.clip(ratio, 0.9, 1.1))
-    beta = 10 if mean_brightness < 120 else 0  # only add brightness if image is dark
+    beta = 10 if mean_brightness < 120 else 0
 
     img = cv2.convertScaleAbs(img, alpha=alpha, beta=beta)
     return img
 
 
-_insight_app = None
-
-
-def _get_insight_app():
-    global _insight_app
-    if _insight_app is None:
-        from insightface.app import FaceAnalysis
-        _insight_app = FaceAnalysis(
-            name="buffalo_l",
-            providers=["CUDAExecutionProvider", "CPUExecutionProvider"],
-        )
-        _insight_app.prepare(ctx_id=0, det_size=(640, 640))
-        logger.info("[InsightFace] Full recognition model loaded")
-    return _insight_app
-
-
 def extract_embedding(image_path: str) -> Tuple[Optional[np.ndarray], Optional[str]]:
     full_path = os.path.join(BASE_DIR, image_path) if not os.path.isabs(image_path) else image_path
     img = cv2.imread(full_path)
-    img = enhance_image(img)
     if img is None:
         logger.warning("[PIPELINE] Cannot read image: %s", full_path)
         return None, "تعذّر قراءة الصورة المرفوعة."
 
-    detector = _get_detector_app()
-    faces = detector.get(img)
+    img = enhance_image(img)
+
+    app = _get_insight_app()
+
+    faces = app.get(img)
+
+    if len(faces) == 0:
+        h, w = img.shape[:2]
+        pad = int(max(h, w) * 0.3)
+        img_padded = cv2.copyMakeBorder(
+            img, pad, pad, pad, pad, cv2.BORDER_CONSTANT, value=(0, 0, 0)
+        )
+        faces = app.get(img_padded)
 
     if len(faces) == 0:
         logger.info("[PIPELINE] No face detected in %s", full_path)
@@ -261,7 +264,6 @@ def extract_embedding(image_path: str) -> Tuple[Optional[np.ndarray], Optional[s
         return None, "تم اكتشاف أكثر من وجه في الصورة، يرجى رفع صورة تحتوي على وجه واحد فقط."
 
     face = faces[0]
-    h, w = img.shape[:2]
 
     crop = _align_face_crop(img, face)
     if crop is None or crop.size == 0:
@@ -272,21 +274,10 @@ def extract_embedding(image_path: str) -> Tuple[Optional[np.ndarray], Optional[s
         logger.info("[PIPELINE] Attribute rejection: %s", reason)
         return None, reason
 
-    app = _get_insight_app()
-    faces_full = app.get(img)
-
-    if not faces_full:
-        pad = int(max(h, w) * 0.3)
-        img_padded = cv2.copyMakeBorder(
-            img, pad, pad, pad, pad, cv2.BORDER_CONSTANT, value=(0, 0, 0)
-        )
-        faces_full = app.get(img_padded)
-
-    if not faces_full:
+    if face.normed_embedding is None:
         return None, "تعذر التعرف على الوجه، يرجى رفع صورة أوضح"
 
-    best_face = max(faces_full, key=lambda f: f.det_score)
-    embedding = best_face.normed_embedding.astype(np.float32)
+    embedding = face.normed_embedding.astype(np.float32)
     logger.info("[PIPELINE] Embedding extracted successfully from %s", full_path)
     return embedding, None
 

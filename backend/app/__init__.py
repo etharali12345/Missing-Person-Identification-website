@@ -14,6 +14,7 @@ from .routes.missing_database import missing_db_bp
 from .routes.found_database import found_db_bp
 from .routes.user_profile import user_profile_bp
 from .routes.scheduler import init_scheduler
+from .services.face_service import preload_models
 
 def create_app():
     root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -55,6 +56,9 @@ def create_app():
     app.register_blueprint(found_db_bp, url_prefix="/api")
     app.register_blueprint(user_profile_bp, url_prefix="/api")
     init_scheduler(app)
+
+    preload_models()
+
     @app.route('/static/uploads/<path:filename>')
     def serve_image(filename):
         uploads_dir = os.path.join(static_dir, 'uploads')
@@ -84,4 +88,5 @@ def create_app():
                 'database': f'not connected {str(e)}'
             })
         
+    
     return app
