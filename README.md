@@ -13,29 +13,32 @@ The platform helps normal users, authorities, and administrators submit and mana
 
 ## User Roles
 
-| Role | What they can do |
-|---|---|
-| **Normal user** | Submit missing-person reports, manage owned reports and matches, and update their profile. |
-| **Authority** | Register for approval, submit found-person reports, manage owned reports, and view the missing-person database. |
-| **Admin** | Manage authority applications, both person databases, matches, and dashboard statistics. |
+| Role            | What they can do                                                                                                |
+| --------------- | --------------------------------------------------------------------------------------------------------------- |
+| **Normal user** | Submit missing-person reports, manage owned reports and matches, and update their profile.                      |
+| **Authority**   | Register for approval, submit found-person reports, manage owned reports, and view the missing-person database. |
+| **Admin**       | Manage authority applications, both person databases, matches, and dashboard statistics.                        |
 
 Authority accounts remain `pending` until an admin changes the status to `approved`; rejected accounts cannot log in.
 
 ## Features
 
 ### Normal users
+
 - Sign up and log in with email or phone.
 - Submit missing-person reports with an image and case details.
 - Edit or delete owned reports and validate uncertain matches.
 - Update profile information and password.
 
 ### Authorities
+
 - Submit authority registration with supporting documentation.
 - Submit and manage found-person reports.
 - Browse missing-person records and match details.
 - Confirm, reject, or cancel owned matches.
 
 ### Admins
+
 - Review authority applications and send approval/rejection notifications.
 - View authority, missing-report, and found-report statistics.
 - Browse, inspect, and delete records in both databases.
@@ -99,23 +102,32 @@ See [Setup Guide](docs/SETUP.md) for MySQL setup, environment variables, account
 
 ## API Overview
 
-| Base route | Purpose |
-|---|---|
-| `/api/auth/*` | Signup, login, current-user lookup, and logout |
-| `/api/admin/*` | Authority management and dashboard statistics |
-| `/api/missing-report/*`, `/api/report/*` | Create missing-person reports and validate matches |
-| `/api/my-missing-cases*`, `/api/my-missing-match*` | Manage a normal user's missing reports and matches |
-| `/api/found-report/*`, `/api/found-match/*` | Create found-person reports and validate owned matches |
-| `/api/my-found-cases*` | Manage an authority/admin user's found reports |
-| `/api/missing-database*` | Browse or manage missing-person database records |
-| `/api/found-database*` | Browse or manage found-person database records |
-| `/api/user-profile*` | Get and update a normal user's profile |
+| Base route                                         | Purpose                                                |
+| -------------------------------------------------- | ------------------------------------------------------ |
+| `/api/auth/*`                                      | Signup, login, current-user lookup, and logout         |
+| `/api/admin/*`                                     | Authority management and dashboard statistics          |
+| `/api/missing-report/*`, `/api/report/*`           | Create missing-person reports and validate matches     |
+| `/api/my-missing-cases*`, `/api/my-missing-match*` | Manage a normal user's missing reports and matches     |
+| `/api/found-report/*`, `/api/found-match/*`        | Create found-person reports and validate owned matches |
+| `/api/my-found-cases*`                             | Manage an authority/admin user's found reports         |
+| `/api/missing-database*`                           | Browse or manage missing-person database records       |
+| `/api/found-database*`                             | Browse or manage found-person database records         |
+| `/api/user-profile*`                               | Get and update a normal user's profile                 |
 
 See [API Reference](docs/API.md) for every route, method, role, and description.
 
 ## Screenshots
 
 <!-- TODO: add screenshot - home page -->
+
+### Home Page
+
+![Home Page](./screenshots/Home.png)
+<img src="./screenshots/home.png" width="600" height="400" alt="Home Page" />
+
+### SignUp Page
+
+![SingUp Page](./screenshots/Signup.png)
 
 <!-- TODO: add screenshot - missing-person report -->
 
