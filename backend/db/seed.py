@@ -1,18 +1,20 @@
 import os
 import sys
+from pathlib import Path
 
 import MySQLdb
+from dotenv import load_dotenv
 from werkzeug.security import generate_password_hash
+
+load_dotenv(Path(__file__).resolve().parents[2] / ".env")
 
 
 def main() -> int:
-    mysql_host = os.environ.get("MYSQL_HOST") or os.environ.get("MYSQLHOST")
-    mysql_port = int(os.environ.get("MYSQL_PORT") or os.environ.get("MYSQLPORT") or "3306")
-    mysql_user = os.environ.get("MYSQL_USER") or os.environ.get("MYSQLUSER")
-    mysql_password = os.environ.get("MYSQL_PASSWORD")
-    if mysql_password is None:
-        mysql_password = os.environ.get("MYSQLPASSWORD")
-    mysql_database = os.environ.get("MYSQL_DB") or os.environ.get("MYSQLDATABASE")
+    mysql_host = os.environ.get("MYSQL_HOST", "127.0.0.1")
+    mysql_port = int(os.environ.get("MYSQL_PORT", "3306"))
+    mysql_user = os.environ.get("MYSQL_USER", "root")
+    mysql_password = os.environ.get("MYSQL_PASSWORD", "")
+    mysql_database = os.environ.get("MYSQL_DB", "face_recognition_db")
 
     seed_user_email = os.environ.get("SEED_USER_EMAIL", "seed-user@example.invalid")
     seed_authority_email = os.environ.get("SEED_AUTHORITY_EMAIL", "seed-authority@example.invalid")
@@ -21,10 +23,9 @@ def main() -> int:
     missing_values = [
         name
         for name, value in (
-            ("MYSQL_HOST/MYSQLHOST", mysql_host),
-            ("MYSQL_USER/MYSQLUSER", mysql_user),
-            ("MYSQL_PASSWORD/MYSQLPASSWORD", mysql_password),
-            ("MYSQL_DB/MYSQLDATABASE", mysql_database),
+            ("MYSQL_HOST", mysql_host),
+            ("MYSQL_USER", mysql_user),
+            ("MYSQL_DB", mysql_database),
             ("SEED_USER_PASSWORD", os.environ.get("SEED_USER_PASSWORD")),
             ("SEED_AUTHORITY_PASSWORD", os.environ.get("SEED_AUTHORITY_PASSWORD")),
             ("SEED_ADMIN_PASSWORD", os.environ.get("SEED_ADMIN_PASSWORD")),

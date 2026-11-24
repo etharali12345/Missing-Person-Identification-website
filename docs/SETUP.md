@@ -12,33 +12,24 @@
 
 ## 1. Start MySQL
 
-Set the database variables from `.env.example`, export them in your shell, and start MySQL:
+Copy the environment template and fill in the placeholders:
 
 ```bash
-export MYSQL_HOST=127.0.0.1
-export MYSQL_PORT=3306
-export MYSQL_USER=<mysql-user>
-export MYSQL_PASSWORD=<mysql-password>
-export MYSQL_DB=face_recognition_db
+cp .env.example .env
 ```
+
+`backend/app/config.py` and `backend/db/seed.py` load the repository-root `.env` automatically.
 
 Create the database and tables:
 
 ```bash
 cd backend
-mysql -h "$MYSQL_HOST" -P "$MYSQL_PORT" -u "$MYSQL_USER" -p < db/schema.sql
+mysql -h 127.0.0.1 -P 3306 -u <mysql-user> -p < db/schema.sql
 ```
 
-Set placeholder seed-account credentials and run the idempotent seed script:
+Set the `SEED_*` placeholder credentials in `.env`, then run the idempotent seed script:
 
 ```bash
-export SEED_USER_EMAIL=seed-user@example.invalid
-export SEED_USER_PASSWORD=<seed-user-password>
-export SEED_AUTHORITY_EMAIL=seed-authority@example.invalid
-export SEED_AUTHORITY_PASSWORD=<seed-authority-password>
-export SEED_ADMIN_EMAIL=seed-admin@example.invalid
-export SEED_ADMIN_PASSWORD=<seed-admin-password>
-
 python db/seed.py
 ```
 
@@ -68,6 +59,7 @@ pip install -r requirements.txt
 
 | Name | Purpose |
 |---|---|
+| `FRONTEND_URL` | Allowed frontend origin |
 | `SECRET_KEY` | Flask secret key |
 | `MYSQL_HOST` | MySQL host |
 | `MYSQL_PORT` | MySQL port |
@@ -84,23 +76,6 @@ pip install -r requirements.txt
 | `MAIL_PASSWORD` | SMTP password |
 | `MAIL_DEFAULT_SENDER` | From address for notification emails |
 | `ADMIN_EMAIL` | Configured admin email value |
-
-### Railway configuration
-
-If local `backend/app/config.py` cannot load, `backend/config_railway.py` reads these environment variables:
-
-| Variable | Purpose |
-|---|---|
-| `SECRET_KEY` | Flask secret key |
-| `JWT_SECRET_KEY` | JWT signing key |
-| `MYSQLHOST` | MySQL host |
-| `MYSQLUSER` | MySQL user |
-| `MYSQLPASSWORD` | MySQL password |
-| `MYSQLDATABASE` | MySQL database name |
-| `MAIL_PASSWORD` | SMTP password |
-| `SEED_USER_EMAIL`, `SEED_USER_PASSWORD` | Placeholder normal-user seed account |
-| `SEED_AUTHORITY_EMAIL`, `SEED_AUTHORITY_PASSWORD` | Placeholder authority seed account |
-| `SEED_ADMIN_EMAIL`, `SEED_ADMIN_PASSWORD` | Placeholder admin seed account |
 
 Flask-CORS allows `http://localhost:5173`, `http://127.0.0.1:5173`, `http://127.0.0.1:5174`, and the deployed Vercel frontend origin.
 

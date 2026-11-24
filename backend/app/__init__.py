@@ -24,16 +24,19 @@ def create_app():
                 static_folder=static_dir, 
                 static_url_path='/static')
     
-    try:
-        from .config import Config
-        app.config.from_object(Config)  
-    except:
-        app.config.from_object('config_railway.Config')  
+    from .config import Config
+    app.config.from_object(Config)
 
     CORS(
         app,
         supports_credentials=True,
-        origins=[app.config["FRONTEND_URL"]],
+        origins=[
+            app.config["FRONTEND_URL"],
+            "http://localhost:5173",
+            "http://127.0.0.1:5173",
+            "http://127.0.0.1:5174",
+            "https://missing-person-identification-websi.vercel.app",
+        ],
         expose_headers=["set-cookie"]
     )
 

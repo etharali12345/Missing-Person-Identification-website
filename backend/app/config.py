@@ -1,19 +1,21 @@
-import os 
+import os
 from datetime import timedelta
+from pathlib import Path
+from dotenv import load_dotenv
+
+load_dotenv(Path(__file__).resolve().parents[2] / ".env")
 
 class Config:
     FRONTEND_URL = os.environ.get("FRONTEND_URL")
 
-    SECRET_KEY = os.environ.get('SECRET_KEY', 'dev-only-key')
-    MYSQL_HOST = os.environ.get('MYSQL_HOST') or os.environ.get('MYSQLHOST', '127.0.0.1')
-    MYSQL_PORT = int(os.environ.get('MYSQL_PORT') or os.environ.get('MYSQLPORT', '3306'))
-    MYSQL_USER = os.environ.get('MYSQL_USER') or os.environ.get('MYSQLUSER', 'root')
-    MYSQL_PASSWORD = os.environ.get('MYSQL_PASSWORD')
-    if MYSQL_PASSWORD is None:
-        MYSQL_PASSWORD = os.environ.get('MYSQLPASSWORD', '')
-    MYSQL_DB = os.environ.get('MYSQL_DB') or os.environ.get('MYSQLDATABASE', 'face_recognition_db')
+    SECRET_KEY = os.environ['SECRET_KEY']
+    MYSQL_HOST = os.environ.get('MYSQL_HOST', '127.0.0.1')
+    MYSQL_PORT = int(os.environ.get('MYSQL_PORT', '3306'))
+    MYSQL_USER = os.environ.get('MYSQL_USER', 'root')
+    MYSQL_PASSWORD = os.environ.get('MYSQL_PASSWORD', '')
+    MYSQL_DB = os.environ.get('MYSQL_DB', 'face_recognition_db')
     
-    JWT_SECRET_KEY = os.environ.get('JWT_SECRET_KEY', 'jwt-dev-only-key')
+    JWT_SECRET_KEY = os.environ['JWT_SECRET_KEY']
     UPLOAD_FOLDER = "static/uploads"
 
     JWT_TOKEN_LOCATION = ['cookies']

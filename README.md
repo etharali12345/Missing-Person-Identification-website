@@ -70,8 +70,7 @@ python3.12 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 
-# Configure MySQL and local secrets in backend/app/config.py,
-# or configure Railway variables listed in docs/SETUP.md.
+# From the repository root: cp .env.example .env, then fill in the placeholders.
 python run.py
 ```
 
@@ -87,24 +86,12 @@ Set `VITE_API_URL=http://127.0.0.1:5000` in `frontend/.env`. Open `http://localh
 
 ### Database Setup
 
-Set the MySQL and seed variables, then create the schema and placeholder accounts:
+Copy `.env.example` to `.env`, fill in the placeholders, then create the schema and placeholder accounts:
 
 ```bash
-export MYSQL_HOST=127.0.0.1
-export MYSQL_PORT=3306
-export MYSQL_USER=<mysql-user>
-export MYSQL_PASSWORD=<mysql-password>
-export MYSQL_DB=face_recognition_db
-
-export SEED_USER_EMAIL=seed-user@example.invalid
-export SEED_USER_PASSWORD=<seed-user-password>
-export SEED_AUTHORITY_EMAIL=seed-authority@example.invalid
-export SEED_AUTHORITY_PASSWORD=<seed-authority-password>
-export SEED_ADMIN_EMAIL=seed-admin@example.invalid
-export SEED_ADMIN_PASSWORD=<seed-admin-password>
-
+cp .env.example .env
 cd backend
-mysql -h "$MYSQL_HOST" -P "$MYSQL_PORT" -u "$MYSQL_USER" -p < db/schema.sql
+mysql -h 127.0.0.1 -P 3306 -u <mysql-user> -p < db/schema.sql
 python db/seed.py
 ```
 

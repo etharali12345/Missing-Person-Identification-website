@@ -4,7 +4,6 @@ backend/app/static/
 backend/venv/
 backend/__pycache__/
 backend/**/*.pyc
-backend/config_railway.py
 frontend/.env
 
 .env
