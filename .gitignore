@@ -1,10 +1,10 @@
-backend/app/config.py
 backend/static/
 backend/faiss_indexes/
 backend/app/static/
 backend/venv/
 backend/__pycache__/
 backend/**/*.pyc
+backend/config_railway.py
 frontend/.env
 
 .env

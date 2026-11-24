@@ -33,12 +33,7 @@ def create_app():
     CORS(
         app,
         supports_credentials=True,
-        origins=[
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-        "http://127.0.0.1:5174",
-        "https://missing-person-identification-websi.vercel.app"
-    ],
+        origins=[app.config["FRONTEND_API_URL"]],
         expose_headers=["set-cookie"]
     )
 

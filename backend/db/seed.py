@@ -98,7 +98,7 @@ def main() -> int:
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
                 """,
                 (
-                    "Seed Authority",
+                    "organization",
                     "Seed Authority",
                     seed_authority_email,
                     generate_password_hash(os.environ["SEED_AUTHORITY_PASSWORD"]),
