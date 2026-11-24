@@ -6,3 +6,23 @@ backend/venv/
 backend/__pycache__/
 backend/**/*.pyc
 frontend/.env
+
+.env
+.env.*
+!.env.example
+
+# Database dumps and local database data
+*_dump.sql
+*-dump.sql
+*.dump.sql
+*.sql.gz
+*.sql.bak
+mysql-data/
+dbdata/
+.mysql/
+*.sqlite
+*.sqlite3
+
+# Uploaded face images and documents
+backend/static/uploads/
+backend/app/static/uploads/

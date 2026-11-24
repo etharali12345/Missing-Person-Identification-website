@@ -1,0 +1,149 @@
+# Missing Person Identification Website
+
+**A face-recognition web platform for reporting missing people and matching them with found-person reports.**
+
+[![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)](https://react.dev/)
+[![Vite](https://img.shields.io/badge/Vite-6-646CFF?logo=vite&logoColor=white)](https://vite.dev/)
+[![Flask](https://img.shields.io/badge/Flask-3-000000?logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
+[![MySQL](https://img.shields.io/badge/MySQL-Database-4479A1?logo=mysql&logoColor=white)](https://www.mysql.com/)
+
+## Overview
+
+The platform helps normal users, authorities, and administrators submit and manage missing/found-person reports. It uses facial embeddings and FAISS similarity search to find strong or uncertain matches, then allows authorized users to validate them.
+
+## User Roles
+
+| Role | What they can do |
+|---|---|
+| **Normal user** | Submit missing-person reports, manage owned reports and matches, and update their profile. |
+| **Authority** | Register for approval, submit found-person reports, manage owned reports, and view the missing-person database. |
+| **Admin** | Manage authority applications, both person databases, matches, and dashboard statistics. |
+
+Authority accounts remain `pending` until an admin changes the status to `approved`; rejected accounts cannot log in.
+
+## Features
+
+### Normal users
+- Sign up and log in with email or phone.
+- Submit missing-person reports with an image and case details.
+- Edit or delete owned reports and validate uncertain matches.
+- Update profile information and password.
+
+### Authorities
+- Submit authority registration with supporting documentation.
+- Submit and manage found-person reports.
+- Browse missing-person records and match details.
+- Confirm, reject, or cancel owned matches.
+
+### Admins
+- Review authority applications and send approval/rejection notifications.
+- View authority, missing-report, and found-report statistics.
+- Browse, inspect, and delete records in both databases.
+- Manage match results.
+
+## Tech Stack
+
+**Frontend:** JavaScript, JSX, React 19, React Router 7, Vite 6, Axios, Bootstrap 5, Lucide React  
+**Backend:** Python, Flask 3, Flask-JWT-Extended, Flask-CORS, Flask-Mail, MySQLdb/MySQL, Gunicorn  
+**Face recognition:** InsightFace, ONNX Runtime, OpenCV, NumPy, Pillow, FAISS
+
+## Architecture
+
+The React frontend calls the Flask REST API through Axios and cookie-based JWT authentication. The API stores case data in MySQL and face embeddings in local FAISS indexes.
+
+```text
+frontend/  # React UI, role routes, components, and API services
+backend/   # Flask API, MySQL access, and facial-recognition services
+docs/      # Detailed API and setup documentation
+```
+
+Core database tables: `users`, `authority`, `missing_persons`, `found_persons`, and `match_results`.
+
+## Quick Start
+
+```bash
+git clone <repository-url>
+cd Missing-Person-Identification-website
+
+cd backend
+python3.12 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+
+# Configure MySQL and local secrets in backend/app/config.py,
+# or configure Railway variables listed in docs/SETUP.md.
+python run.py
+```
+
+In a second terminal:
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Set `VITE_API_URL=http://127.0.0.1:5000` in `frontend/.env`. Open `http://localhost:5173`; the backend runs at `http://127.0.0.1:5000`.
+
+### Database Setup
+
+Set the MySQL and seed variables, then create the schema and placeholder accounts:
+
+```bash
+export MYSQL_HOST=127.0.0.1
+export MYSQL_PORT=3306
+export MYSQL_USER=<mysql-user>
+export MYSQL_PASSWORD=<mysql-password>
+export MYSQL_DB=face_recognition_db
+
+export SEED_USER_EMAIL=seed-user@example.invalid
+export SEED_USER_PASSWORD=<seed-user-password>
+export SEED_AUTHORITY_EMAIL=seed-authority@example.invalid
+export SEED_AUTHORITY_PASSWORD=<seed-authority-password>
+export SEED_ADMIN_EMAIL=seed-admin@example.invalid
+export SEED_ADMIN_PASSWORD=<seed-admin-password>
+
+cd backend
+mysql -h "$MYSQL_HOST" -P "$MYSQL_PORT" -u "$MYSQL_USER" -p < db/schema.sql
+python db/seed.py
+```
+
+See [Setup Guide](docs/SETUP.md) for MySQL setup, environment variables, account creation, build commands, and troubleshooting.
+
+## API Overview
+
+| Base route | Purpose |
+|---|---|
+| `/api/auth/*` | Signup, login, current-user lookup, and logout |
+| `/api/admin/*` | Authority management and dashboard statistics |
+| `/api/missing-report/*`, `/api/report/*` | Create missing-person reports and validate matches |
+| `/api/my-missing-cases*`, `/api/my-missing-match*` | Manage a normal user's missing reports and matches |
+| `/api/found-report/*`, `/api/found-match/*` | Create found-person reports and validate owned matches |
+| `/api/my-found-cases*` | Manage an authority/admin user's found reports |
+| `/api/missing-database*` | Browse or manage missing-person database records |
+| `/api/found-database*` | Browse or manage found-person database records |
+| `/api/user-profile*` | Get and update a normal user's profile |
+
+See [API Reference](docs/API.md) for every route, method, role, and description.
+
+## Screenshots
+
+<!-- TODO: add screenshot - home page -->
+
+<!-- TODO: add screenshot - missing-person report -->
+
+<!-- TODO: add screenshot - found-person report -->
+
+<!-- TODO: add screenshot - admin dashboard -->
+
+## Testing
+
+No backend test suite or frontend test runner is currently configured.
+
+Frontend checks:
+
+```bash
+cd frontend
+npm run lint
+npm run build
+```
