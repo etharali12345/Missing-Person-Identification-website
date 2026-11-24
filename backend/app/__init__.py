@@ -33,7 +33,7 @@ def create_app():
     CORS(
         app,
         supports_credentials=True,
-        origins=[app.config["FRONTEND_API_URL"]],
+        origins=[app.config["FRONTEND_URL"]],
         expose_headers=["set-cookie"]
     )
 

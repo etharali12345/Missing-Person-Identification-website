@@ -2,7 +2,7 @@ import os
 from datetime import timedelta
 
 class Config:
-    FRONTEND_API_URL = os.environ.get("FRONTEND_API_URL")
+    FRONTEND_URL = os.environ.get("FRONTEND_URL")
 
     SECRET_KEY = os.environ.get('SECRET_KEY', 'dev-only-key')
     MYSQL_HOST = os.environ.get('MYSQL_HOST') or os.environ.get('MYSQLHOST', '127.0.0.1')
