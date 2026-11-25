@@ -46,9 +46,9 @@ Authority accounts remain `pending` until an admin changes the status to `approv
 
 ## Tech Stack
 
-**Frontend:** JavaScript, JSX, React 19, React Router 7, Vite 6, Axios, Bootstrap 5, Lucide React  
-**Backend:** Python, Flask 3, Flask-JWT-Extended, Flask-CORS, Flask-Mail, MySQLdb/MySQL, Gunicorn  
-**Face recognition:** InsightFace, ONNX Runtime, OpenCV, NumPy, Pillow, FAISS
+**Frontend:** JavaScript, JSX, React, React Router, Vite, Axios, Bootstrap, Lucide React  
+**Backend:** Python, Flask, Flask-JWT-Extended, Flask-CORS, Flask-Mail, MySQLdb/MySQL  
+**Face recognition:** InsightFace, ArcFace, ONNX Runtime, OpenCV, NumPy, Pillow, FAISS
 
 ## Architecture
 
@@ -118,31 +118,26 @@ See [API Reference](docs/API.md) for every route, method, role, and description.
 
 ## Screenshots
 
-<!-- TODO: add screenshot - home page -->
+The following are selected screenshots showcasing some of the application's interfaces and features. They represent only a portion of the available functionality
 
 ### Home Page
 
 ![Home Page](./screenshots/Home.png)
-<img src="./screenshots/home.png" width="600" height="400" alt="Home Page" />
 
 ### SignUp Page
 
 ![SingUp Page](./screenshots/Signup.png)
 
-<!-- TODO: add screenshot - missing-person report -->
+### Missing Person Reporting Page (Normal User)
 
-<!-- TODO: add screenshot - found-person report -->
+![Report Page](./screenshots/ReportGroup2-1.png)
 
-<!-- TODO: add screenshot - admin dashboard -->
+### Found Persons Reports Management Page (Admin & Authorities)
 
-## Testing
+![Report Page](./screenshots/FoundReports.png)
 
-No backend test suite or frontend test runner is currently configured.
+### Admin Dahsboard
 
-Frontend checks:
+![Report Page](./screenshots/Admin.png)
 
-```bash
-cd frontend
-npm run lint
-npm run build
-```
+---
