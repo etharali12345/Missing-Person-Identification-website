@@ -132,7 +132,7 @@ The following are selected screenshots showcasing some of the application's inte
 
 ![Report Page](./screenshots/ReportGroup2-1.png)
 
-### Found Persons Reports Management Page (Admin & Authorities)
+### Found Person Reports Management (Admin & Authorities)
 
 ![Report Page](./screenshots/FoundReports.png)
 
